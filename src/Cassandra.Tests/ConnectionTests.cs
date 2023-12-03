@@ -28,6 +28,7 @@ using Cassandra.Responses;
 using Cassandra.Serialization;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests
 {
@@ -69,7 +70,7 @@ namespace Cassandra.Tests
             connection.ReadParse(buffer, buffer.Length);
             CollectionAssert.AreEqual(new short[] { 127, 126, 125 }, streamIds);
             TestHelper.WaitUntil(() => responses.Count == 3);
-            Assert.AreEqual(3, responses.Count);
+            Assert.That(3, Is.EqualTo(responses.Count));
             CollectionAssert.AreEqual(Enumerable.Repeat(ResultResponse.ResultResponseKind.Void, 3), responses.Select(r => ((ResultResponse) r).Kind));
         }
 
@@ -87,7 +88,7 @@ namespace Cassandra.Tests
             connection.ReadParse(buffer, buffer.Length);
             CollectionAssert.AreEqual(new short[] { 127, 126 }, streamIds);
             TestHelper.WaitUntil(() => responses.Count == 2);
-            Assert.AreEqual(2, responses.Count);
+            Assert.That(2, Is.EqualTo(responses.Count));
         }
 
         [Test]
@@ -308,7 +309,7 @@ namespace Cassandra.Tests
             await Task.WhenAll(tasks).ConfigureAwait(false);
             // We must await for a short while until operation states are callback (on the TaskScheduler)
             await TestHelper.WaitUntilAsync(() => totalFrames == responses.Count, 100, 30).ConfigureAwait(false);
-            Assert.AreEqual(totalFrames, responses.Count);
+            Assert.That(totalFrames, Is.EqualTo(responses.Count));
         }
         
         [Test]
@@ -334,7 +335,7 @@ namespace Cassandra.Tests
             connection.ReadParse(buffer, buffer.Length);
             CollectionAssert.AreEqual(new short[] { 128, 100, 129 }, streamIds);
             TestHelper.WaitUntil(() => responses.Count == 3);
-            Assert.AreEqual(3, responses.Count);
+            Assert.That(3, Is.EqualTo(responses.Count));
         }
 
         /// <summary>

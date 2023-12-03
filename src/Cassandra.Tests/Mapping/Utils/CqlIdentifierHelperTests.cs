@@ -41,7 +41,7 @@ namespace Cassandra.Tests.Mapping.Utils
 
             var act = target.EscapeIdentifierIfNecessary(pocoData, identifier);
 
-            Assert.AreEqual(expected, act);
+            Assert.That(expected, Is.EqualTo(act));
         }
         
         [TestCase("ks.\"select\"", "ks", "select", false)]
@@ -63,7 +63,7 @@ namespace Cassandra.Tests.Mapping.Utils
 
             var act = target.EscapeTableNameIfNecessary(pocoData, keyspace, tableName);
 
-            Assert.AreEqual(expected, act);
+            Assert.That(expected, Is.EqualTo(act));
         }
     }
 }

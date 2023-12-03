@@ -19,6 +19,7 @@ using System.Linq;
 using System.Reflection;
 using Cassandra.DataStax.Auth;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests
 {
@@ -44,8 +45,8 @@ namespace Cassandra.Tests
             var types = assembly.GetTypes();
             var set = new SortedSet<string>(
                 types.Where(t => t.GetTypeInfo().IsPublic).Select(t => t.Namespace.Split('.')[0]));
-            Assert.AreEqual(1, set.Count);
-            Assert.AreEqual("Cassandra", set.First());
+            Assert.That(1, Is.EqualTo(set.Count));
+            Assert.That("Cassandra", Is.EqualTo(set.First()));
         }
 
         [Test]

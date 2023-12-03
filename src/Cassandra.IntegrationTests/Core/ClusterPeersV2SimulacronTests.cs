@@ -36,10 +36,10 @@ namespace Cassandra.IntegrationTests.Core
         {
             const string query = "SELECT * FROM ks.table";
 
-            Assert.AreEqual(3, Session.Cluster.AllHosts().Count);
-            Assert.IsTrue(Session.Cluster.AllHosts().All(h => h.IsUp));
-            Assert.AreEqual(1, Session.Cluster.AllHosts().Select(h => h.Address.Address).Distinct().Count());
-            Assert.AreEqual(3, Session.Cluster.AllHosts().Select(h => h.Address.Port).Distinct().Count());
+            Assert.That(3, Is.EqualTo(Session.Cluster.AllHosts().Count));
+            Assert.That(Session.Cluster.AllHosts().All(h => h.IsUp), Is.True);
+            Assert.That(1, Is.EqualTo(Session.Cluster.AllHosts().Select(h => h.Address.Address).Distinct().Count()));
+            Assert.That(3, Is.EqualTo(Session.Cluster.AllHosts().Select(h => h.Address.Port).Distinct().Count()));
 
             foreach (var i in Enumerable.Range(0, 10))
             {
@@ -47,11 +47,11 @@ namespace Cassandra.IntegrationTests.Core
                 Session.Execute(query);
             }
             
-            Assert.AreEqual(3, Session.Cluster.AllHosts().Count);
-            Assert.IsTrue(Session.Cluster.AllHosts().All(h => h.IsUp));
+            Assert.That(3, Is.EqualTo(Session.Cluster.AllHosts().Count));
+            Assert.That(Session.Cluster.AllHosts().All(h => h.IsUp), Is.True);
 
             var queriesByNode = TestCluster.GetNodes().Select(n => n.GetQueries(query, QueryType.Query));
-            Assert.IsTrue(queriesByNode.All(queries => queries.Count >= 1));
+            Assert.That(queriesByNode.All(queries => queries.Count >= 1), Is.True);
         }
     }
 }

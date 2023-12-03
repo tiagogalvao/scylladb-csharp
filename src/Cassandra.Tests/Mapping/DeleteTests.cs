@@ -21,6 +21,7 @@ using Cassandra.Tests.Mapping.Pocos;
 using Cassandra.Tests.Mapping.TestData;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.Mapping
 {
@@ -34,7 +35,7 @@ namespace Cassandra.Tests.Mapping
             var session = GetSession((q, args) => query = q, new RowSet());
             var mapper = new Mapper(session, new MappingConfiguration());
             mapper.Delete<Song>(Cql.New("WHERE id = ?", Guid.NewGuid()));
-            Assert.AreEqual("DELETE FROM Song WHERE id = ?", query);
+            Assert.That("DELETE FROM Song WHERE id = ?", Is.EqualTo(query));
         }
 
         [Test]
@@ -50,7 +51,7 @@ namespace Cassandra.Tests.Mapping
             var mapper = new Mapper(session, new MappingConfiguration().Define(new Map<Song>().PartitionKey(s => s.Id)));
             var song = new Song {Id = Guid.NewGuid()};
             mapper.Delete(song);
-            Assert.AreEqual("DELETE FROM Song WHERE Id = ?", query);
+            Assert.That("DELETE FROM Song WHERE Id = ?", Is.EqualTo(query));
             CollectionAssert.AreEqual(new object[] { song.Id }, parameters);
         }
 
@@ -61,7 +62,7 @@ namespace Cassandra.Tests.Mapping
             var session = GetSession((q, args) => query = q, new RowSet());
             var mapper = new Mapper(session, new MappingConfiguration());
             mapper.DeleteIf<Song>(Cql.New("WHERE id = ? IF title = ?", Guid.NewGuid(), "All of My love"));
-            Assert.AreEqual("DELETE FROM Song WHERE id = ? IF title = ?", query);
+            Assert.That("DELETE FROM Song WHERE id = ? IF title = ?", Is.EqualTo(query));
         }
 
         [Test]
@@ -70,8 +71,8 @@ namespace Cassandra.Tests.Mapping
             var session = GetSession((q, args) => { }, TestDataHelper.CreateMultipleValuesRowSet(new[] { "[applied]" }, new[] { true }));
             var mapper = new Mapper(session, new MappingConfiguration());
             var appliedInfo = mapper.DeleteIf<Song>(Cql.New("WHERE id = ? IF title = ?", Guid.NewGuid(), "All of My love"));
-            Assert.True(appliedInfo.Applied);
-            Assert.Null(appliedInfo.Existing);
+            Assert.That(appliedInfo.Applied, Is.True);
+            Assert.That(appliedInfo.Existing, Is.Null);
         }
 
         [Test]
@@ -80,9 +81,9 @@ namespace Cassandra.Tests.Mapping
             var session = GetSession((q, args) => { }, TestDataHelper.CreateMultipleValuesRowSet(new[] { "[applied]", "title" }, new object[] { false, "I Feel Free" }));
             var mapper = new Mapper(session, new MappingConfiguration());
             var appliedInfo = mapper.DeleteIf<Song>(Cql.New("WHERE id = ? IF title = ?", Guid.NewGuid(), "All of My love"));
-            Assert.False(appliedInfo.Applied);
-            Assert.NotNull(appliedInfo.Existing);
-            Assert.AreEqual("I Feel Free", appliedInfo.Existing.Title);
+            Assert.That(appliedInfo.Applied, Is.False);
+            Assert.That(appliedInfo.Existing, Is.Not.Null);
+            Assert.That("I Feel Free", Is.EqualTo(appliedInfo.Existing.Title));
         }
 
         [Test]
@@ -114,9 +115,9 @@ namespace Cassandra.Tests.Mapping
             var song = new Song { Id = Guid.NewGuid(), Title = "t2", ReleaseDate = DateTimeOffset.Now };
             var timestamp = DateTimeOffset.Now.Subtract(TimeSpan.FromDays(1));
             mapper.Delete(song);
-            Assert.Null(statement.Timestamp);
+            Assert.That(statement.Timestamp, Is.Null);
             mapper.Delete(song, CqlQueryOptions.New().SetTimestamp(timestamp));
-            Assert.AreEqual(timestamp, statement.Timestamp);
+            Assert.That(timestamp, Is.EqualTo(statement.Timestamp));
         }
     }
 }

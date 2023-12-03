@@ -23,6 +23,7 @@ using Cassandra.IntegrationTests.Linq.Structures;
 using Cassandra.IntegrationTests.TestBase;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Linq.CqlOperatorTests
 {
@@ -279,7 +280,7 @@ namespace Cassandra.IntegrationTests.Linq.CqlOperatorTests
                               singleEntity.ListType.Concat(toAppend))));
 
             var entityList = table.Where(m => m.Id == singleEntity.Id).ExecuteAsync().Result.ToList();
-            Assert.AreEqual(1, entityList.Count);
+            Assert.That(1, Is.EqualTo(entityList.Count));
             CollectionAssert.AreEqual(singleEntity.ListType.Concat(toAppend), entityList.First().ListType);
         }
 
@@ -315,7 +316,7 @@ namespace Cassandra.IntegrationTests.Linq.CqlOperatorTests
                               singleEntity.ListType)));
 
             var entityList = table.Where(m => m.Id == singleEntity.Id).ExecuteAsync().Result.ToList();
-            Assert.AreEqual(1, entityList.Count);
+            Assert.That(1, Is.EqualTo(entityList.Count));
             CollectionAssert.AreEqual(singleEntity.ArrayType.Concat(toAppend), entityList.First().ArrayType);
         }
 
@@ -352,7 +353,7 @@ namespace Cassandra.IntegrationTests.Linq.CqlOperatorTests
                               expectedEntity.ListType)));
 
             var entityList = table.Where(m => m.Id == singleEntity.Id).ExecuteAsync().Result.ToList();
-            Assert.AreEqual(1, entityList.Count);
+            Assert.That(1, Is.EqualTo(entityList.Count));
             CollectionAssert.AreEqual(expectedEntity.ArrayType, singleEntity.ArrayType);
             entityList.First().AssertEquals(expectedEntity);
         }

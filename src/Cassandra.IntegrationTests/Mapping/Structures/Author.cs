@@ -37,8 +37,8 @@ namespace Cassandra.IntegrationTests.Mapping.Structures
 
         public void AssertEquals(Author actualAuthor)
         {
-            Assert.AreEqual(AuthorId, actualAuthor.AuthorId);
-            Assert.AreEqual(Followers, actualAuthor.Followers);
+            Assert.That(AuthorId, Is.EqualTo(actualAuthor.AuthorId));
+            Assert.That(Followers, Is.EqualTo(actualAuthor.Followers));
         }
 
         public static Author GetRandom(string prefix = "")

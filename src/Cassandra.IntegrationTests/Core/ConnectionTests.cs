@@ -39,6 +39,7 @@ using Cassandra.Serialization;
 
 using Moq;
 using Newtonsoft.Json;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -72,13 +73,13 @@ namespace Cassandra.IntegrationTests.Core
                 connection.Open().Wait();
                 var task = Query(connection, BasicQuery);
                 task.Wait();
-                Assert.AreEqual(TaskStatus.RanToCompletion, task.Status);
+                Assert.That(TaskStatus.RanToCompletion, Is.EqualTo(task.Status));
                 //Result from Cassandra
                 var output = ValidateResult<OutputRows>(task.Result);
                 var rs = output.RowSet;
                 var rows = rs.ToList();
-                Assert.Greater(rows.Count, 0);
-                Assert.NotNull(rows[0].GetValue<string>("key"), "It should contain a value for key column");
+                Assert.That(rows.Count, Is.GreaterThan(0));
+                Assert.That(rows[0].GetValue<string>("key"), Is.Not.Null, "It should contain a value for key column");
             }
         }
 
@@ -91,7 +92,7 @@ namespace Cassandra.IntegrationTests.Core
                 var request = new PrepareRequest(GetSerializer(), BasicQuery, null, null);
                 var task = connection.Send(request);
                 task.Wait();
-                Assert.AreEqual(TaskStatus.RanToCompletion, task.Status);
+                Assert.That(TaskStatus.RanToCompletion, Is.EqualTo(task.Status));
                 ValidateResult<OutputPrepared>(task.Result);
             }
         }
@@ -106,9 +107,9 @@ namespace Cassandra.IntegrationTests.Core
                 var task = connection.Send(request);
                 task.ContinueWith(t =>
                 {
-                    Assert.AreEqual(TaskStatus.Faulted, t.Status);
-                    Assert.NotNull(t.Exception);
-                    Assert.IsInstanceOf<SyntaxError>(t.Exception.InnerException);
+                    Assert.That(TaskStatus.Faulted, Is.EqualTo(t.Status));
+                    Assert.That(t.Exception, Is.Not.Null);
+                    ClassicAssert.IsInstanceOf<SyntaxError>(t.Exception.InnerException);
                 }, TaskContinuationOptions.ExecuteSynchronously).Wait();
             }
         }
@@ -138,8 +139,8 @@ namespace Cassandra.IntegrationTests.Core
                 var output = ValidateResult<OutputRows>(task.Result);
                 var rs = output.RowSet;
                 var rows = rs.ToList();
-                Assert.Greater(rows.Count, 0);
-                Assert.True(rows[0].GetValue<string>("key") != null, "It should contain a key column");
+                Assert.That(rows.Count, Is.GreaterThan(0));
+                Assert.That(rows[0].GetValue<string>("key") != null, Is.True, "It should contain a key column");
             }
         }
 
@@ -169,8 +170,8 @@ namespace Cassandra.IntegrationTests.Core
                 var output = ValidateResult<OutputRows>(task.Result);
 
                 var rows = output.RowSet.ToList();
-                Assert.Greater(rows.Count, 0);
-                Assert.NotNull(rows[0].GetValue<string>("key"), "It should contain a key column value");
+                Assert.That(rows.Count, Is.GreaterThan(0));
+                Assert.That(rows[0].GetValue<string>("key"), Is.Not.Null, "It should contain a key column value");
             }
         }
 
@@ -186,11 +187,11 @@ namespace Cassandra.IntegrationTests.Core
                 //Start a query
                 var task = Query(connection, "SELECT * FROM system.local", QueryProtocolOptions.Default);
                 task.Wait(360000);
-                Assert.AreEqual(TaskStatus.RanToCompletion, task.Status);
+                Assert.That(TaskStatus.RanToCompletion, Is.EqualTo(task.Status));
                 var output = ValidateResult<OutputRows>(task.Result);
                 var rs = output.RowSet;
                 var rows = rs.ToList();
-                Assert.Greater(rows.Count, 0);
+                Assert.That(rows.Count, Is.GreaterThan(0));
             }
         }
 
@@ -217,8 +218,8 @@ namespace Cassandra.IntegrationTests.Core
                     var output = ValidateResult<OutputRows>(t.Result);
                     var rs = output.RowSet;
                     var rows = rs.ToList();
-                    Assert.Greater(rows.Count, 0);
-                    Assert.True(rows[0].GetValue<string>("key") != null, "It should contain a key");
+                    Assert.That(rows.Count, Is.GreaterThan(0));
+                    Assert.That(rows[0].GetValue<string>("key") != null, Is.True, "It should contain a key");
                 }
             }
         }
@@ -234,11 +235,11 @@ namespace Cassandra.IntegrationTests.Core
                 //Start a query
                 var task = Query(connection, BasicQuery, QueryProtocolOptions.Default);
                 task.Wait(360000);
-                Assert.AreEqual(TaskStatus.RanToCompletion, task.Status);
+                Assert.That(TaskStatus.RanToCompletion, Is.EqualTo(task.Status));
                 var output = ValidateResult<OutputRows>(task.Result);
                 var rs = output.RowSet;
                 var rows = rs.ToList();
-                Assert.Greater(rows.Count, 0);
+                Assert.That(rows.Count, Is.GreaterThan(0));
             }
         }
 
@@ -256,8 +257,8 @@ namespace Cassandra.IntegrationTests.Core
                 var task = Query(connection, "SELECT WILL FAIL", QueryProtocolOptions.Default);
                 task.ContinueWith(t =>
                 {
-                    Assert.AreEqual(TaskStatus.Faulted, t.Status);
-                    Assert.IsInstanceOf<SyntaxError>(t.Exception.InnerException);
+                    Assert.That(TaskStatus.Faulted, Is.EqualTo(t.Status));
+                    ClassicAssert.IsInstanceOf<SyntaxError>(t.Exception.InnerException);
                 }, TaskContinuationOptions.ExecuteSynchronously).Wait();
             }
         }
@@ -279,8 +280,8 @@ namespace Cassandra.IntegrationTests.Core
                 Task.WaitAll(taskList.ToArray());
                 foreach (var t in taskList)
                 {
-                    Assert.AreEqual(TaskStatus.RanToCompletion, t.Status);
-                    Assert.NotNull(t.Result);
+                    Assert.That(TaskStatus.RanToCompletion, Is.EqualTo(t.Status));
+                    Assert.That(t.Result, Is.Not.Null);
                 }
             }
         }
@@ -313,9 +314,9 @@ namespace Cassandra.IntegrationTests.Core
                     // ignored
                 }
 
-                Assert.True(taskList.All(t =>
+                Assert.That(taskList.All(t =>
                     t.Status == TaskStatus.RanToCompletion ||
-                    (t.Exception != null && t.Exception.InnerException is ReadTimeoutException)),
+                    (t.Exception != null && t.Exception.InnerException is ReadTimeoutException)), Is.True,
                     string.Join(Environment.NewLine, taskList.Select(t => t.Exception?.ToString() ?? string.Empty)));
             }
         }
@@ -331,8 +332,8 @@ namespace Cassandra.IntegrationTests.Core
                 {
                     var task = Query(connection, "SELECT * FROM system.local", QueryProtocolOptions.Default);
                     task.Wait(1000);
-                    Assert.AreEqual(TaskStatus.RanToCompletion, task.Status);
-                    Assert.NotNull(task.Result);
+                    Assert.That(TaskStatus.RanToCompletion, Is.EqualTo(task.Status));
+                    Assert.That(task.Result, Is.Not.Null);
                 }
             }
         }
@@ -348,7 +349,7 @@ namespace Cassandra.IntegrationTests.Core
                 var eventTypes = CassandraEventType.TopologyChange | CassandraEventType.StatusChange | CassandraEventType.SchemaChange;
                 var task = connection.Send(new RegisterForEventRequest(eventTypes));
                 TaskHelper.WaitToComplete(task, 1000);
-                Assert.IsInstanceOf<ReadyResponse>(task.Result);
+                ClassicAssert.IsInstanceOf<ReadyResponse>(task.Result);
                 connection.CassandraEventResponse += (o, e) =>
                 {
                     receivedEvents.Add(e);
@@ -359,12 +360,12 @@ namespace Cassandra.IntegrationTests.Core
                 TestHelper.RetryAssert(
                     () =>
                     {
-                        Assert.Greater(receivedEvents.Count, 0);
+                        Assert.That(receivedEvents.Count, Is.GreaterThan(0));
                         var evs = receivedEvents.Select(e => e as SchemaChangeEventArgs).Where(e => e != null);
                         var createdEvent = evs.SingleOrDefault(
                             e => e.What == SchemaChangeEventArgs.Reason.Created && e.Keyspace == "test_events_kp" &&
                                  string.IsNullOrEmpty(e.Table));
-                        Assert.IsNotNull(createdEvent, JsonConvert.SerializeObject(receivedEvents.ToArray()));
+                        Assert.That(createdEvent, Is.Not.Null, JsonConvert.SerializeObject(receivedEvents.ToArray()));
                     },
                     100,
                     50);
@@ -374,12 +375,12 @@ namespace Cassandra.IntegrationTests.Core
                 TestHelper.RetryAssert(
                     () =>
                     {
-                        Assert.Greater(receivedEvents.Count, 0);
+                        Assert.That(receivedEvents.Count, Is.GreaterThan(0));
                         var evs = receivedEvents.Select(e => e as SchemaChangeEventArgs).Where(e => e != null);
                         var createdEvent = evs.SingleOrDefault(
                             e => e.What == SchemaChangeEventArgs.Reason.Created && e.Keyspace == "test_events_kp" &&
                                  e.Table == "test_table");
-                        Assert.IsNotNull(createdEvent, JsonConvert.SerializeObject(receivedEvents.ToArray()));
+                        Assert.That(createdEvent, Is.Not.Null, JsonConvert.SerializeObject(receivedEvents.ToArray()));
                     },
                     100,
                     50);
@@ -390,12 +391,12 @@ namespace Cassandra.IntegrationTests.Core
                     TestHelper.RetryAssert(
                         () =>
                         {
-                            Assert.Greater(receivedEvents.Count, 0);
+                            Assert.That(receivedEvents.Count, Is.GreaterThan(0));
                             var evs = receivedEvents.Select(e => e as SchemaChangeEventArgs).Where(e => e != null);
                             var createdEvent = evs.SingleOrDefault(
                                 e => e.What == SchemaChangeEventArgs.Reason.Created && e.Keyspace == "test_events_kp" &&
                                      e.Type == "test_type");
-                            Assert.IsNotNull(createdEvent, JsonConvert.SerializeObject(receivedEvents.ToArray()));
+                            Assert.That(createdEvent, Is.Not.Null, JsonConvert.SerializeObject(receivedEvents.ToArray()));
                         },
                         100,
                         50);
@@ -433,11 +434,11 @@ namespace Cassandra.IntegrationTests.Core
                     taskList.Add(Query(connection, "SELECT * FROM system.local", QueryProtocolOptions.Default));
                 }
                 Task.WaitAll(taskList.ToArray());
-                Assert.True(taskList.All(t => t.Status == TaskStatus.RanToCompletion), "Not all task completed");
+                Assert.That(taskList.All(t => t.Status == TaskStatus.RanToCompletion), Is.True, "Not all task completed");
 
                 //One last time
                 var task = Query(connection, "SELECT * FROM system.local");
-                Assert.True(task.Result != null);
+                Assert.That(task.Result != null, Is.True);
             }
         }
 
@@ -486,10 +487,10 @@ namespace Cassandra.IntegrationTests.Core
             using (var connection = CreateConnection())
             {
                 connection.Open().Wait();
-                Assert.Null(connection.Keyspace);
+                Assert.That(connection.Keyspace, Is.Null);
                 connection.SetKeyspace("system").Wait();
                 //If it was executed correctly, it should be set
-                Assert.AreEqual("system", connection.Keyspace);
+                Assert.That("system", Is.EqualTo(connection.Keyspace));
                 //Execute a query WITHOUT the keyspace prefix
                 TaskHelper.WaitToComplete(Query(connection, "SELECT * FROM local", QueryProtocolOptions.Default));
             }
@@ -501,10 +502,10 @@ namespace Cassandra.IntegrationTests.Core
             using (var connection = CreateConnection())
             {
                 connection.Open().Wait();
-                Assert.Null(connection.Keyspace);
+                Assert.That(connection.Keyspace, Is.Null);
                 Assert.Throws<InvalidQueryException>(() => TaskHelper.WaitToComplete(connection.SetKeyspace("KEYSPACE_Y_DOES_NOT_EXISTS")));
                 //The keyspace should still be null
-                Assert.Null(connection.Keyspace);
+                Assert.That(connection.Keyspace, Is.Null);
                 //Execute a query WITH the keyspace prefix still works
                 TaskHelper.WaitToComplete(Query(connection, "SELECT * FROM system.local", QueryProtocolOptions.Default));
             }
@@ -521,7 +522,7 @@ namespace Cassandra.IntegrationTests.Core
             using (var connection = CreateConnection())
             {
                 await connection.Open().ConfigureAwait(false);
-                Assert.Null(connection.Keyspace);
+                Assert.That(connection.Keyspace, Is.Null);
                 await Query(connection, queryKs1).ConfigureAwait(false);
                 await Query(connection, queryKs2).ConfigureAwait(false);
                 await Task.Delay(100).ConfigureAwait(false);
@@ -535,7 +536,7 @@ namespace Cassandra.IntegrationTests.Core
                 });
                 CollectionAssert.Contains(new[] { "ks_to_switch_p1", "ks_to_switch_p2", "system" }, connection.Keyspace);
                 await Task.Delay(200).ConfigureAwait(false);
-                Assert.AreEqual(3, Volatile.Read(ref counter));
+                Assert.That(3, Is.EqualTo(Volatile.Read(ref counter)));
             }
             // ReSharper enable AccessToDisposedClosure, AccessToModifiedClosure
         }
@@ -546,7 +547,7 @@ namespace Cassandra.IntegrationTests.Core
             using (var connection = CreateConnection(null, null, new PoolingOptions().SetHeartBeatInterval(0)))
             {
                 await connection.Open().ConfigureAwait(false);
-                Assert.Null(connection.Keyspace);
+                Assert.That(connection.Keyspace, Is.Null);
                 var actions = new Action[100]
                     .Select<Action, Action>(_ => () => connection.SetKeyspace("system").Wait())
                     .ToArray();
@@ -554,9 +555,9 @@ namespace Cassandra.IntegrationTests.Core
                 var counter = 0;
                 connection.WriteCompleted += () => Interlocked.Increment(ref counter);
                 TestHelper.ParallelInvoke(actions);
-                Assert.AreEqual("system", connection.Keyspace);
+                Assert.That("system", Is.EqualTo(connection.Keyspace));
                 await Task.Delay(200).ConfigureAwait(false);
-                Assert.AreEqual(1, Volatile.Read(ref counter));
+                Assert.That(1, Is.EqualTo(Volatile.Read(ref counter)));
             }
         }
 
@@ -568,7 +569,7 @@ namespace Cassandra.IntegrationTests.Core
             using (var connection = CreateConnection())
             {
                 connection.Open().Wait();
-                Assert.Null(connection.Keyspace);
+                Assert.That(connection.Keyspace, Is.Null);
                 TaskHelper.WaitToComplete(Query(connection, queryKs1));
                 TaskHelper.WaitToComplete(Query(connection, queryKs2));
                 var counter = 0;
@@ -582,7 +583,7 @@ namespace Cassandra.IntegrationTests.Core
                 Task.WaitAll(tasks);
                 CollectionAssert.Contains(new[] { "ks_to_switch_s1", "ks_to_switch_s2", "system" }, connection.Keyspace);
                 Thread.Sleep(400);
-                Assert.GreaterOrEqual(counter, 3);
+                Assert.That(counter, Is.GreaterThanOrEqualTo(3));
             }
         }
 
@@ -592,7 +593,7 @@ namespace Cassandra.IntegrationTests.Core
             using (var connection = CreateConnection())
             {
                 connection.Open().Wait();
-                Assert.Null(connection.Keyspace);
+                Assert.That(connection.Keyspace, Is.Null);
                 connection.Dispose();
                 //differentiate the task creation from the waiting
                 var task = connection.SetKeyspace("system");
@@ -608,7 +609,7 @@ namespace Cassandra.IntegrationTests.Core
             using (var connection = CreateConnection())
             {
                 connection.Open().Wait();
-                Assert.Null(connection.Keyspace);
+                Assert.That(connection.Keyspace, Is.Null);
                 TaskHelper.WaitToComplete(Query(connection, queryKs));
             }
             TestHelper.Invoke(() =>
@@ -616,7 +617,7 @@ namespace Cassandra.IntegrationTests.Core
                 using (var connection = CreateConnection())
                 {
                     connection.Open().Wait();
-                    Assert.Null(connection.Keyspace);
+                    Assert.That(connection.Keyspace, Is.Null);
                     var tasks = new Task[10];
                     TestHelper.ParallelInvoke(new Action[]
                     {
@@ -629,7 +630,7 @@ namespace Cassandra.IntegrationTests.Core
                     }
                     var ex = Assert.Throws<AggregateException>(() => Task.WaitAll(tasks));
                     var unexpectedException = ex.InnerExceptions.FirstOrDefault(e => !(e is SocketException));
-                    Assert.Null(unexpectedException);
+                    Assert.That(unexpectedException, Is.Null);
                 }
             }, 10);
         }
@@ -656,7 +657,7 @@ namespace Cassandra.IntegrationTests.Core
                     NullConnectionObserver.Instance))
             {
                 var ex = Assert.Throws<SocketException>(() => TaskHelper.WaitToComplete(connection.Open()));
-                Assert.AreEqual(SocketError.TimedOut, ex.SocketErrorCode);
+                Assert.That(SocketError.TimedOut, Is.EqualTo(ex.SocketErrorCode));
             }
             using (var connection =
                 new Connection(
@@ -706,7 +707,7 @@ namespace Cassandra.IntegrationTests.Core
                     //Its alright, it will fail
                 }
 
-                Assert.True(!taskList.Any(t => t.Status != TaskStatus.RanToCompletion && t.Status != TaskStatus.Faulted), "Must be only completed and faulted task");
+                Assert.That(!taskList.Any(t => t.Status != TaskStatus.RanToCompletion && t.Status != TaskStatus.Faulted), Is.True, "Must be only completed and faulted task");
 
                 await Task.Delay(1000).ConfigureAwait(false);
 
@@ -744,7 +745,7 @@ namespace Cassandra.IntegrationTests.Core
                 var writeCounter = 0;
                 connection.WriteCompleted += () => Interlocked.Increment(ref writeCounter);
                 await TestHelper.WaitUntilAsync(() => Volatile.Read(ref writeCounter) > 2, 200, 5).ConfigureAwait(false);
-                Assert.Greater(Volatile.Read(ref writeCounter), 2);
+                Assert.That(Volatile.Read(ref writeCounter), Is.GreaterThan(2));
             }
         }
 
@@ -762,7 +763,7 @@ namespace Cassandra.IntegrationTests.Core
                 connection.WriteCompleted += () => writeCounter++;
                 // No write should occur
                 await Task.Delay(2200).ConfigureAwait(false);
-                Assert.AreEqual(0, writeCounter);
+                Assert.That(0, Is.EqualTo(writeCounter));
             }
         }
 
@@ -786,7 +787,7 @@ namespace Cassandra.IntegrationTests.Core
             using (var connection = CreateConnection(null, null, new PoolingOptions(), ProtocolVersion.V3, testCluster.InitialContactPoint.Address.ToString()))
             {
                 await connection.Open().ConfigureAwait(false);
-                Assert.AreEqual(defaultHeartbeatInterval, connection.Configuration.PoolingOptions.GetHeartBeatInterval());
+                Assert.That(defaultHeartbeatInterval, Is.EqualTo(connection.Configuration.PoolingOptions.GetHeartBeatInterval()));
                 
                 //execute a dummy query
                 await Query(connection, "SELECT * FROM system.local", QueryProtocolOptions.Default).ConfigureAwait(false);
@@ -794,7 +795,7 @@ namespace Cassandra.IntegrationTests.Core
                 await TestHelper.RetryAssertAsync(async () =>
                 {
                     var heartbeats = await testCluster.GetQueriesAsync(null, QueryType.Options).ConfigureAwait(false);
-                    Assert.GreaterOrEqual(heartbeats.Count, 1);
+                    Assert.That(heartbeats.Count, Is.GreaterThanOrEqualTo(1));
                 }, 300, (defaultHeartbeatInterval + 2000) / 300).ConfigureAwait(false);
             }
         }
@@ -825,7 +826,7 @@ namespace Cassandra.IntegrationTests.Core
                 Assert.That(connection.InFlight, Is.GreaterThan(0));
 
                 var thrownException = await TestHelper.EatUpException(connection.Send(requestMock.Object)).ConfigureAwait(false);
-                Assert.AreSame(ex, thrownException);
+                Assert.That(ex, Is.SameAs(thrownException));
 
                 await Task.WhenAll(tasks).ConfigureAwait(false);
 
@@ -888,8 +889,8 @@ namespace Cassandra.IntegrationTests.Core
 
         private static T ValidateResult<T>(Response response)
         {
-            Assert.IsInstanceOf<ResultResponse>(response);
-            Assert.IsInstanceOf<T>(((ResultResponse)response).Output);
+            ClassicAssert.IsInstanceOf<ResultResponse>(response);
+            ClassicAssert.IsInstanceOf<T>(((ResultResponse)response).Output);
             return (T)((ResultResponse)response).Output;
         }
     }

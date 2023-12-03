@@ -102,11 +102,11 @@ namespace Cassandra.IntegrationTests.Data
             var counter = 0;
             while (reader.Read())
             {
-                Assert.AreEqual(4, reader.FieldCount);
+                Assert.That(4, Is.EqualTo(reader.FieldCount));
                 counter++;
             }
 
-            Assert.AreEqual(RowsNo, counter);
+            Assert.That(RowsNo, Is.EqualTo(counter));
         }
 
         [Test]
@@ -126,8 +126,8 @@ namespace Cassandra.IntegrationTests.Data
 
             cmd1.CommandText = "SELECT key FROM system.local";
             cmd3.CommandText = "SELECT * FROM system.local WHERE key = 'does not exist'";
-            Assert.IsInstanceOf<string>(cmd1.ExecuteScalar());
-            Assert.IsNull(cmd3.ExecuteScalar());
+            Assert.That(cmd1.ExecuteScalar(), Is.InstanceOf<string>());
+            Assert.That(cmd3.ExecuteScalar(), Is.Null);
         }
     }
 }

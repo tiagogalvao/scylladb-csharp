@@ -20,6 +20,7 @@ using System.Net;
 using Cassandra.Connections;
 using Cassandra.DataStax.Graph;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests
 {
@@ -32,19 +33,19 @@ namespace Cassandra.Tests
             const string contactPoints = "127.0.0.1,127.0.0.2,127.0.0.3";
             var builder = Cluster.Builder().WithConnectionString(string.Format("Contact Points={0}", contactPoints));
             var config = builder.GetConfiguration();
-            Assert.IsInstanceOf<NoneAuthProvider>(config.AuthProvider);
-            Assert.IsNull(config.AuthInfoProvider);
+            ClassicAssert.IsInstanceOf<NoneAuthProvider>(config.AuthProvider);
+            Assert.That(config.AuthInfoProvider, Is.Null);
 
             builder = Cluster.Builder().WithConnectionString(string.Format("Contact Points={0};Username=user1", contactPoints));
             config = builder.GetConfiguration();
             //As there is no password, auth provider should be empty
-            Assert.IsInstanceOf<NoneAuthProvider>(config.AuthProvider);
-            Assert.IsNull(config.AuthInfoProvider);
+            ClassicAssert.IsInstanceOf<NoneAuthProvider>(config.AuthProvider);
+            Assert.That(config.AuthInfoProvider, Is.Null);
 
             builder = Cluster.Builder().WithConnectionString(string.Format("Contact Points={0};Username=user1;Password=P@ssword!", contactPoints));
             config = builder.GetConfiguration();
-            Assert.IsInstanceOf<PlainTextAuthProvider>(config.AuthProvider);
-            Assert.IsInstanceOf<SimpleAuthInfoProvider>(config.AuthInfoProvider);
+            ClassicAssert.IsInstanceOf<PlainTextAuthProvider>(config.AuthProvider);
+            ClassicAssert.IsInstanceOf<SimpleAuthInfoProvider>(config.AuthInfoProvider);
         }
 
         [Test]
@@ -53,11 +54,11 @@ namespace Cassandra.Tests
             const string contactPoints = "127.0.0.1,127.0.0.2,127.0.0.3";
             var builder = Cluster.Builder().WithConnectionString(string.Format("Contact Points={0}", contactPoints));
             var config = builder.GetConfiguration();
-            Assert.AreEqual(config.ProtocolOptions.Port, ProtocolOptions.DefaultPort);
+            Assert.That(config.ProtocolOptions.Port, Is.EqualTo(ProtocolOptions.DefaultPort));
 
             builder = Cluster.Builder().WithConnectionString(string.Format("Contact Points={0};Port=9000", contactPoints));
             config = builder.GetConfiguration();
-            Assert.AreEqual(config.ProtocolOptions.Port, 9000);
+            Assert.That(config.ProtocolOptions.Port, Is.EqualTo(9000));
         }
 
         [Test]
@@ -66,11 +67,11 @@ namespace Cassandra.Tests
             const string contactPoints = "127.0.0.1,127.0.0.2,127.0.0.3";
             var builder = Cluster.Builder().WithConnectionString(string.Format("Contact Points={0}", contactPoints));
             var config = builder.GetConfiguration();
-            Assert.IsNull(config.ClientOptions.DefaultKeyspace);
+            Assert.That(config.ClientOptions.DefaultKeyspace, Is.Null);
 
             builder = Cluster.Builder().WithConnectionString(string.Format("Contact Points={0};Default Keyspace=ks1", contactPoints));
             config = builder.GetConfiguration();
-            Assert.AreEqual(config.ClientOptions.DefaultKeyspace, "ks1");
+            Assert.That(config.ClientOptions.DefaultKeyspace, Is.EqualTo("ks1"));
         }
 
         [Test]
@@ -79,13 +80,13 @@ namespace Cassandra.Tests
             var contactPoints = new string[] { "127.0.0.1", "127.0.0.2", "127.0.0.3" };
             var builder = Cluster.Builder().AddContactPoints(contactPoints);
             var config = builder.GetConfiguration();
-            Assert.IsInstanceOf<NoneAuthProvider>(config.AuthProvider);
-            Assert.IsNull(config.AuthInfoProvider);
+            ClassicAssert.IsInstanceOf<NoneAuthProvider>(config.AuthProvider);
+            ClassicAssert.That(config.AuthInfoProvider, Is.Null);
 
             builder = Cluster.Builder().AddContactPoints(contactPoints).WithCredentials("user1", "password");
             config = builder.GetConfiguration();
-            Assert.IsInstanceOf<PlainTextAuthProvider>(config.AuthProvider);
-            Assert.IsInstanceOf<SimpleAuthInfoProvider>(config.AuthInfoProvider);
+            ClassicAssert.IsInstanceOf<PlainTextAuthProvider>(config.AuthProvider);
+            ClassicAssert.IsInstanceOf<SimpleAuthInfoProvider>(config.AuthInfoProvider);
 
             Exception ex = Assert.Throws<ArgumentNullException>(() =>
                 Cluster.Builder().AddContactPoints(contactPoints).WithCredentials("user1", null));
@@ -105,7 +106,7 @@ namespace Cassandra.Tests
             
             var builder = Cluster.Builder().AddContactPoints(host1, host2, host3);
             var cluster = builder.Build();
-            Assert.AreEqual(3, cluster.InternalRef.GetResolvedEndpoints().Count);
+            Assert.That(3, Is.EqualTo(cluster.InternalRef.GetResolvedEndpoints().Count));
             CollectionAssert.AreEqual(
                 new[] { new ConnectionEndPoint(new IPEndPoint(IPAddress.Parse(host1), ProtocolOptions.DefaultPort), cluster.Configuration.ServerNameResolver, null) }, 
                 cluster.InternalRef.GetResolvedEndpoints().Single(kvp => kvp.Key.StringRepresentation == host1).Value);
@@ -114,10 +115,10 @@ namespace Cassandra.Tests
                 cluster.InternalRef.GetResolvedEndpoints().Single(kvp => kvp.Key.StringRepresentation == host2).Value);
 
             var localhostAddress = new ConnectionEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), ProtocolOptions.DefaultPort), cluster.Configuration.ServerNameResolver, null);
-            Assert.Contains(localhostAddress, cluster.InternalRef.GetResolvedEndpoints()
-                                                     .Single(kvp => kvp.Key.StringRepresentation == host3)
-                                                     .Value
-                                                     .ToList());
+            ClassicAssert.Contains(localhostAddress, cluster.InternalRef.GetResolvedEndpoints()
+                                                            .Single(kvp => kvp.Key.StringRepresentation == host3)
+                                                            .Value
+                                                            .ToList());
         }
 
         [Test]
@@ -127,17 +128,17 @@ namespace Cassandra.Tests
                 .AddContactPoint("192.168.1.10")
                 .WithMaxProtocolVersion(100);
             var cluster = builder.Build();
-            Assert.AreEqual(100, cluster.Configuration.ProtocolOptions.MaxProtocolVersion);
+            Assert.That(100, Is.EqualTo(cluster.Configuration.ProtocolOptions.MaxProtocolVersion));
             builder = Cluster.Builder()
                 .AddContactPoint("192.168.1.10")
                 .WithMaxProtocolVersion(3);
             cluster = builder.Build();
-            Assert.AreEqual(ProtocolVersion.V3, cluster.Configuration.ProtocolOptions.MaxProtocolVersionValue);
+            Assert.That(ProtocolVersion.V3, Is.EqualTo(cluster.Configuration.ProtocolOptions.MaxProtocolVersionValue));
             builder = Cluster.Builder()
                 .AddContactPoint("192.168.1.10")
                 .WithMaxProtocolVersion(ProtocolVersion.V2);
             cluster = builder.Build();
-            Assert.AreEqual(ProtocolVersion.V2, cluster.Configuration.ProtocolOptions.MaxProtocolVersionValue);
+            Assert.That(ProtocolVersion.V2, Is.EqualTo(cluster.Configuration.ProtocolOptions.MaxProtocolVersionValue));
         }
 
         [Test]
@@ -146,9 +147,9 @@ namespace Cassandra.Tests
             var builder = Cluster.Builder()
                 .AddContactPoint("192.168.1.10");
             var cluster = builder.Build();
-            Assert.AreEqual(Cluster.MaxProtocolVersion, cluster.Configuration.ProtocolOptions.MaxProtocolVersion);
+            Assert.That(Cluster.MaxProtocolVersion, Is.EqualTo(cluster.Configuration.ProtocolOptions.MaxProtocolVersion));
             //Defaults to null
-            Assert.Null(new ProtocolOptions().MaxProtocolVersion);
+            Assert.That(new ProtocolOptions().MaxProtocolVersion, Is.Null);
         }
 
         [Test]
@@ -170,8 +171,8 @@ namespace Cassandra.Tests
                                   .AddContactPoint("::1")
                                   .WithPoolingOptions(options1)
                                   .Build();
-            Assert.AreEqual(coreConnections, cluster1.Configuration.PoolingOptions.GetCoreConnectionsPerHost(HostDistance.Local));
-            Assert.AreEqual(maxConnections, cluster1.Configuration.PoolingOptions.GetMaxConnectionPerHost(HostDistance.Local));
+            Assert.That(coreConnections, Is.EqualTo(cluster1.Configuration.PoolingOptions.GetCoreConnectionsPerHost(HostDistance.Local)));
+            Assert.That(maxConnections, Is.EqualTo(cluster1.Configuration.PoolingOptions.GetMaxConnectionPerHost(HostDistance.Local)));
         }
 
         [Test]
@@ -235,7 +236,7 @@ namespace Cassandra.Tests
 
             // Only IPEndPoint instances as IP addresses and host names must be resolved and assigned
             // the port number, which is performed on Build()
-            Assert.AreEqual(new[] { endpoint1, endpoint2 }, builder.ContactPoints);
+            Assert.That(new[] { endpoint1, endpoint2 }, Is.EqualTo(builder.ContactPoints));
         }
 
         [Test]
@@ -256,7 +257,7 @@ namespace Cassandra.Tests
                                  .AddContactPoint("192.168.1.10")
                                  .WithMaxSchemaAgreementWaitSeconds(expected)
                                  .GetConfiguration();
-            Assert.AreEqual(expected, config.ProtocolOptions.MaxSchemaAgreementWaitSeconds);
+            Assert.That(expected, Is.EqualTo(config.ProtocolOptions.MaxSchemaAgreementWaitSeconds));
         }
 
         [Test]
@@ -266,7 +267,7 @@ namespace Cassandra.Tests
             var config = Cluster.Builder()
                                  .AddContactPoint("192.168.1.10")
                                  .GetConfiguration();
-            Assert.AreEqual(expected, config.ProtocolOptions.MaxSchemaAgreementWaitSeconds);
+            Assert.That(expected, Is.EqualTo(config.ProtocolOptions.MaxSchemaAgreementWaitSeconds));
         }
 
         [Test]
@@ -278,42 +279,42 @@ namespace Cassandra.Tests
                                 .WithCloudSecureConnectionBundle("bundle");
 
             var ex = Assert.Throws<ArgumentException>(() => builder.Build());
-            Assert.AreEqual(exceptionMsg, ex.Message);
+            Assert.That(exceptionMsg, Is.EqualTo(ex.Message));
             
             builder = Cluster.Builder()
                                  .AddContactPoint(IPAddress.Parse("192.168.1.10"))
                                  .WithCloudSecureConnectionBundle("bundle");
 
             ex = Assert.Throws<ArgumentException>(() => builder.Build());
-            Assert.AreEqual(exceptionMsg, ex.Message);
+            Assert.That(exceptionMsg, Is.EqualTo(ex.Message));
             
             builder = Cluster.Builder()
                              .AddContactPoint(new IPEndPoint(IPAddress.Parse("192.168.1.10"), 9042))
                              .WithCloudSecureConnectionBundle("bundle");
 
             ex = Assert.Throws<ArgumentException>(() => builder.Build());
-            Assert.AreEqual(exceptionMsg, ex.Message);
+            Assert.That(exceptionMsg, Is.EqualTo(ex.Message));
             
             builder = Cluster.Builder()
                              .AddContactPoints(new IPEndPoint(IPAddress.Parse("192.168.1.10"), 9042))
                              .WithCloudSecureConnectionBundle("bundle");
 
             ex = Assert.Throws<ArgumentException>(() => builder.Build());
-            Assert.AreEqual(exceptionMsg, ex.Message);
+            Assert.That(exceptionMsg, Is.EqualTo(ex.Message));
 
             builder = Cluster.Builder()
                              .AddContactPoint(IPAddress.Parse("192.168.1.10"))
                              .WithCloudSecureConnectionBundle("bundle");
 
             ex = Assert.Throws<ArgumentException>(() => builder.Build());
-            Assert.AreEqual(exceptionMsg, ex.Message);
+            Assert.That(exceptionMsg, Is.EqualTo(ex.Message));
 
             builder = Cluster.Builder()
                              .WithCloudSecureConnectionBundle("bundle")
                              .AddContactPoint(IPAddress.Parse("192.168.1.10"));
             
             ex = Assert.Throws<ArgumentException>(() => builder.Build());
-            Assert.AreEqual(exceptionMsg, ex.Message);
+            Assert.That(exceptionMsg, Is.EqualTo(ex.Message));
         }
         
         [Test]
@@ -325,42 +326,42 @@ namespace Cassandra.Tests
                                 .WithCloudSecureConnectionBundle("bundle");
 
             var ex = Assert.Throws<ArgumentException>(() => builder.Build());
-            Assert.AreEqual(exceptionMsg, ex.Message);
+            Assert.That(exceptionMsg, Is.EqualTo(ex.Message));
             
             builder = Cluster.Builder()
                              .WithSSL()
                              .WithCloudSecureConnectionBundle("bundle");
 
             ex = Assert.Throws<ArgumentException>(() => builder.Build());
-            Assert.AreEqual(exceptionMsg, ex.Message);
+            Assert.That(exceptionMsg, Is.EqualTo(ex.Message));
             
             builder = Cluster.Builder()
                              .WithSSL()
                              .WithCloudSecureConnectionBundle("bundle");
 
             ex = Assert.Throws<ArgumentException>(() => builder.Build());
-            Assert.AreEqual(exceptionMsg, ex.Message);
+            Assert.That(exceptionMsg, Is.EqualTo(ex.Message));
             
             builder = Cluster.Builder()
                              .WithSSL()
                              .WithCloudSecureConnectionBundle("bundle");
 
             ex = Assert.Throws<ArgumentException>(() => builder.Build());
-            Assert.AreEqual(exceptionMsg, ex.Message);
+            Assert.That(exceptionMsg, Is.EqualTo(ex.Message));
 
             builder = Cluster.Builder()
                              .WithSSL()
                              .WithCloudSecureConnectionBundle("bundle");
 
             ex = Assert.Throws<ArgumentException>(() => builder.Build());
-            Assert.AreEqual(exceptionMsg, ex.Message);
+            Assert.That(exceptionMsg, Is.EqualTo(ex.Message));
 
             builder = Cluster.Builder()
                              .WithCloudSecureConnectionBundle("bundle")
                              .WithSSL();
             
             ex = Assert.Throws<ArgumentException>(() => builder.Build());
-            Assert.AreEqual(exceptionMsg, ex.Message);
+            Assert.That(exceptionMsg, Is.EqualTo(ex.Message));
         }
         
         [Test]
@@ -371,7 +372,7 @@ namespace Cassandra.Tests
                                 .WithCloudSecureConnectionBundle("bundle");
 
             var ex = Assert.Throws<ArgumentException>(() => builder.Build());
-            Assert.IsTrue(ex.Message.Contains(exceptionMsg), ex.Message);
+            Assert.That(ex.Message.Contains(exceptionMsg), Is.True);
         }
 
         [Test]
@@ -384,7 +385,7 @@ namespace Cassandra.Tests
                                  .WithCloudSecureConnectionBundle("bundle");
 
             var ex = Assert.Throws<ArgumentException>(() => builder.Build());
-            Assert.AreEqual(exceptionMsg, ex.Message);
+            Assert.That(exceptionMsg, Is.EqualTo(ex.Message));
             
             builder = Cluster.Builder()
                              .WithSSL()
@@ -392,7 +393,7 @@ namespace Cassandra.Tests
                              .WithCloudSecureConnectionBundle("bundle");
 
             ex = Assert.Throws<ArgumentException>(() => builder.Build());
-            Assert.AreEqual(exceptionMsg, ex.Message);
+            Assert.That(exceptionMsg, Is.EqualTo(ex.Message));
         }
 
         [Test]
@@ -403,8 +404,8 @@ namespace Cassandra.Tests
                 .WithGraphOptions(graphOptions)
                 .AddContactPoint("192.168.1.159")
                 .Build();
-            Assert.NotNull(cluster.Configuration);
-            Assert.AreSame(graphOptions, cluster.Configuration.GraphOptions);
+            Assert.That(cluster.Configuration, Is.Not.Null);
+            Assert.That(graphOptions, Is.SameAs(cluster.Configuration.GraphOptions));
         }
 
         [Test]
@@ -412,9 +413,9 @@ namespace Cassandra.Tests
         {
             //without specifying graph options
             ICluster cluster = Cluster.Builder().AddContactPoint("192.168.1.159").Build();
-            Assert.NotNull(cluster.Configuration);
-            Assert.NotNull(cluster.Configuration);
-            Assert.NotNull(cluster.Configuration.GraphOptions);
+            Assert.That(cluster.Configuration, Is.Not.Null);
+            Assert.That(cluster.Configuration, Is.Not.Null);
+            Assert.That(cluster.Configuration.GraphOptions, Is.Not.Null);
         }
 
         [Test]
@@ -422,8 +423,8 @@ namespace Cassandra.Tests
         {
             //without specifying load balancing policy
             ICluster cluster = Cluster.Builder().AddContactPoint("192.168.1.159").Build();
-            Assert.NotNull(cluster.Configuration);
-            Assert.IsInstanceOf<DefaultLoadBalancingPolicy>(
+            Assert.That(cluster.Configuration, Is.Not.Null);
+            ClassicAssert.IsInstanceOf<DefaultLoadBalancingPolicy>(
                 cluster.Configuration.Policies.LoadBalancingPolicy);
         }
 
@@ -435,8 +436,8 @@ namespace Cassandra.Tests
                 .AddContactPoint("192.168.1.159")
                 .WithLoadBalancingPolicy(lbp)
                 .Build();
-            Assert.NotNull(cluster.Configuration);
-            Assert.AreSame(lbp, cluster.Configuration.Policies.LoadBalancingPolicy);
+            Assert.That(cluster.Configuration, Is.Not.Null);
+            Assert.That(lbp, Is.SameAs(cluster.Configuration.Policies.LoadBalancingPolicy));
         }
 
         [Test]
@@ -446,8 +447,8 @@ namespace Cassandra.Tests
             var cluster = Cluster.Builder()
                                 .AddContactPoint("192.168.1.10")
                                 .Build();
-            Assert.AreEqual(expected, cluster.Configuration.MonitorReportingOptions.MonitorReportingEnabled);
-            Assert.AreEqual(MonitorReportingOptions.DefaultStatusEventDelayMilliseconds, cluster.Configuration.MonitorReportingOptions.StatusEventDelayMilliseconds);
+            Assert.That(expected, Is.EqualTo(cluster.Configuration.MonitorReportingOptions.MonitorReportingEnabled));
+            Assert.That(MonitorReportingOptions.DefaultStatusEventDelayMilliseconds, Is.EqualTo(cluster.Configuration.MonitorReportingOptions.StatusEventDelayMilliseconds));
         }
     }
 }

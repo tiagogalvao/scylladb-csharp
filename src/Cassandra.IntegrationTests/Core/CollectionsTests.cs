@@ -24,6 +24,7 @@ using System.Linq;
 using Cassandra.IntegrationTests.TestBase;
 using Cassandra.Tests;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -54,9 +55,9 @@ namespace Cassandra.IntegrationTests.Core
             var expectedMap = new SortedDictionary<string, string> { { "fruit", "apple" }, { "band", "Beatles" } };
             var expectedList = new List<string> { "one", "two" };
             var expectedSet = new List<string> { "set_1one", "set_2two" };
-            Assert.AreEqual(expectedMap, row.GetValue<IDictionary<string, string>>("map_sample"));
-            Assert.AreEqual(expectedList, row.GetValue<List<string>>("list_sample"));
-            Assert.AreEqual(expectedSet, row.GetValue<List<string>>("set_sample"));
+            Assert.That(expectedMap, Is.EqualTo(row.GetValue<IDictionary<string, string>>("map_sample")));
+            Assert.That(expectedList, Is.EqualTo(row.GetValue<List<string>>("list_sample")));
+            Assert.That(expectedSet, Is.EqualTo(row.GetValue<List<string>>("set_sample")));
         }
 
         [Test]
@@ -156,11 +157,11 @@ namespace Cassandra.IntegrationTests.Core
 
             rowSet = localSession.Execute(
                 new SimpleStatement($"select writetime(list_sample), writetime(map_sample), ttl(list_sample), ttl(map_sample), ttl(set_sample) from {AllTypesTableName} where id=?",id)).ToList();
-            Assert.IsTrue(rowSet.Single().GetValue<long?[]>(0).All(i => i > 0) && rowSet.Single().GetValue<long?[]>(0).Length == 2);
-            Assert.IsTrue(rowSet.Single().GetValue<long?[]>(1).All(i => i > 0) && rowSet.Single().GetValue<long?[]>(1).Length == 2);
-            Assert.IsTrue(rowSet.Single().GetValue<int?[]>(2).All(i => i > 0) && rowSet.Single().GetValue<int?[]>(2).Length == 2);
-            Assert.IsTrue(rowSet.Single().GetValue<IEnumerable<int?>>(3).All(ttl => ttl <= ttlInsert && ttl >= (ttlInsert - 100)) && rowSet.Single().GetValue<IEnumerable<int?>>(3).Count() == 2);
-            Assert.IsTrue(rowSet.Single().GetValue<IEnumerable<int?>>(4).All(ttl => ttl <= ttlInsert && ttl >= (ttlInsert - 100)) && rowSet.Single().GetValue<IEnumerable<int?>>(4).Count() == 2);
+            Assert.That(rowSet.Single().GetValue<long?[]>(0).All(i => i > 0) && rowSet.Single().GetValue<long?[]>(0).Length == 2, Is.True);
+            Assert.That(rowSet.Single().GetValue<long?[]>(1).All(i => i > 0) && rowSet.Single().GetValue<long?[]>(1).Length == 2, Is.True);
+            Assert.That(rowSet.Single().GetValue<int?[]>(2).All(i => i > 0) && rowSet.Single().GetValue<int?[]>(2).Length == 2, Is.True);
+            Assert.That(rowSet.Single().GetValue<IEnumerable<int?>>(3).All(ttl => ttl <= ttlInsert && ttl >= (ttlInsert - 100)) && rowSet.Single().GetValue<IEnumerable<int?>>(3).Count() == 2, Is.True);
+            Assert.That(rowSet.Single().GetValue<IEnumerable<int?>>(4).All(ttl => ttl <= ttlInsert && ttl >= (ttlInsert - 100)) && rowSet.Single().GetValue<IEnumerable<int?>>(4).Count() == 2, Is.True);
         }
 
         public void CheckingOrderOfCollection(string CassandraCollectionType, Type TypeOfDataToBeInputed, Type TypeOfKeyForMap = null,string pendingMode = "")
@@ -237,7 +238,7 @@ namespace Cassandra.IntegrationTests.Core
                 foreach (Row row in rs.GetRows())
                     foreach (object value in row[1] as IEnumerable)
                     {
-                        Assert.True(orderedAsInputed[ind] == (int) value);
+                        Assert.That(orderedAsInputed[ind] == (int) value, Is.True);
                         ind++;
                     }
             }

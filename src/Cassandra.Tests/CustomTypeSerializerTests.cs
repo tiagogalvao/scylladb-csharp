@@ -19,6 +19,7 @@ using System.Text;
 using Cassandra.Serialization;
 using Cassandra.Tests.Extensions.Serializers;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests
 {
@@ -34,11 +35,11 @@ namespace Cassandra.Tests
             var buffer = serializer.Serialize(value);
             CollectionAssert.AreEqual(new byte[] { 0, 0, 0, 5, 1 }, buffer);
             var deserializedValue = serializer.Deserialize(buffer, ColumnTypeCode.Decimal, null);
-            Assert.IsInstanceOf<BigDecimal>(deserializedValue);
+            ClassicAssert.IsInstanceOf<BigDecimal>(deserializedValue);
             var deserializedDecimal = (BigDecimal) deserializedValue;
-            Assert.AreEqual("0.00001", deserializedDecimal.ToString());
-            Assert.AreEqual(value.Scale, deserializedDecimal.Scale);
-            Assert.AreEqual(value.UnscaledValue, deserializedDecimal.UnscaledValue);
+            Assert.That("0.00001", Is.EqualTo(deserializedDecimal.ToString()));
+            Assert.That(value.Scale, Is.EqualTo(deserializedDecimal.Scale));
+            Assert.That(value.UnscaledValue, Is.EqualTo(deserializedDecimal.UnscaledValue));
             //Check that other serializers are still working
             CollectionAssert.AreEqual(new byte[] { 0, 0, 0, 10 }, serializer.Serialize(10));
             CollectionAssert.AreEqual(new byte[] { 0x61 }, serializer.Serialize("a"));
@@ -54,7 +55,7 @@ namespace Cassandra.Tests
             var buffer = serializer.Serialize(value);
             CollectionAssert.AreEqual(new byte[] { 1, 2 }, buffer);
             var deserializedValue = serializer.Deserialize(buffer, ColumnTypeCode.Custom, typeSerializer.TypeInfo);
-            Assert.IsInstanceOf<DummyCustomType>(deserializedValue);
+            ClassicAssert.IsInstanceOf<DummyCustomType>(deserializedValue);
             var deserializedCustom = (DummyCustomType)deserializedValue;
             CollectionAssert.AreEqual(value.Buffer, deserializedCustom.Buffer);
             //Check that other serializers are still working
@@ -74,8 +75,8 @@ namespace Cassandra.Tests
             //Check that other serializers are still working
             CollectionAssert.AreEqual(new byte[] { 0, 0, 0, 10 }, serializer.Serialize(10));
             CollectionAssert.AreEqual(new byte[] { 0x61, 0x62 }, serializer.Serialize("ab"));
-            Assert.AreEqual(1, typeSerializer.DeserializationCounter);
-            Assert.AreEqual(1, typeSerializer.SerializationCounter);
+            Assert.That(1, Is.EqualTo(typeSerializer.DeserializationCounter));
+            Assert.That(1, Is.EqualTo(typeSerializer.SerializationCounter));
         }
     }
 }

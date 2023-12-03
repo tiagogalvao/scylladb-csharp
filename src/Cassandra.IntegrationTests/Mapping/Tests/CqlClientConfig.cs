@@ -46,7 +46,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
         {
             var config = new MappingConfiguration().Define(new ManyDataTypesPocoMappingCaseSensitive());
             var table = new Table<ManyDataTypesPoco>(Session, config);
-            Assert.AreNotEqual(table.Name, table.Name.ToLower()); // make sure the case sensitivity rule is being used
+            Assert.That(table.Name, Is.Not.EqualTo(table.Name.ToLower())); // make sure the case sensitivity rule is being used
             table.CreateIfNotExists();
 
             VerifyQuery(CreateCqlCaseSensitive, 1);
@@ -68,7 +68,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
                       .ThenRowsSuccess(ManyDataTypesPoco.GetColumnsAndTypes(), r => r.WithRow(manyTypesInstance.GetParameters())));
 
             var instancesQueried = mapper.Fetch<ManyDataTypesPoco>().ToList();
-            Assert.AreEqual(instancesQueried.Count, 1);
+            Assert.That(instancesQueried.Count, Is.EqualTo(1));
             manyTypesInstance.AssertEquals(instancesQueried[0]);
         }
 
@@ -157,9 +157,9 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             VerifyQuery(CreateCql, 1);
 
             // validate default lower-casing
-            Assert.AreNotEqual(typeof(ManyDataTypesPoco).Name.ToLower(), typeof(ManyDataTypesPoco).Name);
-            Assert.AreNotEqual(table.Name.ToLower(), table.Name);
-            Assert.AreEqual(typeof(ManyDataTypesPoco).Name.ToLower(), table.Name.ToLower());
+            Assert.That(typeof(ManyDataTypesPoco).Name.ToLower(), Is.Not.EqualTo(typeof(ManyDataTypesPoco).Name));
+            Assert.That(table.Name.ToLower(), Is.Not.EqualTo(table.Name));
+            Assert.That(typeof(ManyDataTypesPoco).Name.ToLower(), Is.EqualTo(table.Name.ToLower()));
 
             // Test
             var mapper = new Mapper(Session, config);

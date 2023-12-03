@@ -56,23 +56,23 @@ namespace Cassandra.Tests.ExecutionProfiles
                     })
                     .Build();
 
-            Assert.AreEqual(3, cluster.Configuration.RequestOptions.Count);
+            Assert.That(3, Is.EqualTo(cluster.Configuration.RequestOptions.Count));
             var options = cluster.Configuration.RequestOptions["test1"];
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, options.ConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, options.SerialConsistencyLevel);
-            Assert.AreEqual(9999, options.ReadTimeoutMillis);
-            Assert.AreSame(lbp, options.LoadBalancingPolicy);
-            Assert.AreSame(sep, options.SpeculativeExecutionPolicy);
-            Assert.AreSame(rp, options.RetryPolicy);
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(options.ConsistencyLevel));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(options.SerialConsistencyLevel));
+            Assert.That(9999, Is.EqualTo(options.ReadTimeoutMillis));
+            Assert.That(lbp, Is.SameAs(options.LoadBalancingPolicy));
+            Assert.That(sep, Is.SameAs(options.SpeculativeExecutionPolicy));
+            Assert.That(rp, Is.SameAs(options.RetryPolicy));
 
             var graphOptions = cluster.Configuration.RequestOptions["test1graph"];
-            Assert.AreEqual(ConsistencyLevel.All, graphOptions.ConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.Serial, graphOptions.SerialConsistencyLevel);
-            Assert.AreEqual(5555, graphOptions.ReadTimeoutMillis);
-            Assert.AreSame(lbpGraph, graphOptions.LoadBalancingPolicy);
-            Assert.AreSame(sepGraph, graphOptions.SpeculativeExecutionPolicy);
-            Assert.AreSame(rpGraph, graphOptions.RetryPolicy);
-            Assert.AreSame(go, graphOptions.GraphOptions);
+            Assert.That(ConsistencyLevel.All, Is.EqualTo(graphOptions.ConsistencyLevel));
+            Assert.That(ConsistencyLevel.Serial, Is.EqualTo(graphOptions.SerialConsistencyLevel));
+            Assert.That(5555, Is.EqualTo(graphOptions.ReadTimeoutMillis));
+            Assert.That(lbpGraph, Is.SameAs(graphOptions.LoadBalancingPolicy));
+            Assert.That(sepGraph, Is.SameAs(graphOptions.SpeculativeExecutionPolicy));
+            Assert.That(rpGraph, Is.SameAs(graphOptions.RetryPolicy));
+            Assert.That(go, Is.SameAs(graphOptions.GraphOptions));
         }
         
         [Test]
@@ -100,15 +100,15 @@ namespace Cassandra.Tests.ExecutionProfiles
                     })
                     .Build();
 
-            Assert.AreEqual(1, cluster.Configuration.RequestOptions.Count);
+            Assert.That(1, Is.EqualTo(cluster.Configuration.RequestOptions.Count));
             var options = cluster.Configuration.RequestOptions["default"];
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, options.ConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, options.SerialConsistencyLevel);
-            Assert.AreEqual(9999, options.ReadTimeoutMillis);
-            Assert.AreSame(lbp, options.LoadBalancingPolicy);
-            Assert.AreSame(sep, options.SpeculativeExecutionPolicy);
-            Assert.AreSame(rp, options.RetryPolicy);
-            Assert.AreSame(go, options.GraphOptions);
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(options.ConsistencyLevel));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(options.SerialConsistencyLevel));
+            Assert.That(9999, Is.EqualTo(options.ReadTimeoutMillis));
+            Assert.That(lbp, Is.SameAs(options.LoadBalancingPolicy));
+            Assert.That(sep, Is.SameAs(options.SpeculativeExecutionPolicy));
+            Assert.That(rp, Is.SameAs(options.RetryPolicy));
+            Assert.That(go, Is.SameAs(options.GraphOptions));
         }
 
         [Test]
@@ -144,32 +144,32 @@ namespace Cassandra.Tests.ExecutionProfiles
                           .WithGraphOptions(go)
                           .Build();
 
-            Assert.AreEqual(3, cluster.Configuration.RequestOptions.Count);
+            Assert.That(3, Is.EqualTo(cluster.Configuration.RequestOptions.Count));
             var options = cluster.Configuration.RequestOptions["test1"];
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, options.ConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, options.SerialConsistencyLevel);
-            Assert.AreEqual(9999, options.ReadTimeoutMillis);
-            Assert.AreSame(lbp, options.LoadBalancingPolicy);
-            Assert.AreSame(sep, options.SpeculativeExecutionPolicy);
-            Assert.AreSame(rp, options.RetryPolicy);
-            Assert.AreEqual(true, options.DefaultIdempotence);
-            Assert.AreEqual(5, options.PageSize);
-            Assert.AreEqual(30, options.QueryAbortTimeout);
-            Assert.AreSame(tg, options.TimestampGenerator);
-            Assert.AreSame(go, options.GraphOptions);
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(options.ConsistencyLevel));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(options.SerialConsistencyLevel));
+            Assert.That(9999, Is.EqualTo(options.ReadTimeoutMillis));
+            Assert.That(lbp, Is.SameAs(options.LoadBalancingPolicy));
+            Assert.That(sep, Is.SameAs(options.SpeculativeExecutionPolicy));
+            Assert.That(rp, Is.SameAs(options.RetryPolicy));
+            Assert.That(true, Is.EqualTo(options.DefaultIdempotence));
+            Assert.That(5, Is.EqualTo(options.PageSize));
+            Assert.That(30, Is.EqualTo(options.QueryAbortTimeout));
+            Assert.That(tg, Is.SameAs(options.TimestampGenerator));
+            Assert.That(go, Is.SameAs(options.GraphOptions));
 
             var graphOptions = cluster.Configuration.RequestOptions["test1Graph"];
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, graphOptions.ConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, graphOptions.SerialConsistencyLevel);
-            Assert.AreEqual(9999, graphOptions.ReadTimeoutMillis);
-            Assert.AreSame(lbp, graphOptions.LoadBalancingPolicy);
-            Assert.AreSame(sep, graphOptions.SpeculativeExecutionPolicy);
-            Assert.AreSame(rp, graphOptions.RetryPolicy);
-            Assert.AreEqual(true, graphOptions.DefaultIdempotence);
-            Assert.AreEqual(5, graphOptions.PageSize);
-            Assert.AreEqual(30, graphOptions.QueryAbortTimeout);
-            Assert.AreSame(tg, graphOptions.TimestampGenerator);
-            Assert.AreSame(go, graphOptions.GraphOptions);
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(graphOptions.ConsistencyLevel));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(graphOptions.SerialConsistencyLevel));
+            Assert.That(9999, Is.EqualTo(graphOptions.ReadTimeoutMillis));
+            Assert.That(lbp, Is.SameAs(graphOptions.LoadBalancingPolicy));
+            Assert.That(sep, Is.SameAs(graphOptions.SpeculativeExecutionPolicy));
+            Assert.That(rp, Is.SameAs(graphOptions.RetryPolicy));
+            Assert.That(true, Is.EqualTo(graphOptions.DefaultIdempotence));
+            Assert.That(5, Is.EqualTo(graphOptions.PageSize));
+            Assert.That(30, Is.EqualTo(graphOptions.QueryAbortTimeout));
+            Assert.That(tg, Is.SameAs(graphOptions.TimestampGenerator));
+            Assert.That(go, Is.SameAs(graphOptions.GraphOptions));
         }
 
         [Test]
@@ -212,32 +212,32 @@ namespace Cassandra.Tests.ExecutionProfiles
                           .WithGraphOptions(go)
                           .Build();
 
-            Assert.AreEqual(3, cluster.Configuration.RequestOptions.Count);
+            Assert.That(3, Is.EqualTo(cluster.Configuration.RequestOptions.Count));
             var options = cluster.Configuration.RequestOptions["test1"];
-            Assert.AreEqual(ConsistencyLevel.Quorum, options.ConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.Serial, options.SerialConsistencyLevel);
-            Assert.AreEqual(300, options.ReadTimeoutMillis);
-            Assert.AreSame(lbp, options.LoadBalancingPolicy);
-            Assert.AreSame(sepProfile, options.SpeculativeExecutionPolicy);
-            Assert.AreSame(rpProfile, options.RetryPolicy);
-            Assert.AreEqual(true, options.DefaultIdempotence);
-            Assert.AreEqual(5, options.PageSize);
-            Assert.AreEqual(30, options.QueryAbortTimeout);
-            Assert.AreSame(tg, options.TimestampGenerator);
-            Assert.AreSame(goProfile, options.GraphOptions);
+            Assert.That(ConsistencyLevel.Quorum, Is.EqualTo(options.ConsistencyLevel));
+            Assert.That(ConsistencyLevel.Serial, Is.EqualTo(options.SerialConsistencyLevel));
+            Assert.That(300, Is.EqualTo(options.ReadTimeoutMillis));
+            Assert.That(lbp, Is.SameAs(options.LoadBalancingPolicy));
+            Assert.That(sepProfile, Is.SameAs(options.SpeculativeExecutionPolicy));
+            Assert.That(rpProfile, Is.SameAs(options.RetryPolicy));
+            Assert.That(true, Is.EqualTo(options.DefaultIdempotence));
+            Assert.That(5, Is.EqualTo(options.PageSize));
+            Assert.That(30, Is.EqualTo(options.QueryAbortTimeout));
+            Assert.That(tg, Is.SameAs(options.TimestampGenerator));
+            Assert.That(goProfile, Is.SameAs(options.GraphOptions));
 
             var graphOptions = cluster.Configuration.RequestOptions["test1Graph"];
-            Assert.AreEqual(ConsistencyLevel.LocalQuorum, graphOptions.ConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.Serial, graphOptions.SerialConsistencyLevel);
-            Assert.AreEqual(5000, graphOptions.ReadTimeoutMillis);
-            Assert.AreSame(lbp, graphOptions.LoadBalancingPolicy);
-            Assert.AreSame(sep, graphOptions.SpeculativeExecutionPolicy);
-            Assert.AreSame(rp, graphOptions.RetryPolicy);
-            Assert.AreEqual(true, graphOptions.DefaultIdempotence);
-            Assert.AreEqual(5, graphOptions.PageSize);
-            Assert.AreEqual(30, graphOptions.QueryAbortTimeout);
-            Assert.AreSame(tg, graphOptions.TimestampGenerator);
-            Assert.AreSame(go, graphOptions.GraphOptions);
+            Assert.That(ConsistencyLevel.LocalQuorum, Is.EqualTo(graphOptions.ConsistencyLevel));
+            Assert.That(ConsistencyLevel.Serial, Is.EqualTo(graphOptions.SerialConsistencyLevel));
+            Assert.That(5000, Is.EqualTo(graphOptions.ReadTimeoutMillis));
+            Assert.That(lbp, Is.SameAs(graphOptions.LoadBalancingPolicy));
+            Assert.That(sep, Is.SameAs(graphOptions.SpeculativeExecutionPolicy));
+            Assert.That(rp, Is.SameAs(graphOptions.RetryPolicy));
+            Assert.That(true, Is.EqualTo(graphOptions.DefaultIdempotence));
+            Assert.That(5, Is.EqualTo(graphOptions.PageSize));
+            Assert.That(30, Is.EqualTo(graphOptions.QueryAbortTimeout));
+            Assert.That(tg, Is.SameAs(graphOptions.TimestampGenerator));
+            Assert.That(go, Is.SameAs(graphOptions.GraphOptions));
         }
 
         [Test]
@@ -289,33 +289,33 @@ namespace Cassandra.Tests.ExecutionProfiles
                           .WithGraphOptions(new GraphOptions())
                           .Build();
 
-            Assert.AreEqual(5, cluster.Configuration.RequestOptions.Count);
+            Assert.That(5, Is.EqualTo(cluster.Configuration.RequestOptions.Count));
             var options = cluster.Configuration.RequestOptions["test1"];
-            Assert.AreEqual(ConsistencyLevel.All, options.ConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, options.SerialConsistencyLevel);
-            Assert.AreEqual(5, options.ReadTimeoutMillis);
-            Assert.AreSame(lbp, options.LoadBalancingPolicy);
-            Assert.AreSame(sepProfile, options.SpeculativeExecutionPolicy);
-            Assert.AreSame(rpProfile, options.RetryPolicy);
-            Assert.AreEqual(true, options.DefaultIdempotence);
-            Assert.AreEqual(5, options.PageSize);
-            Assert.AreEqual(30, options.QueryAbortTimeout);
-            Assert.AreSame(tg, options.TimestampGenerator);
+            Assert.That(ConsistencyLevel.All, Is.EqualTo(options.ConsistencyLevel));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(options.SerialConsistencyLevel));
+            Assert.That(5, Is.EqualTo(options.ReadTimeoutMillis));
+            Assert.That(lbp, Is.SameAs(options.LoadBalancingPolicy));
+            Assert.That(sepProfile, Is.SameAs(options.SpeculativeExecutionPolicy));
+            Assert.That(rpProfile, Is.SameAs(options.RetryPolicy));
+            Assert.That(true, Is.EqualTo(options.DefaultIdempotence));
+            Assert.That(5, Is.EqualTo(options.PageSize));
+            Assert.That(30, Is.EqualTo(options.QueryAbortTimeout));
+            Assert.That(tg, Is.SameAs(options.TimestampGenerator));
             
             var graphOptions = cluster.Configuration.RequestOptions["test1Graph"];
-            Assert.AreEqual(ConsistencyLevel.Two, graphOptions.ConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.Serial, graphOptions.SerialConsistencyLevel);
-            Assert.AreEqual(5, graphOptions.ReadTimeoutMillis);
-            Assert.AreSame(lbp, graphOptions.LoadBalancingPolicy);
-            Assert.AreSame(sepProfile, graphOptions.SpeculativeExecutionPolicy);
-            Assert.AreSame(rpGraph, graphOptions.RetryPolicy);
-            Assert.AreEqual(true, graphOptions.DefaultIdempotence);
-            Assert.AreEqual(5, graphOptions.PageSize);
-            Assert.AreEqual(30, graphOptions.QueryAbortTimeout);
-            Assert.AreSame(tg, graphOptions.TimestampGenerator);
-            Assert.AreSame(go, graphOptions.GraphOptions);
-            Assert.IsNotNull(cluster.Configuration.GraphOptions);
-            Assert.AreNotSame(graphOptions.GraphOptions, cluster.Configuration.GraphOptions);
+            Assert.That(ConsistencyLevel.Two, Is.EqualTo(graphOptions.ConsistencyLevel));
+            Assert.That(ConsistencyLevel.Serial, Is.EqualTo(graphOptions.SerialConsistencyLevel));
+            Assert.That(5, Is.EqualTo(graphOptions.ReadTimeoutMillis));
+            Assert.That(lbp, Is.SameAs(graphOptions.LoadBalancingPolicy));
+            Assert.That(sepProfile, Is.SameAs(graphOptions.SpeculativeExecutionPolicy));
+            Assert.That(rpGraph, Is.SameAs(graphOptions.RetryPolicy));
+            Assert.That(true, Is.EqualTo(graphOptions.DefaultIdempotence));
+            Assert.That(5, Is.EqualTo(graphOptions.PageSize));
+            Assert.That(30, Is.EqualTo(graphOptions.QueryAbortTimeout));
+            Assert.That(tg, Is.SameAs(graphOptions.TimestampGenerator));
+            Assert.That(go, Is.SameAs(graphOptions.GraphOptions));
+            Assert.That(cluster.Configuration.GraphOptions, Is.Not.Null);
+            Assert.That(graphOptions.GraphOptions, Is.Not.SameAs(cluster.Configuration.GraphOptions));
         }
         
         [Test]
@@ -347,19 +347,19 @@ namespace Cassandra.Tests.ExecutionProfiles
                           .WithGraphOptions(go)
                           .Build();
 
-            Assert.AreEqual(1, cluster.Configuration.RequestOptions.Count);
+            Assert.That(1, Is.EqualTo(cluster.Configuration.RequestOptions.Count));
             var options = cluster.Configuration.RequestOptions["default"];
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, options.ConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, options.SerialConsistencyLevel);
-            Assert.AreEqual(9999, options.ReadTimeoutMillis);
-            Assert.AreSame(lbp, options.LoadBalancingPolicy);
-            Assert.AreSame(sep, options.SpeculativeExecutionPolicy);
-            Assert.AreSame(rp, options.RetryPolicy);
-            Assert.AreEqual(true, options.DefaultIdempotence);
-            Assert.AreEqual(5, options.PageSize);
-            Assert.AreEqual(30, options.QueryAbortTimeout);
-            Assert.AreSame(tg, options.TimestampGenerator);
-            Assert.AreSame(go, options.GraphOptions);
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(options.ConsistencyLevel));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(options.SerialConsistencyLevel));
+            Assert.That(9999, Is.EqualTo(options.ReadTimeoutMillis));
+            Assert.That(lbp, Is.SameAs(options.LoadBalancingPolicy));
+            Assert.That(sep, Is.SameAs(options.SpeculativeExecutionPolicy));
+            Assert.That(rp, Is.SameAs(options.RetryPolicy));
+            Assert.That(true, Is.EqualTo(options.DefaultIdempotence));
+            Assert.That(5, Is.EqualTo(options.PageSize));
+            Assert.That(30, Is.EqualTo(options.QueryAbortTimeout));
+            Assert.That(tg, Is.SameAs(options.TimestampGenerator));
+            Assert.That(go, Is.SameAs(options.GraphOptions));
         }
 
         [Test]
@@ -390,18 +390,18 @@ namespace Cassandra.Tests.ExecutionProfiles
                           .WithGraphOptions(go)
                           .Build();
 
-            Assert.AreEqual(1, cluster.Configuration.RequestOptions.Count);
+            Assert.That(1, Is.EqualTo(cluster.Configuration.RequestOptions.Count));
             var options = cluster.Configuration.RequestOptions["default"];
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, options.ConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, options.SerialConsistencyLevel);
-            Assert.AreEqual(9999, options.ReadTimeoutMillis);
-            Assert.AreSame(lbp, options.LoadBalancingPolicy);
-            Assert.AreSame(sep, options.SpeculativeExecutionPolicy);
-            Assert.AreSame(rp, options.RetryPolicy);
-            Assert.AreEqual(true, options.DefaultIdempotence);
-            Assert.AreEqual(5, options.PageSize);
-            Assert.AreEqual(30, options.QueryAbortTimeout);
-            Assert.AreSame(tg, options.TimestampGenerator);
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(options.ConsistencyLevel));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(options.SerialConsistencyLevel));
+            Assert.That(9999, Is.EqualTo(options.ReadTimeoutMillis));
+            Assert.That(lbp, Is.SameAs(options.LoadBalancingPolicy));
+            Assert.That(sep, Is.SameAs(options.SpeculativeExecutionPolicy));
+            Assert.That(rp, Is.SameAs(options.RetryPolicy));
+            Assert.That(true, Is.EqualTo(options.DefaultIdempotence));
+            Assert.That(5, Is.EqualTo(options.PageSize));
+            Assert.That(30, Is.EqualTo(options.QueryAbortTimeout));
+            Assert.That(tg, Is.SameAs(options.TimestampGenerator));
         }
         
         [Test]
@@ -431,22 +431,22 @@ namespace Cassandra.Tests.ExecutionProfiles
             }).Build();
 
             var execProfile = cluster.Configuration.ExecutionProfiles["test1"];
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, execProfile.ConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, execProfile.SerialConsistencyLevel);
-            Assert.AreEqual(9999, execProfile.ReadTimeoutMillis);
-            Assert.AreSame(lbp, execProfile.LoadBalancingPolicy);
-            Assert.AreSame(sep, execProfile.SpeculativeExecutionPolicy);
-            Assert.AreSame(rp, execProfile.RetryPolicy);
-            Assert.IsNull(execProfile.GraphOptions);
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(execProfile.ConsistencyLevel));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(execProfile.SerialConsistencyLevel));
+            Assert.That(9999, Is.EqualTo(execProfile.ReadTimeoutMillis));
+            Assert.That(lbp, Is.SameAs(execProfile.LoadBalancingPolicy));
+            Assert.That(sep, Is.SameAs(execProfile.SpeculativeExecutionPolicy));
+            Assert.That(rp, Is.SameAs(execProfile.RetryPolicy));
+            Assert.That(execProfile.GraphOptions, Is.Null);
             
             var graphExecProfile = cluster.Configuration.ExecutionProfiles["test1Graph"];
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, graphExecProfile.ConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, graphExecProfile.SerialConsistencyLevel);
-            Assert.AreEqual(9999, graphExecProfile.ReadTimeoutMillis);
-            Assert.AreSame(lbp, graphExecProfile.LoadBalancingPolicy);
-            Assert.AreSame(sep, graphExecProfile.SpeculativeExecutionPolicy);
-            Assert.AreSame(rp, graphExecProfile.RetryPolicy);
-            Assert.AreSame(go, graphExecProfile.GraphOptions);
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(graphExecProfile.ConsistencyLevel));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(graphExecProfile.SerialConsistencyLevel));
+            Assert.That(9999, Is.EqualTo(graphExecProfile.ReadTimeoutMillis));
+            Assert.That(lbp, Is.SameAs(graphExecProfile.LoadBalancingPolicy));
+            Assert.That(sep, Is.SameAs(graphExecProfile.SpeculativeExecutionPolicy));
+            Assert.That(rp, Is.SameAs(graphExecProfile.RetryPolicy));
+            Assert.That(go, Is.SameAs(graphExecProfile.GraphOptions));
         }
 
         [Test]
@@ -469,13 +469,13 @@ namespace Cassandra.Tests.ExecutionProfiles
             }).Build();
 
             var execProfile = cluster.Configuration.ExecutionProfiles["default"];
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, execProfile.ConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, execProfile.SerialConsistencyLevel);
-            Assert.AreEqual(9999, execProfile.ReadTimeoutMillis);
-            Assert.AreSame(lbp, execProfile.LoadBalancingPolicy);
-            Assert.AreSame(sep, execProfile.SpeculativeExecutionPolicy);
-            Assert.AreSame(rp, execProfile.RetryPolicy);
-            Assert.AreSame(go, execProfile.GraphOptions);
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(execProfile.ConsistencyLevel));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(execProfile.SerialConsistencyLevel));
+            Assert.That(9999, Is.EqualTo(execProfile.ReadTimeoutMillis));
+            Assert.That(lbp, Is.SameAs(execProfile.LoadBalancingPolicy));
+            Assert.That(sep, Is.SameAs(execProfile.SpeculativeExecutionPolicy));
+            Assert.That(rp, Is.SameAs(execProfile.RetryPolicy));
+            Assert.That(go, Is.SameAs(execProfile.GraphOptions));
         }
 
         [Test]
@@ -506,15 +506,15 @@ namespace Cassandra.Tests.ExecutionProfiles
                           .WithGraphOptions(go)
                           .Build();
 
-            Assert.AreEqual(1, cluster.Configuration.RequestOptions.Count);
+            Assert.That(1, Is.EqualTo(cluster.Configuration.RequestOptions.Count));
             var profile = cluster.Configuration.ExecutionProfiles["default"];
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, profile.ConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, profile.SerialConsistencyLevel);
-            Assert.AreEqual(9999, profile.ReadTimeoutMillis);
-            Assert.AreSame(lbp, profile.LoadBalancingPolicy);
-            Assert.AreSame(sep, profile.SpeculativeExecutionPolicy);
-            Assert.AreSame(rp, profile.RetryPolicy);
-            Assert.AreSame(go, profile.GraphOptions);
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(profile.ConsistencyLevel));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(profile.SerialConsistencyLevel));
+            Assert.That(9999, Is.EqualTo(profile.ReadTimeoutMillis));
+            Assert.That(lbp, Is.SameAs(profile.LoadBalancingPolicy));
+            Assert.That(sep, Is.SameAs(profile.SpeculativeExecutionPolicy));
+            Assert.That(rp, Is.SameAs(profile.RetryPolicy));
+            Assert.That(go, Is.SameAs(profile.GraphOptions));
         }
         
         [Test]
@@ -548,13 +548,13 @@ namespace Cassandra.Tests.ExecutionProfiles
                                    .WithReadTimeoutMillis(4412)))
                        .Build();
 
-            Assert.AreSame(retryPolicy2, cluster.Configuration.Policies.ExtendedRetryPolicy);
-            Assert.AreSame(retryPolicy2, cluster.Configuration.Policies.RetryPolicy);
-            Assert.AreSame(sep2, cluster.Configuration.Policies.SpeculativeExecutionPolicy);
-            Assert.AreSame(lbp2, cluster.Configuration.Policies.LoadBalancingPolicy);
-            Assert.AreEqual(4412, cluster.Configuration.SocketOptions.ReadTimeoutMillis);
-            Assert.AreEqual(ConsistencyLevel.Quorum, cluster.Configuration.QueryOptions.GetConsistencyLevel());
-            Assert.AreEqual(ConsistencyLevel.Serial, cluster.Configuration.QueryOptions.GetSerialConsistencyLevel());
+            Assert.That(retryPolicy2, Is.SameAs(cluster.Configuration.Policies.ExtendedRetryPolicy));
+            Assert.That(retryPolicy2, Is.SameAs(cluster.Configuration.Policies.RetryPolicy));
+            Assert.That(sep2, Is.SameAs(cluster.Configuration.Policies.SpeculativeExecutionPolicy));
+            Assert.That(lbp2, Is.SameAs(cluster.Configuration.Policies.LoadBalancingPolicy));
+            Assert.That(4412, Is.EqualTo(cluster.Configuration.SocketOptions.ReadTimeoutMillis));
+            Assert.That(ConsistencyLevel.Quorum, Is.EqualTo(cluster.Configuration.QueryOptions.GetConsistencyLevel()));
+            Assert.That(ConsistencyLevel.Serial, Is.EqualTo(cluster.Configuration.QueryOptions.GetSerialConsistencyLevel()));
         }
     }
 }

@@ -43,7 +43,7 @@ namespace Cassandra.Tests
             var uut = new Response(frame);
 
             // Assert
-            Assert.IsNull(uut.TraceId);
+            Assert.That(uut.TraceId, Is.Null);
         }
 
         [Test]
@@ -60,7 +60,7 @@ namespace Cassandra.Tests
             new Response(frame);
 
             // Assert
-            Assert.AreEqual(0, frame.Body.Position);
+            Assert.That(0, Is.EqualTo(frame.Body.Position));
         }
 
         [Test]
@@ -79,7 +79,7 @@ namespace Cassandra.Tests
             var uut = new Response(frame);
 
             // Assert
-            Assert.AreEqual(expected, uut.TraceId);
+            Assert.That(expected, Is.EqualTo(uut.TraceId));
         }
 
         [Test]
@@ -94,8 +94,8 @@ namespace Cassandra.Tests
             new Response(frame);
 
             // Assert
-            Assert.AreEqual(16, body.Position);
-            Assert.AreEqual(20, body.Length);
+            Assert.That(16, Is.EqualTo(body.Position));
+            Assert.That(20, Is.EqualTo(body.Length));
         }
     }
 }

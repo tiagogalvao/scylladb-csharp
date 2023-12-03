@@ -26,6 +26,7 @@ using Cassandra.Tasks;
 using Cassandra.Tests;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -54,7 +55,7 @@ namespace Cassandra.IntegrationTests.Core
                 {
                     var session = cluster.Connect();
                     Parallel.For(0, 10, _ => session.Execute("SELECT * FROM system.local"));
-                    Assert.AreEqual(version, cluster.InternalRef.GetControlConnection().ProtocolVersion);
+                    Assert.That(version, Is.EqualTo(cluster.InternalRef.GetControlConnection().ProtocolVersion));
                 }
                 else
                 {
@@ -63,7 +64,7 @@ namespace Cassandra.IntegrationTests.Core
                     Assert.That(ex.Errors.Count, Is.EqualTo(2));
                     foreach (var err in ex.Errors.Values)
                     {
-                        Assert.IsInstanceOf<UnsupportedProtocolVersionException>(err);
+                        ClassicAssert.IsInstanceOf<UnsupportedProtocolVersionException>(err);
                     }
                 }
             }
@@ -83,7 +84,7 @@ namespace Cassandra.IntegrationTests.Core
             {
                 var session = cluster.Connect();
                 Parallel.For(0, 10, _ => session.Execute("SELECT * FROM system.local"));
-                Assert.AreEqual(version, cluster.InternalRef.GetControlConnection().ProtocolVersion);
+                Assert.That(version, Is.EqualTo(cluster.InternalRef.GetControlConnection().ProtocolVersion));
             }
         }
 

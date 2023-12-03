@@ -75,8 +75,8 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             // Delete the record
             _mapper.Delete(movieToDelete);
             List<Movie> actualMovieList = _movieTable.Execute().ToList();
-            Assert.AreEqual(_movieList.Count - 1, actualMovieList.Count());
-            Assert.IsFalse(Movie.ListContains(actualMovieList, movieToDelete));
+            Assert.That(_movieList.Count - 1, Is.EqualTo(actualMovieList.Count()));
+            Assert.That(Movie.ListContains(actualMovieList, movieToDelete), Is.False);
         }
 
         /// <summary>
@@ -92,8 +92,8 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             _mapper.DeleteAsync(movieToDelete).Wait();
 
             List<Movie> actualMovieList = _movieTable.Execute().ToList();
-            Assert.AreEqual(_movieList.Count - 1, actualMovieList.Count());
-            Assert.IsFalse(Movie.ListContains(actualMovieList, movieToDelete));
+            Assert.That(_movieList.Count - 1, Is.EqualTo(actualMovieList.Count()));
+            Assert.That(Movie.ListContains(actualMovieList, movieToDelete), Is.False);
         }
 
         /// <summary>
@@ -128,8 +128,8 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
                 {
                     actualMovieList = _movieTable.Execute().ToList();
                 }
-                Assert.AreEqual(_movieList.Count - 1, actualMovieList.Count(), "Unexpected failure for consistency level: " + consistencyLevel);
-                Assert.IsFalse(Movie.ListContains(actualMovieList, movieToDelete));
+                Assert.That(_movieList.Count - 1, Is.EqualTo(actualMovieList.Count()), "Unexpected failure for consistency level: " + consistencyLevel);
+                Assert.That(Movie.ListContains(actualMovieList, movieToDelete), Is.False);
 
                 // re-insert the movie
                 _mapper.Insert(movieToDelete);
@@ -140,7 +140,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
                 {
                     actualMovieList = _movieTable.Execute().ToList();
                 }
-                Assert.AreEqual(actualMovieList.Count, _movieList.Count);
+                Assert.That(actualMovieList.Count, Is.EqualTo(_movieList.Count));
             }
         }
 
@@ -173,13 +173,13 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             mapper.Insert(song);
             //It should not apply it as the condition will NOT be satisfied
             var appliedInfo = mapper.DeleteIf<Song>(Cql.New("WHERE id = ? IF title = ?", song.Id, "Crossroad2"));
-            Assert.False(appliedInfo.Applied);
-            Assert.NotNull(appliedInfo.Existing);
-            Assert.AreEqual("Crossroad", appliedInfo.Existing.Title);
+            Assert.That(appliedInfo.Applied, Is.False);
+            Assert.That(appliedInfo.Existing, Is.Not.Null);
+            Assert.That("Crossroad",Is.EqualTo( appliedInfo.Existing.Title));
             //It should apply it as the condition will be satisfied
             appliedInfo = mapper.DeleteIf<Song>(Cql.New("WHERE id = ? IF title = ?", song.Id, song.Title));
-            Assert.True(appliedInfo.Applied);
-            Assert.Null(appliedInfo.Existing);
+            Assert.That(appliedInfo.Applied, Is.True);
+            Assert.That(appliedInfo.Existing, Is.Null);
         }
     }
 }

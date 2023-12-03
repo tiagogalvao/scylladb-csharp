@@ -47,7 +47,7 @@ namespace Cassandra.IntegrationTests.Core
             {
                 var session = cluster.Connect();
                 var rs = session.Execute(new SimpleStatement(Query));
-                Assert.AreEqual(ConsistencyLevel.LocalOne, rs.Info.AchievedConsistency);
+                Assert.That(ConsistencyLevel.LocalOne, Is.EqualTo(rs.Info.AchievedConsistency));
                 VerifyConsistency(simulacronCluster, Query, ConsistencyLevel.LocalOne);
             }
         }
@@ -71,7 +71,7 @@ namespace Cassandra.IntegrationTests.Core
                 var session = cluster.Connect();
                 var simpleStatement = new SimpleStatement(Query);
                 var result = session.Execute(simpleStatement);
-                Assert.AreEqual(consistencyLevel, result.Info.AchievedConsistency);
+                Assert.That(consistencyLevel, Is.EqualTo(result.Info.AchievedConsistency));
                 VerifyConsistency(simulacronCluster, Query, consistencyLevel);
             }
         }
@@ -90,7 +90,7 @@ namespace Cassandra.IntegrationTests.Core
                 var session = cluster.Connect();
                 var simpleStatement = new SimpleStatement(conditionalQuery);
                 var result = session.Execute(simpleStatement);
-                Assert.AreEqual(ConsistencyLevel.LocalOne, result.Info.AchievedConsistency);
+                Assert.That(ConsistencyLevel.LocalOne, Is.EqualTo(result.Info.AchievedConsistency));
                 VerifyConsistency(simulacronCluster, conditionalQuery, ConsistencyLevel.LocalOne, serialConsistency);
             }
         }
@@ -114,7 +114,7 @@ namespace Cassandra.IntegrationTests.Core
                 var session = cluster.Connect();
                 var simpleStatement = new SimpleStatement(Query).SetConsistencyLevel(consistencyLevel);
                 var result = session.Execute(simpleStatement);
-                Assert.AreEqual(consistencyLevel, result.Info.AchievedConsistency);
+                Assert.That(consistencyLevel, Is.EqualTo(result.Info.AchievedConsistency));
                 VerifyConsistency(simulacronCluster, Query, consistencyLevel);
             }
         }
@@ -135,7 +135,7 @@ namespace Cassandra.IntegrationTests.Core
                                                                 .SetConsistencyLevel(consistencyLevel)
                                                                 .SetSerialConsistencyLevel(serialConsistency);
                 var result = session.Execute(simpleStatement);
-                Assert.AreEqual(consistencyLevel, result.Info.AchievedConsistency);
+                Assert.That(consistencyLevel, Is.EqualTo(result.Info.AchievedConsistency));
                 VerifyConsistency(simulacronCluster, conditionalQuery, consistencyLevel, serialConsistency);
             }
         }
@@ -159,7 +159,7 @@ namespace Cassandra.IntegrationTests.Core
                 var simpleStatement = new SimpleStatement(conditionalQuery);
 
                 var result = session.Execute(simpleStatement);
-                Assert.AreEqual(consistencyLevel, result.Info.AchievedConsistency);
+                Assert.That(consistencyLevel, Is.EqualTo(result.Info.AchievedConsistency));
                 VerifyConsistency(simulacronCluster, conditionalQuery, consistencyLevel, serialConsistency);
             }
         }
@@ -185,7 +185,7 @@ namespace Cassandra.IntegrationTests.Core
                 var prepStmt = session.Prepare(prepQuery);
                 var boundStmt = prepStmt.Bind(1);
                 var result = session.Execute(boundStmt);
-                Assert.AreEqual(consistencyLevel, result.Info.AchievedConsistency);
+                Assert.That(consistencyLevel, Is.EqualTo(result.Info.AchievedConsistency));
                 VerifyConsistency(simulacronCluster, prepQuery, consistencyLevel, null, QueryType.Execute);
             }
         }
@@ -205,7 +205,7 @@ namespace Cassandra.IntegrationTests.Core
                 var prepStmt = session.Prepare(prepQuery);
                 var boundStmt = prepStmt.Bind(1);
                 var result = session.Execute(boundStmt);
-                Assert.AreEqual(ConsistencyLevel.LocalOne, result.Info.AchievedConsistency);
+                Assert.That(ConsistencyLevel.LocalOne, Is.EqualTo(result.Info.AchievedConsistency));
                 VerifyConsistency(simulacronCluster, prepQuery, ConsistencyLevel.LocalOne, consistencyLevel, QueryType.Execute);
             }
         }
@@ -230,7 +230,7 @@ namespace Cassandra.IntegrationTests.Core
                 var prepStmt = session.Prepare(prepQuery);
                 var boundStmt = prepStmt.Bind(1).SetConsistencyLevel(consistencyLevel);
                 var result = session.Execute(boundStmt);
-                Assert.AreEqual(consistencyLevel, result.Info.AchievedConsistency);
+                Assert.That(consistencyLevel, Is.EqualTo(result.Info.AchievedConsistency));
                 VerifyConsistency(simulacronCluster, prepQuery, consistencyLevel, null, QueryType.Execute);
             }
         }
@@ -239,17 +239,17 @@ namespace Cassandra.IntegrationTests.Core
                                               ConsistencyLevel? serialConsistency = null, QueryType queryType = QueryType.Query)
         {
             var executedQueries = simulacronCluster.GetQueries(query, queryType);
-            Assert.NotNull(executedQueries);
+            Assert.That(executedQueries, Is.Not.Null);
             var log = executedQueries.First();
-            Assert.AreEqual(consistency, log.ConsistencyLevel);
+            Assert.That(consistency, Is.EqualTo(log.ConsistencyLevel));
 
             if (serialConsistency == null)
             {
-                Assert.AreEqual(ConsistencyLevel.Serial, log.SerialConsistencyLevel);
+                Assert.That(ConsistencyLevel.Serial, Is.EqualTo(log.SerialConsistencyLevel));
             }
             else
             {
-                Assert.AreEqual(serialConsistency, log.SerialConsistencyLevel);
+                Assert.That(serialConsistency, Is.EqualTo(log.SerialConsistencyLevel));
             }
         }
     }

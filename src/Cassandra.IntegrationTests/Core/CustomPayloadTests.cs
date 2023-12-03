@@ -21,6 +21,7 @@ using Cassandra.IntegrationTests.TestBase;
 using Cassandra.IntegrationTests.TestClusterManagement;
 using Cassandra.Tests;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -56,8 +57,8 @@ namespace Cassandra.IntegrationTests.Core
             var stmt = new SimpleStatement("SELECT * FROM system.local");
             stmt.SetOutgoingPayload(outgoing);
             var rs = Session.Execute(stmt);
-            Assert.NotNull(rs.Info.IncomingPayload);
-            Assert.AreEqual(outgoing.Count, rs.Info.IncomingPayload.Count);
+            Assert.That(rs.Info.IncomingPayload, Is.Not.Null);
+            Assert.That(outgoing.Count, Is.EqualTo(rs.Info.IncomingPayload.Count));
             CollectionAssert.AreEqual(outgoing["k1"], rs.Info.IncomingPayload["k1"]);
             CollectionAssert.AreEqual(outgoing["k2"], rs.Info.IncomingPayload["k2"]);
         }
@@ -70,8 +71,8 @@ namespace Cassandra.IntegrationTests.Core
             stmt.Add(new SimpleStatement(string.Format("INSERT INTO {0} (k, i) VALUES ('one', 1)", Table)));
             stmt.SetOutgoingPayload(outgoing);
             var rs = Session.Execute(stmt);
-            Assert.NotNull(rs.Info.IncomingPayload);
-            Assert.AreEqual(outgoing.Count, rs.Info.IncomingPayload.Count);
+            Assert.That(rs.Info.IncomingPayload, Is.Not.Null);
+            Assert.That(outgoing.Count, Is.EqualTo(rs.Info.IncomingPayload.Count));
             CollectionAssert.AreEqual(outgoing["k1-batch"], rs.Info.IncomingPayload["k1-batch"]);
             CollectionAssert.AreEqual(outgoing["k2-batch"], rs.Info.IncomingPayload["k2-batch"]);
         }
@@ -84,8 +85,8 @@ namespace Cassandra.IntegrationTests.Core
             var stmt = prepared.Bind("local");
             stmt.SetOutgoingPayload(outgoing);
             var rs = Session.Execute(stmt);
-            Assert.NotNull(rs.Info.IncomingPayload);
-            Assert.AreEqual(outgoing.Count, rs.Info.IncomingPayload.Count);
+            Assert.That(rs.Info.IncomingPayload, Is.Not.Null);
+            Assert.That(outgoing.Count, Is.EqualTo(rs.Info.IncomingPayload.Count));
             CollectionAssert.AreEqual(outgoing["k1-bound"], rs.Info.IncomingPayload["k1-bound"]);
             CollectionAssert.AreEqual(outgoing["k2-bound"], rs.Info.IncomingPayload["k2-bound"]);
         }
@@ -99,8 +100,8 @@ namespace Cassandra.IntegrationTests.Core
                 { "k2-prep", Encoding.UTF8.GetBytes("value2-prep") }
             };
             var prepared = Session.Prepare("SELECT key as k FROM system.local WHERE key = ?", outgoing);
-            Assert.NotNull(prepared.IncomingPayload);
-            Assert.AreEqual(outgoing.Count, prepared.IncomingPayload.Count);
+            Assert.That(prepared.IncomingPayload, Is.Not.Null);
+            Assert.That(outgoing.Count, Is.EqualTo(prepared.IncomingPayload.Count));
             CollectionAssert.AreEqual(outgoing["k1-prep"], prepared.IncomingPayload["k1-prep"]);
             CollectionAssert.AreEqual(outgoing["k2-prep"], prepared.IncomingPayload["k2-prep"]);
         }

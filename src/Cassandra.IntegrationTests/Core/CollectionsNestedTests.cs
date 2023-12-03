@@ -20,6 +20,8 @@ using System.Linq;
 using Cassandra.IntegrationTests.TestBase;
 using Cassandra.Tests;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 #pragma warning disable 618
 
 namespace Cassandra.IntegrationTests.Core
@@ -145,7 +147,7 @@ namespace Cassandra.IntegrationTests.Core
 
                 // Insert data
                 var err = Assert.Throws<InvalidQueryException>(() => session.Execute(new SimpleStatement(cqlInsertStr).Bind(id, map1Value, map2Value, list1Value, id)));
-                Assert.AreEqual("PRIMARY KEY part id found in SET part", err.Message);
+                Assert.That("PRIMARY KEY part id found in SET part", Is.EqualTo(err.Message));
             }
         }
 
@@ -274,12 +276,12 @@ namespace Cassandra.IntegrationTests.Core
             var actualMap2 = row.GetValue<IDictionary<int, IDictionary<string, long>>>("map2");
             var actualList1 = row.GetValue<IList<IDictionary<string, float>>>("list1");
 
-            Assert.NotNull(actualMap1);
-            Assert.NotNull(actualMap2);
-            Assert.NotNull(actualList1);
-            Assert.AreEqual(expectedMap1.Count, actualMap1.Count);
-            Assert.AreEqual(expectedMap2.Count, actualMap2.Count);
-            Assert.AreEqual(expectedList1.Count, actualList1.Count);
+            Assert.That(actualMap1, Is.Not.Null);
+            Assert.That(actualMap2, Is.Not.Null);
+            Assert.That(actualList1, Is.Not.Null);
+            Assert.That(expectedMap1.Count, Is.EqualTo(actualMap1.Count));
+            Assert.That(expectedMap2.Count, Is.EqualTo(actualMap2.Count));
+            Assert.That(expectedList1.Count, Is.EqualTo(actualList1.Count));
 
             CollectionAssert.AreEqual(expectedMap1, actualMap1);
             CollectionAssert.AreEqual(expectedMap2, actualMap2);

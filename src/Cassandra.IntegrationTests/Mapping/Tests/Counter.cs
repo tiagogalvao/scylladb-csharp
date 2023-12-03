@@ -79,12 +79,12 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
                 {
                     if (pocoWithCounterExpected.KeyPart1 == pocoWithCounterActual.KeyPart1)
                     {
-                        Assert.AreEqual(pocoWithCounterExpected.KeyPart2, pocoWithCounterExpected.KeyPart2);
-                        Assert.AreEqual(pocoWithCounterExpected.Counter, pocoWithCounterExpected.Counter);
+                        Assert.That(pocoWithCounterExpected.KeyPart2, Is.EqualTo(pocoWithCounterExpected.KeyPart2));
+                        Assert.That(pocoWithCounterExpected.Counter, Is.EqualTo(pocoWithCounterExpected.Counter));
                         counterFound = true;
                     }
                 }
-                Assert.IsTrue(counterFound, "Counter with first key part: " + pocoWithCounterExpected.KeyPart1 + " was not found!");
+                Assert.That(counterFound, Is.True, "Counter with first key part: " + pocoWithCounterExpected.KeyPart1 + " was not found!");
             }
         }
 
@@ -120,7 +120,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
 
             // Validate Error Message
             var e = Assert.Throws<InvalidQueryException>(() => table.Insert(pocoAndLinqAttributesPocos).Execute());
-            Assert.AreEqual(expectedErrMsg, e.Message);
+            Assert.That(expectedErrMsg, Is.EqualTo(e.Message));
         }
 
         private class PocoWithCounterAttribute

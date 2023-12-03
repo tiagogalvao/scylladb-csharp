@@ -54,7 +54,7 @@ namespace Cassandra.Tests
         {
             foreach (var value in Values)
             {
-                Assert.AreEqual(Duration.Parse(value.Item3), value.Item1);
+                Assert.That(Duration.Parse(value.Item3), Is.EqualTo(value.Item1));
             }
         }
 
@@ -76,15 +76,15 @@ namespace Cassandra.Tests
         {
             var duration = new Duration(months, days, nanoseconds);
             var durationFromString = Duration.Parse(valueStr);
-            Assert.AreEqual(duration, durationFromString);
-            Assert.AreEqual(valueStr, durationFromString.ToIsoString());
+            Assert.That(duration, Is.EqualTo(durationFromString));
+            Assert.That(valueStr, Is.EqualTo(durationFromString.ToIsoString()));
         }
 
         [Test]
         public void Parse_Should_Read_Iso_Week_Format_Test()
         {
-            Assert.AreEqual(Duration.Parse("P1W"), new Duration(0, 7, 0));
-            Assert.AreEqual(Duration.Parse("P2W"), new Duration(0, 14, 0));
+            Assert.That(Duration.Parse("P1W"), Is.EqualTo(new Duration(0, 7, 0)));
+            Assert.That(Duration.Parse("P2W"), Is.EqualTo(new Duration(0, 14, 0)));
         }
 
         [Test]
@@ -93,7 +93,7 @@ namespace Cassandra.Tests
             foreach (var value in Values)
             {
                 var expected = value.Item3.Replace("µs", "us");
-                Assert.AreEqual(value.Item1.ToString(), expected);
+                Assert.That(value.Item1.ToString(), Is.EqualTo(expected));
             }
         }
 
@@ -112,10 +112,10 @@ namespace Cassandra.Tests
 
         private static void EqualsTest(Duration a, Duration b)
         {
-            Assert.AreEqual(a, b);
-            Assert.True(a == b);
-            Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
-            Assert.False(a.Equals(null));
+            Assert.That(a, Is.EqualTo(b));
+            Assert.That(a == b, Is.True);
+            Assert.That(a.GetHashCode(), Is.EqualTo(b.GetHashCode()));
+            Assert.That(a.Equals(null), Is.False);
         }
 
         [TestCase("567s", "567000ms")]
@@ -128,9 +128,9 @@ namespace Cassandra.Tests
         {
             var duration1 = Duration.Parse(valueStr1);
             var duration2 = Duration.Parse(valueStr2);
-            Assert.AreEqual(duration1, duration2);
-            Assert.True(duration1 == duration2);
-            Assert.AreEqual(duration1.GetHashCode(), duration2.GetHashCode());
+            Assert.That(duration1, Is.EqualTo(duration2));
+            Assert.That(duration1 == duration2, Is.True);
+            Assert.That(duration1.GetHashCode(), Is.EqualTo(duration2.GetHashCode()));
         }
 
         [Test]
@@ -139,7 +139,7 @@ namespace Cassandra.Tests
             var serializer = new DurationSerializer(true);
             foreach (var value in Values)
             {
-                Assert.AreEqual(value.Item2, ToHex(serializer.Serialize(4, value.Item1)));
+                Assert.That(value.Item2, Is.EqualTo(ToHex(serializer.Serialize(4, value.Item1))));
             }
         }
 
@@ -150,7 +150,7 @@ namespace Cassandra.Tests
             foreach (var value in Values)
             {
                 var buffer = FromHex(value.Item2);
-                Assert.AreEqual(value.Item1, serializer.Deserialize(4, buffer, 0, buffer.Length, null));
+                Assert.That(value.Item1, Is.EqualTo(serializer.Deserialize(4, buffer, 0, buffer.Length, null)));
             }
         }
 
@@ -192,7 +192,7 @@ namespace Cassandra.Tests
             foreach (var value in values)
             {
                 var timespan = value.ToTimeSpan();
-                Assert.AreEqual(value, Duration.FromTimeSpan(timespan));
+                Assert.That(value, Is.EqualTo(Duration.FromTimeSpan(timespan)));
             }
         }
     }

@@ -27,6 +27,7 @@ using Cassandra.IntegrationTests.TestClusterManagement.Simulacron;
 using Cassandra.Tests;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -63,7 +64,7 @@ namespace Cassandra.IntegrationTests.Core
                 TestHelper.Invoke(() =>
                 {
                     var rs = session.Execute("SELECT key FROM system.local");
-                    Assert.AreEqual(nodes[1].ContactPoint, rs.Info.QueriedHost.ToString());
+                    Assert.That(nodes[1].ContactPoint, Is.EqualTo(rs.Info.QueriedHost.ToString()));
                 }, 10);
             }
         }
@@ -90,7 +91,7 @@ namespace Cassandra.IntegrationTests.Core
                 TestHelper.Invoke(() =>
                 {
                     var rs = session.Execute(ps.Bind());
-                    Assert.AreEqual(nodes[1].ContactPoint, rs.Info.QueriedHost.ToString());
+                    Assert.That(nodes[1].ContactPoint, Is.EqualTo(rs.Info.QueriedHost.ToString()));
                 }, 10);
             }
         }
@@ -151,9 +152,9 @@ namespace Cassandra.IntegrationTests.Core
                         exceptions.Add(ex);
                     }
                 }, 10);
-                Assert.AreEqual(1, coordinators.Count);
-                Assert.AreEqual(5, exceptions.Count);
-                Assert.AreEqual(nodes[0].ContactPoint, coordinators.First());
+                Assert.That(1, Is.EqualTo(coordinators.Count));
+                Assert.That(5, Is.EqualTo(exceptions.Count));
+                Assert.That(nodes[0].ContactPoint, Is.EqualTo(coordinators.First()));
             }
         }
 
@@ -175,10 +176,10 @@ namespace Cassandra.IntegrationTests.Core
                     var query = new SimpleStatement(cql);
                     var task = session.ExecuteAsync(query);
                     Thread.Sleep(15000);
-                    Assert.AreEqual(TaskStatus.WaitingForActivation, task.Status);
+                    Assert.That(TaskStatus.WaitingForActivation, Is.EqualTo(task.Status));
                     Thread.Sleep(15000);
                     TestHelper.RetryAssert(
-                        () => { Assert.AreEqual(TaskStatus.RanToCompletion, task.Status, task.Exception?.ToString() ?? "no exception"); },
+                        () => { Assert.That(TaskStatus.RanToCompletion, Is.EqualTo(task.Status), task.Exception?.ToString() ?? "no exception"); },
                         100,
                         50);
                 }
@@ -220,8 +221,8 @@ namespace Cassandra.IntegrationTests.Core
                 Assert.Throws<OperationTimedOutException>(() => session.Execute("SELECT key FROM system.local"));
                 stopWatch.Stop();
                 //precision of the timer is not guaranteed
-                Assert.Greater(stopWatch.ElapsedMilliseconds, generalReadTimeout - 500);
-                Assert.Less(stopWatch.ElapsedMilliseconds, generalReadTimeout + 3000);
+                Assert.That(stopWatch.ElapsedMilliseconds, Is.GreaterThan(generalReadTimeout - 500));
+                Assert.That(stopWatch.ElapsedMilliseconds, Is.LessThan(generalReadTimeout + 3000));
 
                 //Try with an specified timeout at Statement level
                 var stmt = new SimpleStatement("SELECT key FROM system.local")
@@ -230,8 +231,8 @@ namespace Cassandra.IntegrationTests.Core
                 Assert.Throws<OperationTimedOutException>(() => session.Execute(stmt));
                 stopWatch.Stop();
                 //precision of the timer is not guaranteed
-                Assert.Greater(stopWatch.ElapsedMilliseconds, statementReadTimeout - 2000);
-                Assert.Less(stopWatch.ElapsedMilliseconds, statementReadTimeout + 6000);
+                Assert.That(stopWatch.ElapsedMilliseconds, Is.GreaterThan(statementReadTimeout - 2000));
+                Assert.That(stopWatch.ElapsedMilliseconds, Is.LessThan(statementReadTimeout + 6000));
             }
         }
 
@@ -262,10 +263,10 @@ namespace Cassandra.IntegrationTests.Core
                           .ThenRowsSuccess(new [] { ("key", DataType.Ascii) }, rows => rows.WithRow("123"))
                           .WithDelayInMs(10000));
                 var ex = Assert.Throws<NoHostAvailableException>(() => session.Execute("SELECT key FROM system.local"));
-                Assert.AreEqual(2, ex.Errors.Count);
+                Assert.That(2, Is.EqualTo(ex.Errors.Count));
                 foreach (var innerException in ex.Errors.Values)
                 {
-                    Assert.IsInstanceOf<OperationTimedOutException>(innerException);
+                    ClassicAssert.IsInstanceOf<OperationTimedOutException>(innerException);
                 }
             }
         }
@@ -282,10 +283,10 @@ namespace Cassandra.IntegrationTests.Core
             {
                 _testCluster.GetNodes().First().DisableConnectionListener(0, "reject_startup").GetAwaiter().GetResult();
                 var ex = Assert.Throws<NoHostAvailableException>(() => cluster.Connect());
-                Assert.AreEqual(1, ex.Errors.Count);
+                Assert.That(1, Is.EqualTo(ex.Errors.Count));
                 foreach (var innerException in ex.Errors.Values)
                 {
-                    Assert.IsInstanceOf<OperationTimedOutException>(innerException);
+                    ClassicAssert.IsInstanceOf<OperationTimedOutException>(innerException);
                 }
             }
         }
@@ -323,7 +324,7 @@ namespace Cassandra.IntegrationTests.Core
                         }
                         catch (NoHostAvailableException ex)
                         {
-                            Assert.AreEqual(1, ex.Errors.Count);
+                            Assert.That(1, Is.EqualTo(ex.Errors.Count));
                             return;
                         }
 
@@ -356,7 +357,7 @@ namespace Cassandra.IntegrationTests.Core
                             }
                             catch (NoHostAvailableException ex)
                             {
-                                Assert.AreEqual(1, ex.Errors.Count);
+                                Assert.That(1, Is.EqualTo(ex.Errors.Count));
                                 continue;
                             }
 
@@ -375,7 +376,7 @@ namespace Cassandra.IntegrationTests.Core
 
                     GC.Collect();
                     Thread.Sleep(1000);
-                    Assert.Less(GC.GetTotalMemory(true) / initialMemory, 1.5M,
+                    Assert.That(GC.GetTotalMemory(true) / initialMemory, Is.LessThan(1.5M),
                         "Should not exceed a 50% (1.5) more than was previously allocated");
 
                 }
@@ -464,11 +465,11 @@ namespace Cassandra.IntegrationTests.Core
 
                                 if (i % 2 == 0)
                                 {
-                                    Assert.IsNotNull(ex);
+                                    Assert.That(ex, Is.Not.Null);
                                 }
                                 else
                                 {
-                                    Assert.IsNull(ex);
+                                    Assert.That(ex, Is.Null);
                                 }
                             }
                         })).Concat(clustersWithoutDefaultKs.Select((c, i) => Task.Run(async () =>
@@ -489,11 +490,11 @@ namespace Cassandra.IntegrationTests.Core
 
                                 if (i % 2 == 0)
                                 {
-                                    Assert.IsNotNull(ex);
+                                    Assert.That(ex, Is.Not.Null);
                                 }
                                 else
                                 {
-                                    Assert.IsNull(ex);
+                                    Assert.That(ex, Is.Null);
                                 }
                             }
                         }))).ToArray();
@@ -521,9 +522,9 @@ namespace Cassandra.IntegrationTests.Core
                     await Task.Delay(1000).ConfigureAwait(false);
                     
                     var connectedPorts = await _testCluster.GetConnectedPortsAsync().ConfigureAwait(false);
-                    Assert.AreEqual(20, connectedPorts.Count); // control connections
+                    Assert.That(20, Is.EqualTo(connectedPorts.Count)); // control connections
 
-                    Assert.Less(GC.GetTotalMemory(true) / initialMemory, 1.75M,
+                    Assert.That(GC.GetTotalMemory(true) / initialMemory, Is.LessThan(1.75M),
                         "Should not exceed 75% (1.75) more than was previously allocated");
                 }
                 finally

@@ -105,7 +105,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                     {
                         "ANY ConsistencyLevel is only supported for writes"
                     };
-                    Assert.True(acceptableErrorMessages.Contains(e.Message));
+                    Assert.That(acceptableErrorMessages.Contains(e.Message), Is.True);
                 }
             }
 
@@ -124,7 +124,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                         "consistency level LOCAL_QUORUM not compatible with replication strategy (org.apache.cassandra.locator.SimpleStrategy)",
                         "consistency level EACH_QUORUM not compatible with replication strategy (org.apache.cassandra.locator.SimpleStrategy)"
                     };
-                    Assert.True(acceptableErrorMessages.Contains(e.Message), string.Format("Received: {0}", e.Message));
+                    Assert.That(acceptableErrorMessages.Contains(e.Message), Is.True, string.Format("Received: {0}", e.Message));
                 }
                 catch (UnavailableException)
                 {
@@ -153,7 +153,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                         "consistency level LOCAL_QUORUM not compatible with replication strategy (org.apache.cassandra.locator.SimpleStrategy)",
                         "EACH_QUORUM ConsistencyLevel is only supported for writes"
                     };
-                    Assert.True(acceptableErrorMessages.Contains(e.Message), string.Format("Received: {0}", e.Message));
+                    Assert.That(acceptableErrorMessages.Contains(e.Message), Is.True, string.Format("Received: {0}", e.Message));
                 }
                 catch (ReadTimeoutException)
                 {
@@ -196,7 +196,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                 coordinatorsWithMoreThanZeroQueries++;
                 _policyTestTools.AssertQueried(coordinator.Key, 6);
             }
-            Assert.AreEqual(2, coordinatorsWithMoreThanZeroQueries);
+            Assert.That(2, Is.EqualTo(coordinatorsWithMoreThanZeroQueries));
 
             _policyTestTools.ResetCoordinators();
             testCluster.StopForce(awareCoord);
@@ -242,7 +242,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                     {
                         "ANY ConsistencyLevel is only supported for writes"
                     };
-                    Assert.True(acceptableErrorMessages.Contains(e.Message));
+                    Assert.That(acceptableErrorMessages.Contains(e.Message), Is.True);
                 }
             }
 
@@ -261,7 +261,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                         "consistency level LOCAL_QUORUM not compatible with replication strategy (org.apache.cassandra.locator.SimpleStrategy)",
                         "consistency level EACH_QUORUM not compatible with replication strategy (org.apache.cassandra.locator.SimpleStrategy)"
                     };
-                    Assert.True(acceptableErrorMessages.Contains(e.Message), string.Format("Received: {0}", e.Message));
+                    Assert.That(acceptableErrorMessages.Contains(e.Message), Is.True, string.Format("Received: {0}", e.Message));
                 }
                 catch (UnavailableException)
                 {
@@ -290,7 +290,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                         "consistency level LOCAL_QUORUM not compatible with replication strategy (org.apache.cassandra.locator.SimpleStrategy)",
                         "EACH_QUORUM ConsistencyLevel is only supported for writes"
                     };
-                    Assert.True(acceptableErrorMessages.Contains(e.Message), string.Format("Received: {0}", e.Message));
+                    Assert.That(acceptableErrorMessages.Contains(e.Message), Is.True, string.Format("Received: {0}", e.Message));
                 }
                 catch (ReadTimeoutException)
                 {
@@ -375,7 +375,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                     {
                         "ANY ConsistencyLevel is only supported for writes"
                     };
-                    Assert.True(acceptableErrorMessages.Contains(e.Message));
+                    Assert.That(acceptableErrorMessages.Contains(e.Message), Is.True);
                 }
             }
 
@@ -394,7 +394,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                         "consistency level LOCAL_QUORUM not compatible with replication strategy (org.apache.cassandra.locator.SimpleStrategy)",
                         "consistency level EACH_QUORUM not compatible with replication strategy (org.apache.cassandra.locator.SimpleStrategy)"
                     };
-                    Assert.True(acceptableErrorMessages.Contains(e.Message), string.Format("Received: {0}", e.Message));
+                    Assert.That(acceptableErrorMessages.Contains(e.Message), Is.True, string.Format("Received: {0}", e.Message));
                 }
                 catch (UnavailableException)
                 {
@@ -423,7 +423,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                         "consistency level LOCAL_QUORUM not compatible with replication strategy (org.apache.cassandra.locator.SimpleStrategy)",
                         "EACH_QUORUM ConsistencyLevel is only supported for writes"
                     };
-                    Assert.True(acceptableErrorMessages.Contains(e.Message), string.Format("Received: {0}", e.Message));
+                    Assert.That(acceptableErrorMessages.Contains(e.Message), Is.True, string.Format("Received: {0}", e.Message));
                 }
                 catch (ReadTimeoutException)
                 {
@@ -490,7 +490,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                     {
                         "ANY ConsistencyLevel is only supported for writes"
                     };
-                    Assert.True(acceptableErrorMessages.Contains(e.Message));
+                    Assert.That(acceptableErrorMessages.Contains(e.Message), Is.True);
                 }
             }
 
@@ -509,7 +509,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                         "consistency level LOCAL_QUORUM not compatible with replication strategy (org.apache.cassandra.locator.SimpleStrategy)",
                         "consistency level EACH_QUORUM not compatible with replication strategy (org.apache.cassandra.locator.SimpleStrategy)"
                     };
-                    Assert.True(acceptableErrorMessages.Contains(e.Message), string.Format("Received: {0}", e.Message));
+                    Assert.That(acceptableErrorMessages.Contains(e.Message), Is.True, string.Format("Received: {0}", e.Message));
                 }
                 catch (UnavailableException)
                 {
@@ -538,7 +538,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                         "consistency level LOCAL_QUORUM not compatible with replication strategy (org.apache.cassandra.locator.SimpleStrategy)",
                         "EACH_QUORUM ConsistencyLevel is only supported for writes"
                     };
-                    Assert.True(acceptableErrorMessages.Contains(e.Message), string.Format("Received: {0}", e.Message));
+                    Assert.That(acceptableErrorMessages.Contains(e.Message), Is.True, string.Format("Received: {0}", e.Message));
                 }
                 catch (ReadTimeoutException)
                 {

@@ -37,7 +37,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                       .ThenRowsSuccess(new[] { ("count", DataType.BigInt) }, rows => rows.WithRow(_entityList.Count)));
             var table = new Table<AllDataTypesEntity>(Session, new MappingConfiguration());
             var count = table.Count().Execute();
-            Assert.AreEqual(_entityList.Count, count);
+            Assert.That(_entityList.Count, Is.EqualTo(count));
         }
 
         [Test]
@@ -54,7 +54,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                       .ThenRowsSuccess(new[] { ("count", DataType.BigInt) }, rows => rows.WithRow(1)));
             var table = new Table<AllDataTypesEntity>(Session, new MappingConfiguration());
             long count = table.Where(e => e.StringType == expectedEntity.StringType && e.GuidType == expectedEntity.GuidType).Count().Execute();
-            Assert.AreEqual(1, count);
+            Assert.That(1, Is.EqualTo(count));
         }
 
         [Test, TestCassandraVersion(3, 0)]
@@ -77,7 +77,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                       .ThenRowsSuccess(new[] { ("count", DataType.BigInt) }, rows => rows.WithRow(3)));
 
             var count = table.Where(e => e.Body == "a lot").AllowFiltering().Count().Execute();
-            Assert.AreEqual(3, count);
+            Assert.That(3, Is.EqualTo(count));
         }
 
         [Test]
@@ -88,7 +88,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                       .ThenRowsSuccess(new[] { ("count", DataType.BigInt) }, rows => rows.WithRow(_entityList.Count)));
             var table = new Table<AllDataTypesEntity>(Session, new MappingConfiguration());
             var count = table.Count().Execute();
-            Assert.AreEqual(_entityList.Count, count);
+            Assert.That(_entityList.Count, Is.EqualTo(count));
         }
 
         [Test]
@@ -105,7 +105,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                       .ThenRowsSuccess(new[] { ("count", DataType.BigInt) }, rows => rows.WithRow(1)));
             var table = new Table<AllDataTypesEntity>(Session, new MappingConfiguration());
             long count = table.Where(e => e.StringType == expectedEntity.StringType && e.GuidType == expectedEntity.GuidType).Count().ExecuteAsync().Result;
-            Assert.AreEqual(1, count);
+            Assert.That(1, Is.EqualTo(count));
         }
     }
 }

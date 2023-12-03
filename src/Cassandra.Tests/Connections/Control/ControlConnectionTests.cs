@@ -29,6 +29,7 @@ using Cassandra.Tests.Connections.TestHelpers;
 using Cassandra.Tests.MetadataHelpers.TestHelpers;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.Connections.Control
 {
@@ -129,9 +130,9 @@ namespace Cassandra.Tests.Connections.Control
             using (var cc = NewInstance().ControlConnection)
             {
                 await cc.InitAsync().ConfigureAwait(false);
-                Assert.AreEqual("ut-dc", cc.Host.Datacenter);
-                Assert.AreEqual("ut-rack", cc.Host.Rack);
-                Assert.AreEqual(Version.Parse("2.2.1"), cc.Host.CassandraVersion);
+                Assert.That("ut-dc", Is.EqualTo(cc.Host.Datacenter));
+                Assert.That("ut-rack", Is.EqualTo(cc.Host.Rack));
+                Assert.That(Version.Parse("2.2.1"), Is.EqualTo(cc.Host.CassandraVersion));
             }
         }
 
@@ -194,12 +195,12 @@ namespace Cassandra.Tests.Connections.Control
                 var cluster = createResult.Cluster;
                 var cc = createResult.ControlConnection;
                 cc.InitAsync().GetAwaiter().GetResult();
-                Assert.AreEqual(4, metadata.AllHosts().Count);
+                Assert.That(4, Is.EqualTo(metadata.AllHosts().Count));
                 var host2 = metadata.GetHost(new IPEndPoint(hostAddress2, ProtocolOptions.DefaultPort));
-                Assert.NotNull(host2);
+                Assert.That(host2, Is.Not.Null);
                 host2.SetDown();
                 var host3 = metadata.GetHost(new IPEndPoint(hostAddress3, ProtocolOptions.DefaultPort));
-                Assert.NotNull(host3);
+                Assert.That(host3, Is.Not.Null);
 
                 Mock.Get(cluster)
                     .Setup(c => c.RetrieveAndSetDistance(It.IsAny<Host>()))
@@ -255,7 +256,7 @@ namespace Cassandra.Tests.Connections.Control
                         var cluster = createResult.Cluster;
                         var cc = createResult.ControlConnection;
                         cc.InitAsync().GetAwaiter().GetResult();
-                        Assert.AreEqual(4, metadata.AllHosts().Count);
+                        Assert.That(4, Is.EqualTo(metadata.AllHosts().Count));
 
                         Mock.Get(cluster)
                             .Setup(c => c.RetrieveAndSetDistance(It.IsAny<Host>()))
@@ -310,22 +311,22 @@ namespace Cassandra.Tests.Connections.Control
 
             if (keepContactPointsUnresolved)
             {
-                Assert.AreEqual(0, _cp1.Calls.Count(b => b == false));
-                Assert.AreEqual(0, _cp2.Calls.Count(b => b == false));
-                Assert.AreEqual(0, _localhost.Calls.Count(b => b == false));
+                Assert.That(0, Is.EqualTo(_cp1.Calls.Count(b => b == false)));
+                Assert.That(0, Is.EqualTo(_cp2.Calls.Count(b => b == false)));
+                Assert.That(0, Is.EqualTo(_localhost.Calls.Count(b => b == false)));
             }
             else
             {
-                Assert.AreEqual(1, _cp1.Calls.Count(b => b == false));
-                Assert.AreEqual(1, _cp2.Calls.Count(b => b == false));
-                Assert.AreEqual(1, _localhost.Calls.Count(b => b == false));
+                Assert.That(1, Is.EqualTo(_cp1.Calls.Count(b => b == false)));
+                Assert.That(1, Is.EqualTo(_cp2.Calls.Count(b => b == false)));
+                Assert.That(1, Is.EqualTo(_localhost.Calls.Count(b => b == false)));
             }
 
-            Assert.AreEqual(1, _cp1.Calls.Count(b => b == true));
-            Assert.AreEqual(1, _cp2.Calls.Count(b => b == true));
-            Assert.AreEqual(1, _localhost.Calls.Count(b => b == true));
-            Assert.AreEqual(2, createResult.ConnectionFactory.CreatedConnections[_endpoint1].Count);
-            Assert.AreEqual(2, createResult.ConnectionFactory.CreatedConnections[_endpoint2].Count);
+            Assert.That(1, Is.EqualTo(_cp1.Calls.Count(b => b == true)));
+            Assert.That(1, Is.EqualTo(_cp2.Calls.Count(b => b == true)));
+            Assert.That(1, Is.EqualTo(_localhost.Calls.Count(b => b == true)));
+            Assert.That(2, Is.EqualTo(createResult.ConnectionFactory.CreatedConnections[_endpoint1].Count));
+            Assert.That(2, Is.EqualTo(createResult.ConnectionFactory.CreatedConnections[_endpoint2].Count));
         }
 
         private ControlConnectionCreateResult CreateForContactPointTest(bool keepContactPointsUnresolved)

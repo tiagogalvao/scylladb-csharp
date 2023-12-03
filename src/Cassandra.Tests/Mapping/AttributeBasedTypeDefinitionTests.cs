@@ -19,6 +19,7 @@ using Cassandra.Mapping;
 using Cassandra.Mapping.Attributes;
 using Cassandra.Tests.Mapping.Pocos;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.Mapping
 {
@@ -30,26 +31,26 @@ namespace Cassandra.Tests.Mapping
         {
             //Non decorated Poco
             var definition = new AttributeBasedTypeDefinition(typeof(AllTypesEntity));
-            Assert.False(definition.CaseSensitive);
-            Assert.False(definition.CompactStorage);
-            Assert.False(definition.AllowFiltering);
-            Assert.False(definition.ExplicitColumns);
-            Assert.AreEqual(0, definition.ClusteringKeys.Length);
-            Assert.AreEqual(0, definition.PartitionKeys.Length);
-            Assert.Null(definition.KeyspaceName);
-            Assert.AreEqual("AllTypesEntity", definition.TableName);
-            Assert.AreEqual(typeof(AllTypesEntity), definition.PocoType);
+            Assert.That(definition.CaseSensitive, Is.False);
+            Assert.That(definition.CompactStorage, Is.False);
+            Assert.That(definition.AllowFiltering, Is.False);
+            Assert.That(definition.ExplicitColumns, Is.False);
+            Assert.That(0, Is.EqualTo(definition.ClusteringKeys.Length));
+            Assert.That(0, Is.EqualTo(definition.PartitionKeys.Length));
+            Assert.That(definition.KeyspaceName, Is.Null);
+            Assert.That("AllTypesEntity", Is.EqualTo(definition.TableName));
+            Assert.That(typeof(AllTypesEntity), Is.EqualTo(definition.PocoType));
         }
 
         [Test]
         public void AttributeBased_Single_PartitionKey_Test()
         {
             var definition = new AttributeBasedTypeDefinition(typeof(DecoratedUser));
-            Assert.False(definition.CaseSensitive);
-            Assert.False(definition.CompactStorage);
-            Assert.False(definition.AllowFiltering);
-            Assert.False(definition.ExplicitColumns);
-            Assert.AreEqual(0, definition.ClusteringKeys.Length);
+            Assert.That(definition.CaseSensitive, Is.False);
+            Assert.That(definition.CompactStorage, Is.False);
+            Assert.That(definition.AllowFiltering, Is.False);
+            Assert.That(definition.ExplicitColumns, Is.False);
+            Assert.That(0, Is.EqualTo(definition.ClusteringKeys.Length));
             CollectionAssert.AreEqual(new[] { "userid" }, definition.PartitionKeys);
         }
 
@@ -57,10 +58,10 @@ namespace Cassandra.Tests.Mapping
         public void AttributeBased_Composite_PartitionKey_Test()
         {
             var definition = new AttributeBasedTypeDefinition(typeof(DecoratedTimeSeries));
-            Assert.True(definition.CaseSensitive);
-            Assert.False(definition.CompactStorage);
-            Assert.False(definition.AllowFiltering);
-            Assert.False(definition.ExplicitColumns);
+            Assert.That(definition.CaseSensitive, Is.True);
+            Assert.That(definition.CompactStorage, Is.False);
+            Assert.That(definition.AllowFiltering, Is.False);
+            Assert.That(definition.ExplicitColumns, Is.False);
             CollectionAssert.AreEqual(new [] {Tuple.Create("Time", SortOrder.Unspecified)}, definition.ClusteringKeys);
             CollectionAssert.AreEqual(new[] { "name", "Slice" }, definition.PartitionKeys);
         }
@@ -69,10 +70,10 @@ namespace Cassandra.Tests.Mapping
         public void AttributeBased_Without_Name_For_Clustering_Key_Test()
         {
             var definition = new AttributeBasedTypeDefinition(typeof(SamplePocoWithoutClusteringKeyName));
-            Assert.False(definition.CaseSensitive);
-            Assert.False(definition.CompactStorage);
-            Assert.False(definition.AllowFiltering);
-            Assert.False(definition.ExplicitColumns);
+            Assert.That(definition.CaseSensitive, Is.False);
+            Assert.That(definition.CompactStorage, Is.False);
+            Assert.That(definition.AllowFiltering, Is.False);
+            Assert.That(definition.ExplicitColumns, Is.False);
             CollectionAssert.AreEqual(new [] {Tuple.Create("Id2", SortOrder.Unspecified)}, definition.ClusteringKeys);
             CollectionAssert.AreEqual(new[] { "Id1" }, definition.PartitionKeys);
         }

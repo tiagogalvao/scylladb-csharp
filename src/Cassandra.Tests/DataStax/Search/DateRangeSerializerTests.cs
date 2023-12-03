@@ -34,7 +34,7 @@ namespace Cassandra.Tests.DataStax.Search
                 // Use a buffer at a different index than 0
                 var buffer = DateRangeSerializerTests.JoinBuffers(new[] {new byte[10], serialized}, serialized.Length + 10);
                 var deserialized = serializer.Deserialize(4, buffer, 10, serialized.Length, serializer.TypeInfo);
-                Assert.AreEqual(value, deserialized);
+                Assert.That(value, Is.EqualTo(deserialized));
             }
         }
 

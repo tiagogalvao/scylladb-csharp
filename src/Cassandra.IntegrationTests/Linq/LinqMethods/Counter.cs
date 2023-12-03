@@ -86,12 +86,12 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
             PrimeLinqCounterRangeQuery(expectedCounters);
 
             var countersQueried = table.Select(m => m).Execute().ToList();
-            Assert.AreEqual(10, countersQueried.Count);
+            Assert.That(10, Is.EqualTo(countersQueried.Count));
             foreach (var expectedCounter in expectedCounters)
             {
                 var actualCounter = countersQueried.Single(c => c.KeyPart1 == expectedCounter.KeyPart1);
-                Assert.AreEqual(expectedCounter.KeyPart2, actualCounter.KeyPart2);
-                Assert.AreEqual(expectedCounter.Counter, actualCounter.Counter);
+                Assert.That(expectedCounter.KeyPart2, Is.EqualTo(actualCounter.KeyPart2));
+                Assert.That(expectedCounter.Counter, Is.EqualTo(actualCounter.Counter));
             }
         }
 
@@ -121,7 +121,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                          ServerError.Invalid, expectedErrMsg));
 
             var e = Assert.Throws<InvalidQueryException>(() => Session.Execute(table.Insert(pocoAndLinqAttributesLinqPocos)));
-            Assert.AreEqual(expectedErrMsg, e.Message);
+            Assert.That(expectedErrMsg, Is.EqualTo(e.Message));
         }
 
         [TestCase(-21)]
@@ -168,7 +168,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                             .Execute()
                             .First();
 
-            Assert.AreEqual(increment, updatedCounter.Counter);
+            Assert.That(increment, Is.EqualTo(updatedCounter.Counter));
 
             // second update
             counterTable
@@ -183,7 +183,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
 
             updatedCounter = counterTable.Where(t => t.KeyPart1 == counter.KeyPart1 && t.KeyPart2 == counter.KeyPart2)
                                          .Execute().First();
-            Assert.AreEqual(increment * 2, updatedCounter.Counter);
+            Assert.That(increment * 2, Is.EqualTo(updatedCounter.Counter));
 
             // third update
             counterTable
@@ -198,7 +198,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
 
             updatedCounter = counterTable.Where(t => t.KeyPart1 == counter.KeyPart1 && t.KeyPart2 == counter.KeyPart2)
                                          .Execute().First();
-            Assert.AreEqual(increment * 3, updatedCounter.Counter);
+            Assert.That(increment * 3, Is.EqualTo(updatedCounter.Counter));
 
             // testing negative values
             var negativeIncrement = -1 * increment;
@@ -216,7 +216,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
 
             updatedCounter = counterTable.Where(t => t.KeyPart1 == counter.KeyPart1 && t.KeyPart2 == counter.KeyPart2)
                                          .Execute().First();
-            Assert.AreEqual(increment * 2, updatedCounter.Counter);
+            Assert.That(increment * 2, Is.EqualTo(updatedCounter.Counter));
 
             // second negative update
             counterTable
@@ -231,7 +231,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
 
             updatedCounter = counterTable.Where(t => t.KeyPart1 == counter.KeyPart1 && t.KeyPart2 == counter.KeyPart2)
                                          .Execute().First();
-            Assert.AreEqual(increment, updatedCounter.Counter);
+            Assert.That(increment, Is.EqualTo(updatedCounter.Counter));
 
             // third negative update
             counterTable
@@ -246,7 +246,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
 
             updatedCounter = counterTable.Where(t => t.KeyPart1 == counter.KeyPart1 && t.KeyPart2 == counter.KeyPart2)
                                          .Execute().First();
-            Assert.AreEqual(0, updatedCounter.Counter);
+            Assert.That(0, Is.EqualTo(updatedCounter.Counter));
         }
 
         [Test]
@@ -300,9 +300,9 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
             PrimeLinqCounterRangeQuery(expectedCounters, "linqcounter_batchtest_table", false);
 
             var counters = counterTable.Execute().ToList();
-            Assert.AreEqual(2, counters.Count);
-            Assert.IsTrue(counters.Contains(counter));
-            Assert.IsTrue(counters.Contains(counter2));
+            Assert.That(2, Is.EqualTo(counters.Count));
+            Assert.That(counters.Contains(counter), Is.True);
+            Assert.That(counters.Contains(counter2), Is.True);
         }
 
         [Table]

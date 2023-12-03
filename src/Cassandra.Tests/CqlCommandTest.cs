@@ -31,50 +31,50 @@ namespace Cassandra.Tests
 
             // test CreateDbParameter()
             var parameter = target.CreateParameter();
-            Assert.IsNotNull(parameter);
+            Assert.That(parameter, Is.Not.Null);
 
             // test Parameters
             var parameterCollection = target.Parameters;
-            Assert.IsNotNull(parameterCollection);
-            Assert.AreEqual(parameterCollection, target.Parameters);
+            Assert.That(parameterCollection, Is.Not.Null);
+            Assert.That(parameterCollection, Is.EqualTo(target.Parameters));
 
             // test Connection
             var connection = new CqlConnection("contact points=127.0.0.1;port=9042");
-            Assert.IsNull(target.Connection);
+            Assert.That(target.Connection, Is.Null);
             target.Connection = connection;
-            Assert.AreEqual(connection, target.Connection);
+            Assert.That(connection, Is.EqualTo(target.Connection));
 
             // test IsPrepared
-            Assert.IsTrue(target.IsPrepared);
+            Assert.That(target.IsPrepared, Is.True);
 
             // test CommandText
             var cqlQuery = "test query";
-            Assert.IsNull(target.CommandText);
+            Assert.That(target.CommandText, Is.Null);
             target.CommandText = cqlQuery;
-            Assert.AreEqual(cqlQuery, target.CommandText);
+            Assert.That(cqlQuery, Is.EqualTo(target.CommandText));
 
             // test CommandTimeout, it should always return -1
             var timeout = 1;
-            Assert.AreEqual(-1, target.CommandTimeout);
+            Assert.That(-1, Is.EqualTo(target.CommandTimeout));
             target.CommandTimeout = timeout;
-            Assert.AreEqual(-1, target.CommandTimeout);
+            Assert.That(-1, Is.EqualTo(target.CommandTimeout));
 
             // test CommandType, it should always return CommandType.Text
             var commandType = CommandType.TableDirect;
-            Assert.AreEqual(CommandType.Text, target.CommandType);
+            Assert.That(CommandType.Text, Is.EqualTo(target.CommandType));
             target.CommandType = commandType;
-            Assert.AreEqual(CommandType.Text, target.CommandType);
+            Assert.That(CommandType.Text, Is.EqualTo(target.CommandType));
 
             // test DesignTimeVisible, it should always return true
-            Assert.IsTrue(target.DesignTimeVisible);
+            Assert.That(target.DesignTimeVisible, Is.True);
             target.DesignTimeVisible = false;
-            Assert.IsTrue(target.DesignTimeVisible);
+            Assert.That(target.DesignTimeVisible, Is.True);
 
             // test UpdateRowSource, it should always return UpdateRowSource.FirstReturnedRecord
             var updateRowSource = UpdateRowSource.Both;
-            Assert.AreEqual(UpdateRowSource.FirstReturnedRecord, target.UpdatedRowSource);
+            Assert.That(UpdateRowSource.FirstReturnedRecord, Is.EqualTo(target.UpdatedRowSource));
             target.UpdatedRowSource = updateRowSource;
-            Assert.AreEqual(UpdateRowSource.FirstReturnedRecord, target.UpdatedRowSource);
+            Assert.That(UpdateRowSource.FirstReturnedRecord, Is.EqualTo(target.UpdatedRowSource));
         }
 
         [Test]

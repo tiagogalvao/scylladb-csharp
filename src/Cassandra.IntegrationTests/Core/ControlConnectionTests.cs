@@ -46,7 +46,7 @@ namespace Cassandra.IntegrationTests.Core
             using (var cc = NewInstance())
             {
                 cc.InitAsync().Wait(InitTimeout);
-                Assert.AreEqual(GetProtocolVersion(), cc.ProtocolVersion);
+                Assert.That(GetProtocolVersion(), Is.EqualTo(cc.ProtocolVersion));
             }
         }
 
@@ -63,7 +63,7 @@ namespace Cassandra.IntegrationTests.Core
             using (var cc = NewInstance(version))
             {
                 cc.InitAsync().Wait(InitTimeout);
-                Assert.AreEqual(version, cc.ProtocolVersion);
+                Assert.That(version, Is.EqualTo(cc.ProtocolVersion));
             }
         }
 
@@ -75,7 +75,7 @@ namespace Cassandra.IntegrationTests.Core
             using (var cc = NewInstance(version))
             {
                 cc.InitAsync().Wait(InitTimeout);
-                Assert.AreEqual(version - 1, cc.ProtocolVersion);
+                Assert.That(version - 1, Is.EqualTo(cc.ProtocolVersion));
             }
         }
 
@@ -87,7 +87,7 @@ namespace Cassandra.IntegrationTests.Core
             using (var cc = NewInstance(version))
             {
                 cc.InitAsync().Wait(InitTimeout);
-                Assert.AreEqual(ProtocolVersion.V4, cc.ProtocolVersion);
+                Assert.That(ProtocolVersion.V4, Is.EqualTo(cc.ProtocolVersion));
             }
         }
 

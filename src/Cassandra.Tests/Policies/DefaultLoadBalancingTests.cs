@@ -16,6 +16,7 @@
 using System.Linq;
 using System.Net;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.Policies
 {
@@ -54,12 +55,12 @@ namespace Cassandra.Tests.Policies
 #pragma warning disable 618
             var lbp = new DefaultLoadBalancingPolicy(new TestLoadBalancingPolicy(HostDistance.Ignored));
 #pragma warning restore 618
-            Assert.AreEqual(HostDistance.Ignored, lbp.Distance(new Host(new IPEndPoint(200L, 9042), ReconnectionPolicy)));
+            Assert.That(HostDistance.Ignored, Is.EqualTo(lbp.Distance(new Host(new IPEndPoint(200L, 9042), ReconnectionPolicy))));
             var statement = new TargettedSimpleStatement("Q");
             // Use 201 as preferred
             statement.PreferredHost = new Host(new IPEndPoint(201L, 9042), ReconnectionPolicy);
             lbp.NewQueryPlan(null, statement);
-            Assert.AreEqual(HostDistance.Local, lbp.Distance(statement.PreferredHost));
+            Assert.That(HostDistance.Local, Is.EqualTo(lbp.Distance(statement.PreferredHost)));
         }
     }
 }

@@ -50,7 +50,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
 
             AllDataTypesEntity.PrimeCountQuery(TestCluster, _entityList.Count);
             var count = table.Count().Execute();
-            Assert.AreEqual(_entityList.Count, count);
+            Assert.That(_entityList.Count, Is.EqualTo(count));
 
             AllDataTypesEntity entityToDelete = _entityList[0];
 
@@ -73,9 +73,9 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
             AllDataTypesEntity.PrimeCountQuery(TestCluster, _entityList.Count - 1);
 
             count = table.Count().Execute();
-            Assert.AreEqual(_entityList.Count - 1, count);
+            Assert.That(_entityList.Count - 1, Is.EqualTo(count));
             TestCluster.PrimeFluent(b => entityToDelete.When(TestCluster, b).ThenVoidSuccess());
-            Assert.AreEqual(0, selectQuery.Execute().ToList().Count);
+            Assert.That(0, Is.EqualTo(selectQuery.Execute().ToList().Count));
         }
         
         [TestCase(true)]
@@ -130,12 +130,12 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
             var listOfExecutionParameters = GetBoundStatementExecutionParameters(
                 $"DELETE FROM \"{AllDataTypesEntity.TableName}\" WHERE \"string_type\" = ?").ToList();
 
-            Assert.AreEqual(1, listOfExecutionParameters.Count);
+            Assert.That(1, Is.EqualTo(listOfExecutionParameters.Count));
             var parameter = Convert.FromBase64String((string)listOfExecutionParameters.Single().Single());
             var actualParameter = (string) Session.Cluster.Metadata.ControlConnection.Serializer.GetCurrentSerializer().Deserialize(parameter, 0, parameter.Length, ColumnTypeCode.Text, null);
-            Assert.AreNotEqual(entityToDelete.StringType, actualParameter);
-            Assert.IsTrue(actualParameter.StartsWith(entityToDelete.StringType));
-            Assert.IsTrue(actualParameter.Length > entityToDelete.StringType.Length);
+            Assert.That(entityToDelete.StringType, Is.Not.EqualTo(actualParameter));
+            Assert.That(actualParameter.StartsWith(entityToDelete.StringType), Is.True);
+            Assert.That(actualParameter.Length > entityToDelete.StringType.Length, Is.True);
         }
 
         /// <summary>

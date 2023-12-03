@@ -73,33 +73,33 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
                       .ThenRowsSuccess(new[] { "SomeDouble1", "somestring1" }, r => r.WithRow(poco1.SomeDouble1, poco1.SomeString1)));
 
             List<Poco1> poco1s = cqlClient1.Fetch<Poco1>(cqlSelectAll1).ToList();
-            Assert.AreEqual(1, poco1s.Count);
-            Assert.AreEqual(poco1.SomeString1, poco1s[0].SomeString1);
-            Assert.AreEqual(poco1.SomeDouble1, poco1s[0].SomeDouble1);
+            Assert.That(1, Is.EqualTo(poco1s.Count));
+            Assert.That(poco1.SomeString1, Is.EqualTo(poco1s[0].SomeString1));
+            Assert.That(poco1.SomeDouble1, Is.EqualTo(poco1s[0].SomeDouble1));
 
             TestCluster.PrimeFluent(
                 b => b.WhenQuery("SELECT * from poco2")
                       .ThenRowsSuccess(new[] { "SomeDouble2", "somestring2" }, r => r.WithRow(poco2.SomeDouble2, poco2.SomeString2)));
 
             List<Poco2> poco2s = cqlClient2.Fetch<Poco2>(cqlSelectAll2).ToList();
-            Assert.AreEqual(1, poco2s.Count);
-            Assert.AreEqual(poco2.SomeString2, poco2s[0].SomeString2);
-            Assert.AreEqual(poco2.SomeDouble2, poco2s[0].SomeDouble2);
+            Assert.That(1, Is.EqualTo(poco2s.Count));
+            Assert.That(poco2.SomeString2, Is.EqualTo(poco2s[0].SomeString2));
+            Assert.That(poco2.SomeDouble2, Is.EqualTo(poco2s[0].SomeDouble2));
 
             // Try that again
             poco1s.Clear();
-            Assert.AreEqual(0, poco1s.Count);
+            Assert.That(0, Is.EqualTo(poco1s.Count));
             poco1s = cqlClient1.Fetch<Poco1>(cqlSelectAll1).ToList();
-            Assert.AreEqual(1, poco1s.Count);
-            Assert.AreEqual(poco1.SomeString1, poco1s[0].SomeString1);
-            Assert.AreEqual(poco1.SomeDouble1, poco1s[0].SomeDouble1);
+            Assert.That(1, Is.EqualTo(poco1s.Count));
+            Assert.That(poco1.SomeString1, Is.EqualTo(poco1s[0].SomeString1));
+            Assert.That(poco1.SomeDouble1, Is.EqualTo(poco1s[0].SomeDouble1));
 
             poco2s.Clear();
-            Assert.AreEqual(0, poco2s.Count);
+            Assert.That(0, Is.EqualTo(poco2s.Count));
             poco2s = cqlClient1.Fetch<Poco2>(cqlSelectAll2).ToList();
-            Assert.AreEqual(1, poco2s.Count);
-            Assert.AreEqual(poco2.SomeString2, poco2s[0].SomeString2);
-            Assert.AreEqual(poco2.SomeDouble2, poco2s[0].SomeDouble2);
+            Assert.That(1, Is.EqualTo(poco2s.Count));
+            Assert.That(poco2.SomeString2, Is.EqualTo(poco2s[0].SomeString2));
+            Assert.That(poco2.SomeDouble2, Is.EqualTo(poco2s[0].SomeDouble2));
         }
 
         ////////////////////////////////////////////////////

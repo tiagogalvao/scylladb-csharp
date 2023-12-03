@@ -22,6 +22,7 @@ using Cassandra.IntegrationTests.TestBase;
 using Cassandra.IntegrationTests.TestClusterManagement;
 using Cassandra.Tests;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -64,20 +65,20 @@ namespace Cassandra.IntegrationTests.Core
         public void Should_QueryTrace_When_Enabled()
         {
             var rs = Session.Execute(new SimpleStatement("SELECT * from system.local").EnableTracing());
-            Assert.NotNull(rs.Info.QueryTrace);
+            Assert.That(rs.Info.QueryTrace, Is.Not.Null);
             var hosts = Session.Cluster.AllHosts();
-            Assert.NotNull(hosts);
+            Assert.That(hosts, Is.Not.Null);
             var coordinator = hosts.FirstOrDefault();
-            Assert.NotNull(coordinator);
-            Assert.AreEqual(coordinator.Address.Address, rs.Info.QueryTrace.Coordinator);
-            Assert.Greater(rs.Info.QueryTrace.Events.Count, 0);
+            Assert.That(coordinator, Is.Not.Null);
+            Assert.That(coordinator.Address.Address, Is.EqualTo(rs.Info.QueryTrace.Coordinator));
+            Assert.That(rs.Info.QueryTrace.Events.Count, Is.GreaterThan(0));
             if (Session.BinaryProtocolVersion >= 4)
             {
-                Assert.NotNull(rs.Info.QueryTrace.ClientAddress);   
+                Assert.That(rs.Info.QueryTrace.ClientAddress, Is.Not.Null);   
             }
             else
             {
-                Assert.Null(rs.Info.QueryTrace.ClientAddress);
+                Assert.That(rs.Info.QueryTrace.ClientAddress, Is.Null);
             }
         }
 
@@ -85,7 +86,7 @@ namespace Cassandra.IntegrationTests.Core
         public void Should_NotGetQueryTrace_When_NotEnabledXDefaultX()
         {
             var rs = Session.Execute(new SimpleStatement("SELECT * from system.local"));
-            Assert.Null(rs.Info.QueryTrace);
+            Assert.That(rs.Info.QueryTrace, Is.Null);
         }
 
         [Test, TestCassandraVersion(2, 2)]
@@ -93,15 +94,15 @@ namespace Cassandra.IntegrationTests.Core
         {
             var rs = Session.Execute("SELECT * FROM system.local");
             //It should be null for queries that do not generate warnings
-            Assert.Null(rs.Info.Warnings);
+            Assert.That(rs.Info.Warnings, Is.Null);
         }
 
         [Test, TestCassandraVersion(2, 2)]
         public void Should_Warning_When_BatchExceedsLength()
         {
             var rs = Session.Execute(GetBatchAsSimpleStatement(5*1025));
-            Assert.NotNull(rs.Info.Warnings);
-            Assert.AreEqual(1, rs.Info.Warnings.Length);
+            Assert.That(rs.Info.Warnings, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(rs.Info.Warnings.Length));
             StringAssert.Contains("batch", rs.Info.Warnings[0].ToLowerInvariant());
             StringAssert.Contains("exceeding", rs.Info.Warnings[0].ToLowerInvariant());
         }
@@ -111,9 +112,9 @@ namespace Cassandra.IntegrationTests.Core
         {
             var statement = GetBatchAsSimpleStatement(5 * 1025);
             var rs = Session.Execute(statement.EnableTracing());
-            Assert.NotNull(rs.Info.QueryTrace);
-            Assert.NotNull(rs.Info.Warnings);
-            Assert.AreEqual(1, rs.Info.Warnings.Length);
+            Assert.That(rs.Info.QueryTrace, Is.Not.Null);
+            Assert.That(rs.Info.Warnings, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(rs.Info.Warnings.Length));
             StringAssert.Contains("batch", rs.Info.Warnings[0].ToLowerInvariant());
             StringAssert.Contains("exceeding", rs.Info.Warnings[0].ToLowerInvariant());
         }
@@ -135,12 +136,12 @@ namespace Cassandra.IntegrationTests.Core
             var statement = GetBatchAsSimpleStatement(5*1025);
             var outgoing = GetPayload();
             var rs = Session.Execute(statement.SetOutgoingPayload(GetPayload()));
-            Assert.NotNull(rs.Info.Warnings);
-            Assert.AreEqual(1, rs.Info.Warnings.Length);
+            Assert.That(rs.Info.Warnings, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(rs.Info.Warnings.Length));
             StringAssert.Contains("batch", rs.Info.Warnings[0].ToLowerInvariant());
             StringAssert.Contains("exceeding", rs.Info.Warnings[0].ToLowerInvariant());
-            CollectionAssert.AreEqual(outgoing["k1"], rs.Info.IncomingPayload["k1"]);
-            CollectionAssert.AreEqual(outgoing["k2"], rs.Info.IncomingPayload["k2"]);
+            CollectionAssert.Equals(outgoing["k1"], rs.Info.IncomingPayload["k1"]);
+            CollectionAssert.Equals(outgoing["k2"], rs.Info.IncomingPayload["k2"]);
         }
 
         [Test, TestCassandraVersion(2, 2)]
@@ -154,11 +155,11 @@ namespace Cassandra.IntegrationTests.Core
             };
             var rs = Session.Execute(statement.SetOutgoingPayload(outgoing).EnableTracing());
 
-            Assert.NotNull(rs.Info.QueryTrace);
-            CollectionAssert.AreEqual(outgoing["k1"], rs.Info.IncomingPayload["k1"]);
-            CollectionAssert.AreEqual(outgoing["k2"], rs.Info.IncomingPayload["k2"]);
-            Assert.NotNull(rs.Info.Warnings);
-            Assert.AreEqual(1, rs.Info.Warnings.Length);
+            Assert.That(rs.Info.QueryTrace, Is.Not.Null);
+            CollectionAssert.Equals(outgoing["k1"], rs.Info.IncomingPayload["k1"]);
+            CollectionAssert.Equals(outgoing["k2"], rs.Info.IncomingPayload["k2"]);
+            Assert.That(rs.Info.Warnings, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(rs.Info.Warnings.Length));
             StringAssert.Contains("batch", rs.Info.Warnings[0].ToLowerInvariant());
             StringAssert.Contains("exceeding", rs.Info.Warnings[0].ToLowerInvariant());
         }

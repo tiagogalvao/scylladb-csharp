@@ -51,7 +51,7 @@ namespace Cassandra.IntegrationTests.Core
             }
             sw.Stop();
             // Consider timer precision ~16ms
-            Assert.Greater(sw.Elapsed.TotalMilliseconds, 684, "The connection timeout was not respected");
+            Assert.That(sw.Elapsed.TotalMilliseconds, Is.GreaterThan(684), "The connection timeout was not respected");
         }
     }
 }

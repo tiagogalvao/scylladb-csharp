@@ -28,6 +28,7 @@ using Cassandra.Tasks;
 using Cassandra.Tests;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -64,9 +65,9 @@ namespace Cassandra.IntegrationTests.Core
                 TestHelper.RetryAssert(
                     () =>
                     {
-                        Assert.AreEqual(1, Session.Cluster.AllHosts().Count(h => !h.IsUp), Session.Cluster.AllHosts().Count(h => !h.IsUp));
-                        Assert.AreNotEqual(oldCcHost, Session.Cluster.Metadata.ControlConnection.Host, Session.Cluster.Metadata.ControlConnection.Host.Address.ToString());
-                        Assert.IsTrue(Session.Cluster.Metadata.ControlConnection.Host.IsUp, $"{Session.Cluster.Metadata.ControlConnection.Host.Address.ToString()} not up");
+                        ClassicAssert.AreEqual(1, Session.Cluster.AllHosts().Count(h => !h.IsUp), Session.Cluster.AllHosts().Count(h => !h.IsUp));
+                        ClassicAssert.AreNotEqual(oldCcHost, Session.Cluster.Metadata.ControlConnection.Host, Session.Cluster.Metadata.ControlConnection.Host.Address.ToString());
+                        Assert.That(Session.Cluster.Metadata.ControlConnection.Host.IsUp, Is.True, $"{Session.Cluster.Metadata.ControlConnection.Host.Address.ToString()} not up");
                     },
                     200,
                     100);
@@ -78,9 +79,9 @@ namespace Cassandra.IntegrationTests.Core
                 TestHelper.RetryAssert(
                     () =>
                     {
-                        Assert.AreEqual(2, Session.Cluster.AllHosts().Count(h => !h.IsUp), Session.Cluster.AllHosts().Count(h => !h.IsUp));
-                        Assert.AreNotEqual(oldCcHost, Session.Cluster.Metadata.ControlConnection.Host, Session.Cluster.Metadata.ControlConnection.Host.Address.ToString());
-                        Assert.IsTrue(Session.Cluster.Metadata.ControlConnection.Host.IsUp, $"{Session.Cluster.Metadata.ControlConnection.Host.Address.ToString()} not up");
+                        ClassicAssert.AreEqual(2, Session.Cluster.AllHosts().Count(h => !h.IsUp), Session.Cluster.AllHosts().Count(h => !h.IsUp));
+                        ClassicAssert.AreNotEqual(oldCcHost, Session.Cluster.Metadata.ControlConnection.Host, Session.Cluster.Metadata.ControlConnection.Host.Address.ToString());
+                        Assert.That(Session.Cluster.Metadata.ControlConnection.Host.IsUp, Is.True, $"{Session.Cluster.Metadata.ControlConnection.Host.Address.ToString()} not up");
                     },
                     200,
                     100);
@@ -88,10 +89,10 @@ namespace Cassandra.IntegrationTests.Core
                 var afterPeersV2Queries = TestCluster.GetQueries("SELECT * FROM system.peers_v2");
                 var afterPeersQueries = TestCluster.GetQueries("SELECT * FROM system.peers");
 
-                Assert.AreEqual(peersV2Queries.Count, afterPeersV2Queries.Count);
-                Assert.GreaterOrEqual(afterPeersQueries.Count, peersQueries.Count + 2);
+                Assert.That(peersV2Queries.Count, Is.EqualTo(afterPeersV2Queries.Count));
+                Assert.That(afterPeersQueries.Count, Is.GreaterThanOrEqualTo(peersQueries.Count + 2));
                 //sometimes CC is able to reconnect after simulacron closes connection for a brief period so let's allow 1 additional queries per stopped node
-                Assert.LessOrEqual(afterPeersQueries.Count, peersQueries.Count + 4);
+                Assert.That(afterPeersQueries.Count, Is.LessThanOrEqualTo(peersQueries.Count + 4));
 
             }
             catch (Exception ex)
@@ -158,8 +159,8 @@ namespace Cassandra.IntegrationTests.Core
                 }
 
                 await Task.WhenAll(actionsBefore.ToArray()).ConfigureAwait(false);
-                Assert.True(actionsBefore.All(a => a.IsCompleted));
-                Assert.False(actionsBefore.Any(a => a.IsFaulted)); ;
+                Assert.That(actionsBefore.All(a => a.IsCompleted), Is.True);
+                Assert.That(actionsBefore.Any(a => a.IsFaulted), Is.False);
 
                 for (var i = 0; i < 200; i++)
                 {
@@ -167,8 +168,8 @@ namespace Cassandra.IntegrationTests.Core
                 }
 
                 await Task.WhenAll(actionsAfter.ToArray()).ConfigureAwait(false);
-                Assert.True(actionsAfter.All(a => a.IsCompleted));
-                Assert.False(actionsAfter.Any(a => a.IsFaulted));
+                Assert.That(actionsAfter.All(a => a.IsCompleted), Is.True);
+                Assert.That(actionsAfter.Any(a => a.IsFaulted), Is.False);
             }
         }
 
@@ -212,13 +213,13 @@ namespace Cassandra.IntegrationTests.Core
                 try
                 {
                     cluster.Connect("system");
-                    Assert.IsTrue(
-                        cluster.AllHosts().Any(h => addressList.Contains(h.Address.Address)),
+                    Assert.That(
+                        cluster.AllHosts().Any(h => addressList.Contains(h.Address.Address)), Is.True,
                         string.Join(";", cluster.AllHosts().Select(h => h.Address.ToString())) + " | " + TestCluster.InitialContactPoint.Address);
                 }
                 catch (NoHostAvailableException ex)
                 {
-                    Assert.IsTrue(ex.Errors.Keys.Select(k => k.Address).OrderBy(a => a.ToString()).SequenceEqual(addressList.OrderBy(a => a.ToString())));
+                    Assert.That(ex.Errors.Keys.Select(k => k.Address).OrderBy(a => a.ToString()).SequenceEqual(addressList.OrderBy(a => a.ToString())), Is.True);
                 }
             }
         }
@@ -243,12 +244,12 @@ namespace Cassandra.IntegrationTests.Core
                              .SetMetadataAbortTimeout(500)),
                 out var ex))
             {
-                Assert.AreEqual(typeof(TimeoutException), ex.GetType());
-                Assert.AreEqual(timeoutMessage, ex.Message);
+                Assert.That(typeof(TimeoutException), Is.EqualTo(ex.GetType()));
+                Assert.That(timeoutMessage, Is.EqualTo(ex.Message));
                 var ex2 = Assert.Throws<InitFatalErrorException>(() => cluster.Connect("sample_ks"));
-                Assert.AreEqual(cachedError, ex2.Message);
-                Assert.AreEqual(typeof(TimeoutException), ex2.InnerException.GetType());
-                Assert.AreEqual(timeoutMessage, ex2.InnerException.Message);
+                Assert.That(cachedError, Is.EqualTo(ex2.Message));
+                Assert.That(typeof(TimeoutException), Is.EqualTo(ex2.InnerException.GetType()));
+                Assert.That(timeoutMessage, Is.EqualTo(ex2.InnerException.Message));
             }
         }
 
@@ -264,12 +265,12 @@ namespace Cassandra.IntegrationTests.Core
                                .SetMetadataAbortTimeout(500)),
                 out var ex))
             {
-                Assert.AreEqual(typeof(TimeoutException), ex.GetType());
+                Assert.That(typeof(TimeoutException), Is.EqualTo(ex.GetType()));
                 TestHelper.RetryAssert(
                     () =>
                     {
                         var ex2 = Assert.Throws<InitFatalErrorException>(() => cluster.Connect("sample_ks"));
-                        Assert.AreEqual(typeof(NoHostAvailableException), ex2.InnerException.GetType());
+                        Assert.That(typeof(NoHostAvailableException), Is.EqualTo(ex2.InnerException.GetType()));
                     },
                     1000,
                     30);
@@ -286,7 +287,7 @@ namespace Cassandra.IntegrationTests.Core
             {
                 var ex = Assert.Throws<NoHostAvailableException>(() => cluster.Connect());
                 var ex2 = Assert.Throws<NoHostAvailableException>(() => cluster.Connect("sample_ks"));
-                Assert.AreNotSame(ex, ex2);
+                Assert.That(ex, Is.Not.SameAs(ex2));
             }
         }
 

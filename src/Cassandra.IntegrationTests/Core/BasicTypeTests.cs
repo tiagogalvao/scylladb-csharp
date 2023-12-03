@@ -179,7 +179,7 @@ namespace Cassandra.IntegrationTests.Core
             var row = Session.Execute("SELECT * FROM decimal_neg_scale").First();
             var decValue = row.GetValue<decimal>("value");
             
-            Assert.AreEqual(50, decValue);
+            Assert.That(50, Is.EqualTo(decValue));
         }
 
         ////////////////////////////////////
@@ -272,7 +272,7 @@ namespace Cassandra.IntegrationTests.Core
 
             var logs = TestCluster.GetQueries(null, QueryType.Query).Where(l => l.Query.StartsWith("UPDATE")).ToList();
 
-            Assert.AreEqual(100, logs.Count);
+            Assert.That(100, Is.EqualTo(logs.Count));
             foreach (var i in Enumerable.Range(0, 100))
             {
                 var query = string.Format(@"UPDATE {0} SET incdec = incdec {2}  WHERE tweet_id = {1};", tableName,

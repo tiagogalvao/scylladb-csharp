@@ -55,7 +55,7 @@ namespace Cassandra.Tests.DataStax.Search
         {
             foreach (var value in DateRangeTests.Values)
             {
-                Assert.AreEqual(DateRange.Parse(value.Item1), value.Item3);
+                Assert.That(DateRange.Parse(value.Item1), Is.EqualTo(value.Item3));
             }
         }
 
@@ -84,7 +84,7 @@ namespace Cassandra.Tests.DataStax.Search
         {
             foreach (var value in DateRangeTests.Values)
             {
-                Assert.AreEqual(value.Item3.ToString(), value.Item2 ?? value.Item1);
+                Assert.That(value.Item3.ToString(), Is.EqualTo(value.Item2 ?? value.Item1));
             }
         }
 
@@ -93,8 +93,8 @@ namespace Cassandra.Tests.DataStax.Search
         {
             var lowerBound = new DateRangeBound(DateTimeOffset.UtcNow, DateRangePrecision.Second);
             var value = new DateRange(lowerBound);
-            Assert.AreEqual(null, value.UpperBound);
-            Assert.AreEqual(lowerBound, value.LowerBound);
+            Assert.That(null, Is.EqualTo(value.UpperBound));
+            Assert.That(lowerBound, Is.EqualTo(value.LowerBound));
         }
 
         [Test]
@@ -115,9 +115,9 @@ namespace Cassandra.Tests.DataStax.Search
             {
                 foreach (var other in valuesToCompare)
                 {
-                    Assert.AreEqual(
+                    Assert.That(
                         Math.Sign(value.Item2.CompareTo(other.Item2)), 
-                        Math.Sign(DateRange.Parse(value.Item1).CompareTo(DateRange.Parse(other.Item1))),
+                        Is.EqualTo(Math.Sign(DateRange.Parse(value.Item1).CompareTo(DateRange.Parse(other.Item1)))),
                         "Comparison failed for {0} vs {1}", value.Item1, other.Item1);
                 }
             }

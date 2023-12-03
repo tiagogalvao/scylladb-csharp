@@ -42,12 +42,12 @@ namespace Cassandra.IntegrationTests.Core
                 session.Execute(batchStatement);
                 var timestamp = generator.Next();
                 var executed = simulacronCluster.GetQueries(null, QueryType.Batch);
-                Assert.IsNotEmpty(executed);
+                Assert.That(executed, Is.Not.Empty);
                 var executedArray = executed.ToArray();
-                Assert.AreEqual(1, executedArray.Length);
+                Assert.That(1, Is.EqualTo(executedArray.Length));
                 var log = executedArray[0];
                 var logtimestamp = log.ClientTimestamp;
-                Assert.AreEqual(timestamp, logtimestamp);
+                Assert.That(timestamp, Is.EqualTo(logtimestamp));
             }
         }
 
@@ -64,12 +64,12 @@ namespace Cassandra.IntegrationTests.Core
                 var batchStatement = new BatchStatement().Add(query);
                 session.Execute(batchStatement);
                 var executed = simulacronCluster.GetQueries(null, QueryType.Batch);
-                Assert.IsNotEmpty(executed);
+                Assert.That(executed, Is.Not.Empty);
                 var executedArray = executed.ToArray();
-                Assert.AreEqual(1, executedArray.Length);
+                Assert.That(1, Is.EqualTo(executedArray.Length));
                 var log = executedArray[0];
                 var logtimestamp = log.ClientTimestamp;
-                Assert.Greater(logtimestamp, oldTimestamp);
+                Assert.That(logtimestamp, Is.GreaterThan(oldTimestamp));
             }
         }
 

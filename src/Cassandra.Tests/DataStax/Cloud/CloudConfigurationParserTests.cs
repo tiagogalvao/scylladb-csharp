@@ -19,6 +19,7 @@ using System.IO;
 using System.Text;
 using Cassandra.DataStax.Cloud;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.DataStax.Cloud
 {
@@ -55,8 +56,8 @@ namespace Cassandra.Tests.DataStax.Cloud
             
             var config = target.ParseConfig(stream);
             
-            Assert.AreEqual(30443, config.Port);
-            Assert.AreEqual("ea20d9d5-f69e-46ad-8eb1-f32f33a7472e.us-east-1.dse.datastax.com", config.Host);
+            Assert.That(30443, Is.EqualTo(config.Port));
+            Assert.That("ea20d9d5-f69e-46ad-8eb1-f32f33a7472e.us-east-1.dse.datastax.com", Is.EqualTo(config.Host));
         }
         
         [Test]
@@ -73,8 +74,8 @@ namespace Cassandra.Tests.DataStax.Cloud
             
             var config = target.ParseConfig(stream);
             
-            Assert.AreEqual(30443, config.Port);
-            Assert.AreEqual("ea20d9d5-f69e-46ad-8eb1-f32f33a7472e.us-east-1.dse.datastax.com", config.Host);
+            Assert.That(30443, Is.EqualTo(config.Port));
+            Assert.That("ea20d9d5-f69e-46ad-8eb1-f32f33a7472e.us-east-1.dse.datastax.com", Is.EqualTo(config.Host));
         }
         
         [Test]
@@ -97,8 +98,8 @@ namespace Cassandra.Tests.DataStax.Cloud
             
             var config = target.ParseConfig(stream);
             
-            Assert.AreEqual(30443, config.Port);
-            Assert.AreEqual("ea20d9d5-f69e-46ad-8eb1-f32f33a7472e.us-east-1.dse.datastax.com", config.Host);
+            Assert.That(30443, Is.EqualTo(config.Port));
+            Assert.That("ea20d9d5-f69e-46ad-8eb1-f32f33a7472e.us-east-1.dse.datastax.com", Is.EqualTo(config.Host));
         }
         
         [Test]
@@ -120,7 +121,7 @@ namespace Cassandra.Tests.DataStax.Cloud
             
             var ex = Assert.Throws<ArgumentException>(() => target.ParseConfig(stream));
             
-            Assert.IsTrue(ex.Message.Contains("Could not parse the \"host\""), ex.Message);
+            ClassicAssert.IsTrue(ex.Message.Contains("Could not parse the \"host\""), ex.Message);
         }
         
         [Test]
@@ -142,7 +143,7 @@ namespace Cassandra.Tests.DataStax.Cloud
             
             var ex = Assert.Throws<ArgumentException>(() => target.ParseConfig(stream));
             
-            Assert.IsTrue(ex.Message.Contains("Could not parse the \"port\""), ex.Message);
+            ClassicAssert.IsTrue(ex.Message.Contains("Could not parse the \"port\""), ex.Message);
         }
         
         [Test]
@@ -154,7 +155,7 @@ namespace Cassandra.Tests.DataStax.Cloud
             
             var ex = Assert.Throws<ArgumentException>(() => target.ParseConfig(stream));
             
-            Assert.IsTrue(ex.Message.Contains("Config file is empty"), ex.Message);
+            ClassicAssert.IsTrue(ex.Message.Contains("Config file is empty"), ex.Message);
         }
         
         [Test]
@@ -166,7 +167,7 @@ namespace Cassandra.Tests.DataStax.Cloud
             
             var ex = Assert.Throws<ArgumentException>(() => target.ParseConfig(stream));
             
-            Assert.IsTrue(ex.Message.Contains("Could not parse"), ex.Message);
+            ClassicAssert.IsTrue(ex.Message.Contains("Could not parse"), ex.Message);
         }
     }
 }

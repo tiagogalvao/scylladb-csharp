@@ -126,8 +126,8 @@ namespace Cassandra.Tests.Mapping
             batch.Insert(testUsers[1]);
             batch.Insert(testUsers[2]);
             mapper.Execute(batch);
-            Assert.NotNull(statement);
-            Assert.AreEqual(BatchType.Unlogged, statement.BatchType);
+            Assert.That(statement, Is.Not.Null);
+            Assert.That(BatchType.Unlogged, Is.EqualTo(statement.BatchType));
         }
 
         [Test]
@@ -162,12 +162,12 @@ namespace Cassandra.Tests.Mapping
             batch.Delete<InsertUser>("WHERE userid = ?", deleteId);
             batch.Update<InsertUser>("SET name = ? WHERE userid = ?", "SomeNewName", updateId);
             var queries = batch.Statements.Select(cql => cql.Statement).ToArray();
-            Assert.AreEqual(3, queries.Length);
-            Assert.AreEqual("INSERT INTO users (Age, ChildrenAges, CreatedDate, FavoriteColor, HairColor, IsActive, " +
+            Assert.That(3, Is.EqualTo(queries.Length));
+            Assert.That("INSERT INTO users (Age, ChildrenAges, CreatedDate, FavoriteColor, HairColor, IsActive, " +
                             "LastLoginDate, LoginHistory, LuckyNumbers, Name, preferredcontactmethod, TypeOfUser, userid) VALUES " +
-                            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", queries[0]);
-            Assert.AreEqual("DELETE FROM users WHERE userid = ?", queries[1]);
-            Assert.AreEqual("UPDATE users SET name = ? WHERE userid = ?", queries[2]);
+                            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Is.EqualTo(queries[0]));
+            Assert.That("DELETE FROM users WHERE userid = ?", Is.EqualTo(queries[1]));
+            Assert.That("UPDATE users SET name = ? WHERE userid = ?", Is.EqualTo(queries[2]));
             mapper.Execute(batch);
         }
 
@@ -182,14 +182,14 @@ namespace Cassandra.Tests.Mapping
             //It should include null columns
             batch.Insert(new Song { Id = Guid.NewGuid() }, true);
             mapper.Execute(batch);
-            Assert.NotNull(statement);
-            Assert.AreEqual(BatchType.Logged, statement.BatchType);
+            Assert.That(statement, Is.Not.Null);
+            Assert.That(BatchType.Logged, Is.EqualTo(statement.BatchType));
             var queries = batch.Statements.Select(cql => cql.Statement).ToArray();
             var parameters = batch.Statements.Select(cql => cql.Arguments).ToArray();
-            Assert.AreEqual("INSERT INTO Song (Id, ReleaseDate) VALUES (?, ?)", queries[0]);
-            Assert.AreEqual(2, parameters[0].Length);
-            Assert.AreEqual("INSERT INTO Song (Artist, Id, ReleaseDate, Title) VALUES (?, ?, ?, ?)", queries[1]);
-            Assert.AreEqual(4, parameters[1].Length);
+            Assert.That("INSERT INTO Song (Id, ReleaseDate) VALUES (?, ?)", Is.EqualTo(queries[0]));
+            Assert.That(2, Is.EqualTo(parameters[0].Length));
+            Assert.That("INSERT INTO Song (Artist, Id, ReleaseDate, Title) VALUES (?, ?, ?, ?)", Is.EqualTo(queries[1]));
+            Assert.That(4, Is.EqualTo(parameters[1].Length));
         }
 
         [Test]
@@ -205,11 +205,11 @@ namespace Cassandra.Tests.Mapping
             mapper.Execute(batch
                 .WithOptions(o => o.SetConsistencyLevel(consistency))
                 .WithOptions(o => o.SetTimestamp(timestamp)));
-            Assert.NotNull(statement);
-            Assert.AreEqual(BatchType.Logged, statement.BatchType);
-            Assert.AreEqual(consistency, statement.ConsistencyLevel);
-            Assert.AreEqual(timestamp, statement.Timestamp);
-            Assert.AreEqual(2, batch.Statements.Count());
+            Assert.That(statement, Is.Not.Null);
+            Assert.That(BatchType.Logged, Is.EqualTo(statement.BatchType));
+            Assert.That(consistency, Is.EqualTo(statement.ConsistencyLevel));
+            Assert.That(timestamp, Is.EqualTo(statement.Timestamp));
+            Assert.That(2, Is.EqualTo(batch.Statements.Count()));
         }
 
         [Test]
@@ -223,15 +223,15 @@ namespace Cassandra.Tests.Mapping
             const int ttl = 3600;
             batch.Insert(new Song { Id = Guid.NewGuid() }, true, ttl);
             mapper.Execute(batch);
-            Assert.NotNull(statement);
-            Assert.AreEqual(BatchType.Logged, statement.BatchType);
+            Assert.That(statement, Is.Not.Null);
+            Assert.That(BatchType.Logged, Is.EqualTo(statement.BatchType));
             var queries = batch.Statements.Select(cql => cql.Statement).ToArray();
             var parameters = batch.Statements.Select(cql => cql.Arguments).ToArray();
-            Assert.AreEqual("INSERT INTO Song (Id, ReleaseDate) VALUES (?, ?)", queries[0]);
-            Assert.AreEqual(2, parameters[0].Length);
-            Assert.AreEqual("INSERT INTO Song (Artist, Id, ReleaseDate, Title) VALUES (?, ?, ?, ?) USING TTL ?", queries[1]);
-            Assert.AreEqual(5, parameters[1].Length);
-            Assert.AreEqual(ttl, parameters[1].Last());
+            Assert.That("INSERT INTO Song (Id, ReleaseDate) VALUES (?, ?)", Is.EqualTo(queries[0]));
+            Assert.That(2, Is.EqualTo(parameters[0].Length));
+            Assert.That("INSERT INTO Song (Artist, Id, ReleaseDate, Title) VALUES (?, ?, ?, ?) USING TTL ?", Is.EqualTo(queries[1]));
+            Assert.That(5, Is.EqualTo(parameters[1].Length));
+            Assert.That(ttl, Is.EqualTo(parameters[1].Last()));
         }
 
         [Test]
@@ -242,7 +242,7 @@ namespace Cassandra.Tests.Mapping
             batch.Update<PlainUser>(Cql.New("SET val1 = ? WHERE id = ? IF val2 = ?", "value1", "id1", "value2"));
             batch.Update<PlainUser>(Cql.New("SET val3 = ? WHERE id = ?", "value3", "id1"));
             var info = mapper.ExecuteConditional<PlainUser>(batch);
-            Assert.True(info.Applied);
+            Assert.That(info.Applied, Is.True);
         }
 
         [Test]
@@ -254,8 +254,8 @@ namespace Cassandra.Tests.Mapping
             batch.InsertIfNotExists(new PlainUser());
             batch.InsertIfNotExists(new PlainUser());
             var info = mapper.ExecuteConditional<PlainUser>(batch);
-            Assert.True(info.Applied);
-            Assert.Null(info.Existing);
+            Assert.That(info.Applied, Is.True);
+            Assert.That(info.Existing, Is.Null);
         }
 
         [Test]
@@ -268,10 +268,10 @@ namespace Cassandra.Tests.Mapping
             batch.Delete<PlainUser>(Cql.New("WHERE userid = ? IF laslogindate = ?", id, DateTimeOffset.Now));
             batch.Insert(new PlainUser());
             var info = mapper.ExecuteConditional<PlainUser>(batch);
-            Assert.False(info.Applied);
-            Assert.NotNull(info.Existing);
-            Assert.AreEqual(id, info.Existing.UserId);
-            Assert.AreEqual(DateTimeOffset.Parse("2015-03-01 +0"), info.Existing.LastLoginDate);
+            Assert.That(info.Applied, Is.False);
+            Assert.That(info.Existing, Is.Not.Null);
+            Assert.That(id, Is.EqualTo(info.Existing.UserId));
+            Assert.That(DateTimeOffset.Parse("2015-03-01 +0"), Is.EqualTo(info.Existing.LastLoginDate));
         }
 
         [Test]

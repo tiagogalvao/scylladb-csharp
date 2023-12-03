@@ -74,8 +74,8 @@ namespace Cassandra.IntegrationTests.DataStax.Search
                 Session.Execute(new SimpleStatement(insertQuery, id, value));
                 var rs = Session.Execute(new SimpleStatement(selectQuery, id));
                 var row = rs.First();
-                Assert.AreEqual(value, row.GetValue<DateRange>("c1"));
-                Assert.AreEqual(value.ToString(), row.GetValue<DateRange>("c1").ToString());
+                Assert.That(value, Is.EqualTo(row.GetValue<DateRange>("c1")));
+                Assert.That(value.ToString(), Is.EqualTo(row.GetValue<DateRange>("c1").ToString()));
             }
         }
 
@@ -111,7 +111,7 @@ namespace Cassandra.IntegrationTests.DataStax.Search
                 var row = rs.First();
                 var jsonString = row.GetValue<string>("[json]");
                 dynamic dynamicJsonObj = JsonConvert.DeserializeObject(jsonString);
-                Assert.AreEqual(value, DateRange.Parse(dynamicJsonObj.c1.ToString()));
+                Assert.That(value, DateRange.Parse(dynamicJsonObj.c1.ToString()));
             }
         }
 
@@ -139,10 +139,10 @@ namespace Cassandra.IntegrationTests.DataStax.Search
             Session.Execute(new SimpleStatement(insertQuery, id, udtRangeValue, udtRangeValue, tuple1, tuple2));
             var rs = Session.Execute(new SimpleStatement(selectQuery, id));
             var row = rs.First();
-            Assert.AreEqual(udtRangeValue, row.GetValue<UdtDataRange>("u"));
-            Assert.AreEqual(udtRangeValue, row.GetValue<UdtDataRange>("uf"));
-            Assert.AreEqual(tuple1, row.GetValue<Tuple<DateRange, int>>("t"));
-            Assert.AreEqual(tuple2, row.GetValue<Tuple<DateRange, int>>("tf"));
+            Assert.That(udtRangeValue, Is.EqualTo(row.GetValue<UdtDataRange>("u")));
+            Assert.That(udtRangeValue, Is.EqualTo(row.GetValue<UdtDataRange>("uf")));
+            Assert.That(tuple1, Is.EqualTo(row.GetValue<Tuple<DateRange, int>>("t")));
+            Assert.That(tuple2, Is.EqualTo(row.GetValue<Tuple<DateRange, int>>("tf")));
         }
 
         [Test]
@@ -165,11 +165,11 @@ namespace Cassandra.IntegrationTests.DataStax.Search
             Session.Execute(new SimpleStatement(insertQuery, id, list, set, map, mapReverse));
             var rs = Session.Execute(new SimpleStatement(selectQuery, id));
             var row = rs.First();
-            Assert.AreEqual(id, row.GetValue<Guid>("k"));
-            Assert.AreEqual(list, row.GetValue<List<DateRange>>("l"));
-            Assert.AreEqual(set, row.GetValue<HashSet<DateRange>>("s"));
-            Assert.AreEqual(map, row.GetValue<IDictionary<string, DateRange>>("m0"));
-            Assert.AreEqual(mapReverse, row.GetValue<IDictionary<DateRange, string>>("m1"));
+            Assert.That(id, Is.EqualTo(row.GetValue<Guid>("k")));
+            Assert.That(list, Is.EqualTo(row.GetValue<List<DateRange>>("l")));
+            Assert.That(set, Is.EqualTo(row.GetValue<HashSet<DateRange>>("s")));
+            Assert.That(map, Is.EqualTo(row.GetValue<IDictionary<string, DateRange>>("m0")));
+            Assert.That(mapReverse, Is.EqualTo(row.GetValue<IDictionary<DateRange, string>>("m1")));
         }
 
         [Test]
@@ -183,8 +183,8 @@ namespace Cassandra.IntegrationTests.DataStax.Search
             Session.Execute(new SimpleStatement(insertQuery, dtExpected, 1));
             var rs = Session.Execute(new SimpleStatement(selectQuery, dtExpected));
             var row = rs.First();
-            Assert.AreEqual(dtExpected, row.GetValue<DateRange>("k"));
-            Assert.AreEqual(1, row.GetValue<int>("v"));
+            Assert.That(dtExpected, Is.EqualTo(row.GetValue<DateRange>("k")));
+            Assert.That(1, Is.EqualTo(row.GetValue<int>("v")));
         }
 
         [Test]
@@ -203,8 +203,8 @@ namespace Cassandra.IntegrationTests.DataStax.Search
             Session.Execute(preparedStatement.Bind(id, dtExpected));
             var rs = Session.Execute(preparedSelectStatement.Bind(id));
             var row = rs.First();
-            Assert.AreEqual(id, row.GetValue<Guid>("pk"));
-            Assert.AreEqual(dtExpected, row.GetValue<DateRange>("c1"));
+            Assert.That(id, Is.EqualTo(row.GetValue<Guid>("pk")));
+            Assert.That(dtExpected, Is.EqualTo(row.GetValue<DateRange>("c1")));
         }
     }
 

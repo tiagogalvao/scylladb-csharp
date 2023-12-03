@@ -296,7 +296,7 @@ namespace Cassandra.IntegrationTests.Core
                     while (rowEnum.MoveNext())
                     {
                         var current = rowEnum.Current;
-                        Assert.AreEqual(objArr[y], current, $"Found difference between expected and actual row {objArr[y]} != {current}");
+                        Assert.That(objArr[y], Is.EqualTo(current), $"Found difference between expected and actual row {objArr[y]} != {current}");
                         y++;
                     }
                 }

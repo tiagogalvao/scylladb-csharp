@@ -17,6 +17,7 @@
 using System.Text;
 using Cassandra.DataStax.Auth;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.DataStax.Auth
 {
@@ -48,14 +49,14 @@ namespace Cassandra.Tests.DataStax.Auth
         public void Should_CreatePlainTextAuthProvider_When_WithCredentialsIsCalled()
         {
             var cluster = Cluster.Builder().AddContactPoint("127.0.0.1").WithCredentials("cassandra", "cassandra").Build();
-            Assert.AreEqual(typeof(PlainTextAuthProvider), cluster.Configuration.AuthProvider.GetType());
+            Assert.That(typeof(PlainTextAuthProvider), Is.EqualTo(cluster.Configuration.AuthProvider.GetType()));
         }
         
         [Test]
         public void Should_SetDsePlainTextAuthProvider_When_WithAuthProviderIsCalled()
         {
             var cluster = Cluster.Builder().AddContactPoint("127.0.0.1").WithAuthProvider(new DsePlainTextAuthProvider("cassandra", "cassandra")).Build();
-            Assert.AreEqual(typeof(DsePlainTextAuthProvider), cluster.Configuration.AuthProvider.GetType());
+            Assert.That(typeof(DsePlainTextAuthProvider), Is.EqualTo(cluster.Configuration.AuthProvider.GetType()));
         }
     }
 }

@@ -42,14 +42,14 @@ namespace Cassandra.IntegrationTests.Core
             var sessionWithoutName1 = cluster3.Connect();
             var sessionWithoutName2 = cluster3.Connect();
 
-            Assert.AreEqual("session-name", sessionWithName1.SessionName);
-            Assert.AreEqual("session-name1", sessionWithName2.SessionName);
+            Assert.That("session-name", Is.EqualTo(sessionWithName1.SessionName));
+            Assert.That("session-name1", Is.EqualTo(sessionWithName2.SessionName));
 
-            Assert.AreEqual("s", sessionWithSmallName1.SessionName);
-            Assert.AreEqual("s1", sessionWithSmallName2.SessionName);
+            Assert.That("s", Is.EqualTo(sessionWithSmallName1.SessionName));
+            Assert.That("s1", Is.EqualTo(sessionWithSmallName2.SessionName));
 
-            Assert.AreEqual("s0", sessionWithoutName1.SessionName);
-            Assert.AreEqual("s1", sessionWithoutName2.SessionName);
+            Assert.That("s0", Is.EqualTo(sessionWithoutName1.SessionName));
+            Assert.That("s1", Is.EqualTo(sessionWithoutName2.SessionName));
         }
     }
 }

@@ -27,6 +27,7 @@ using Cassandra.Tests;
 using Castle.Core;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -76,11 +77,10 @@ namespace Cassandra.IntegrationTests.Core
 
             requests = requests.Where(t => t.IsFaulted).ToList();
 
-            Assert.Greater(requests.Count, 1);
-
-            Assert.IsTrue(requests.All(
+            Assert.That(requests.Count, Is.GreaterThan(1));
+            Assert.That(requests.All(
                 t => ((NoHostAvailableException)t.Exception.InnerException)
-                        .Errors.Any(e => e.Value is OperationTimedOutException)));
+                        .Errors.Any(e => e.Value is OperationTimedOutException)), Is.True);
         }
 
         [TestCase(false)]
@@ -129,16 +129,16 @@ namespace Cassandra.IntegrationTests.Core
             TestHelper.RetryAssert(
                 () =>
                 {
-                    Assert.IsTrue(runningNodesConnections.All(c => c.InFlight == 0));
-                    Assert.IsTrue(runningNodesConnections.All(c => c.WriteQueueLength == 0));
-                    Assert.IsTrue(runningNodesConnections.All(c => c.PendingOperationsMapLength == 0));
+                    Assert.That(runningNodesConnections.All(c => c.InFlight == 0), Is.True);
+                    Assert.That(runningNodesConnections.All(c => c.WriteQueueLength == 0), Is.True);
+                    Assert.That(runningNodesConnections.All(c => c.PendingOperationsMapLength == 0), Is.True);
                 },
                 100,
                 100);
 
-            Assert.IsTrue(pausedNodeConnections.All(c => c.InFlight > 0));
-            Assert.IsTrue(pausedNodeConnections.All(c => c.WriteQueueLength > 0));
-            Assert.IsTrue(pausedNodeConnections.All(c => c.PendingOperationsMapLength > 0));
+            Assert.That(pausedNodeConnections.All(c => c.InFlight > 0), Is.True);
+            Assert.That(pausedNodeConnections.All(c => c.WriteQueueLength > 0), Is.True);
+            Assert.That(pausedNodeConnections.All(c => c.PendingOperationsMapLength > 0), Is.True);
         }
 
         [TestCase(false)]
@@ -193,20 +193,20 @@ namespace Cassandra.IntegrationTests.Core
                 TestHelper.RetryAssert(
                     () =>
                     {
-                        Assert.IsTrue(runningNodesConnections.All(c => c.InFlight == 0));
-                        Assert.IsTrue(runningNodesConnections.All(c => c.WriteQueueLength == 0));
-                        Assert.IsTrue(runningNodesConnections.All(c => c.PendingOperationsMapLength == 0));
+                        Assert.That(runningNodesConnections.All(c => c.InFlight == 0), Is.True);
+                        Assert.That(runningNodesConnections.All(c => c.WriteQueueLength == 0), Is.True);
+                        Assert.That(runningNodesConnections.All(c => c.PendingOperationsMapLength == 0), Is.True);
                     },
                     100,
                     100);
 
-                Assert.IsTrue(pausedNodeConnections.All(c => c.InFlight > 0));
-                Assert.IsTrue(pausedNodeConnections.All(c => c.WriteQueueLength > 0));
-                Assert.IsTrue(pausedNodeConnections.All(c => c.PendingOperationsMapLength > 0));
+                Assert.That(pausedNodeConnections.All(c => c.InFlight > 0), Is.True);
+                Assert.That(pausedNodeConnections.All(c => c.WriteQueueLength > 0), Is.True);
+                Assert.That(pausedNodeConnections.All(c => c.PendingOperationsMapLength > 0), Is.True);
 
                 var writeQueueLengths = pausedNodeConnections.Select(c => c.WriteQueueLength);
 
-                Assert.AreEqual(pausedNodeConnections.Sum(c => c.InFlight), requests.Count(t => !t.IsCompleted && !t.IsFaulted));
+                Assert.That(pausedNodeConnections.Sum(c => c.InFlight), Is.EqualTo(requests.Count(t => !t.IsCompleted && !t.IsFaulted)));
 
                 // these should succeed because we are not hitting the paused node with the custom profile
                 var moreRequests =
@@ -217,14 +217,14 @@ namespace Cassandra.IntegrationTests.Core
                               .ToList();
 
                 await Task.WhenAll(moreRequests).ConfigureAwait(false);
-                Assert.IsTrue(moreRequests.All(t => t.IsCompleted && !t.IsFaulted && !t.IsCanceled));
+                Assert.That(moreRequests.All(t => t.IsCompleted && !t.IsFaulted && !t.IsCanceled), Is.True);
                 CollectionAssert.AreEqual(writeQueueLengths, pausedNodeConnections.Select(c => c.WriteQueueLength));
             }
             finally
             {
                 await TestCluster.ResumeReadsAsync().ConfigureAwait(false);
                 await (await Task.WhenAny(Task.WhenAll(requests), Task.Delay(5000)).ConfigureAwait(false)).ConfigureAwait(false);
-                Assert.IsTrue(requests.All(t => t.IsCompleted && !t.IsFaulted && !t.IsCanceled));
+                Assert.That(requests.All(t => t.IsCompleted && !t.IsFaulted && !t.IsCanceled), Is.True);
             }
         }
 
@@ -272,7 +272,7 @@ namespace Cassandra.IntegrationTests.Core
                 await task.ConfigureAwait(false);
             }
 
-            Assert.IsTrue(connections.All(c => c.WriteQueueLength > 0));
+            Assert.That(connections.All(c => c.WriteQueueLength > 0), Is.True);
             var writeQueueSizes = connections.ToDictionary(c => c, c => c.WriteQueueLength, ReferenceEqualityComparer<IConnection>.Instance);
             var pendingOps = connections.ToDictionary(c => c, c => c.PendingOperationsMapLength, ReferenceEqualityComparer<IConnection>.Instance);
 
@@ -293,13 +293,13 @@ namespace Cassandra.IntegrationTests.Core
                     // ignored
                 }
                 var moreFailedRequests = moreRequests.Where(t => t.IsFaulted).ToList();
-                Assert.Greater(moreFailedRequests.Count, 1);
-                Assert.AreEqual(moreRequests.Count, moreFailedRequests.Count);
+                Assert.That(moreFailedRequests.Count, Is.GreaterThan(1));
+                Assert.That(moreRequests.Count, Is.EqualTo(moreFailedRequests.Count));
                 
-                Assert.GreaterOrEqual(connections.Sum(c => c.InFlight), maxRequestsPerConnection * Session.Cluster.AllHosts().Count);
+                Assert.That(connections.Sum(c => c.InFlight), Is.GreaterThanOrEqualTo(maxRequestsPerConnection * Session.Cluster.AllHosts().Count));
                 
                 // ReSharper disable once PossibleNullReferenceException
-                Assert.IsTrue(moreFailedRequests.All(t => t.IsFaulted && ((NoHostAvailableException)t.Exception.InnerException).Errors.All(e => e.Value is BusyPoolException)));
+                Assert.That(moreFailedRequests.All(t => t.IsFaulted && ((NoHostAvailableException)t.Exception.InnerException).Errors.All(e => e.Value is BusyPoolException)), Is.True);
                 var newWriteQueueSizes =
                     connections.ToDictionary(c => c, c => c.WriteQueueLength, ReferenceEqualityComparer<IConnection>.Instance);
                 var newPendingsOps =
@@ -307,14 +307,14 @@ namespace Cassandra.IntegrationTests.Core
 
                 foreach (var kvp in writeQueueSizes)
                 {
-                    Assert.GreaterOrEqual(newWriteQueueSizes[kvp.Key], kvp.Value);
-                    Assert.Greater(newWriteQueueSizes[kvp.Key], 1);
+                    Assert.That(newWriteQueueSizes[kvp.Key], Is.GreaterThanOrEqualTo(kvp.Value));
+                    Assert.That(newWriteQueueSizes[kvp.Key], Is.GreaterThan(1));
                 }
                 
                 foreach (var kvp in pendingOps)
                 {
-                    Assert.AreEqual(newPendingsOps[kvp.Key], kvp.Value);
-                    Assert.Greater(newPendingsOps[kvp.Key], 1);
+                    Assert.That(newPendingsOps[kvp.Key], Is.EqualTo(kvp.Value));
+                    Assert.That(newPendingsOps[kvp.Key], Is.GreaterThan(1));
                 }
             }
             finally
@@ -328,12 +328,12 @@ namespace Cassandra.IntegrationTests.Core
                 {
                 }
 
-                Assert.AreEqual(
-                    requests.Count, 
-                    requests.Count(t => t.IsCompleted && !t.IsFaulted && !t.IsCanceled) 
-                    + requests.Count(t => t.IsFaulted && 
-                                          ((NoHostAvailableException)t.Exception.InnerException)
-                                          .Errors.All(e => e.Value is BusyPoolException)));
+                Assert.That(
+                    requests.Count, Is.EqualTo(requests.Count(t => t.IsCompleted && !t.IsFaulted && !t.IsCanceled) 
+                                               + requests.Count(t => t.IsFaulted && 
+                                                                     ((NoHostAvailableException)t.Exception.InnerException)
+                                                                     .Errors.All(e => e.Value is BusyPoolException)))
+                    );
             }
         }
 
@@ -351,11 +351,11 @@ namespace Cassandra.IntegrationTests.Core
                         var tempLastValue = lastWriteQueueValue;
                         lastWriteQueueValue = currentValue;
 
-                        Assert.AreEqual(tempLastValue, currentValue);
+                        Assert.That(tempLastValue, Is.EqualTo(currentValue));
 
                         if (maxPerConnection.HasValue)
                         {
-                            Assert.GreaterOrEqual(connection.InFlight, maxPerConnection);
+                            Assert.That(connection.InFlight, Is.GreaterThanOrEqualTo(maxPerConnection));
                         }
 
                         return TaskHelper.Completed;

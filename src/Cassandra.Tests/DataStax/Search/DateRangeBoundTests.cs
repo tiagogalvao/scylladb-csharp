@@ -38,7 +38,7 @@ namespace Cassandra.Tests.DataStax.Search
             foreach (var boundaryString in arr)
             {
                 var value = DateRangeBound.Parse(boundaryString);
-                Assert.AreEqual(boundaryString, value.ToString());
+                Assert.That(boundaryString, Is.EqualTo(value.ToString()));
             }
         }
 
@@ -57,7 +57,7 @@ namespace Cassandra.Tests.DataStax.Search
         public void Constructor_Uses_Utc_Timestamp()
         {
             var d1 = new DateTimeOffset(1999, 12, 31, 23, 59, 59, TimeSpan.FromHours(3));
-            Assert.AreEqual(new DateRangeBound(d1, DateRangePrecision.Millisecond).ToString(), "1999-12-31T20:59:59.000Z");
+            Assert.That(new DateRangeBound(d1, DateRangePrecision.Millisecond).ToString(), Is.EqualTo("1999-12-31T20:59:59.000Z"));
         }
 
         [Test]
@@ -65,12 +65,12 @@ namespace Cassandra.Tests.DataStax.Search
         {
             var d1 = new DateTimeOffset(1999, 12, 31, 23, 59, 59, TimeSpan.FromHours(0));
             var boundary1 = new DateRangeBound(d1, DateRangePrecision.Millisecond);
-            Assert.True(boundary1 == new DateRangeBound(d1, DateRangePrecision.Millisecond));
-            Assert.True(boundary1.Equals(new DateRangeBound(d1, DateRangePrecision.Millisecond)));
-            Assert.False(boundary1 == new DateRangeBound(d1, DateRangePrecision.Second));
-            Assert.True(boundary1 != new DateRangeBound(d1, DateRangePrecision.Second));
-            Assert.False(boundary1.Equals(new DateRangeBound(d1, DateRangePrecision.Second)));
-            Assert.False(boundary1.Equals(null));
+            Assert.That(boundary1 == new DateRangeBound(d1, DateRangePrecision.Millisecond), Is.True);
+            Assert.That(boundary1.Equals(new DateRangeBound(d1, DateRangePrecision.Millisecond)), Is.True);
+            Assert.That(boundary1 == new DateRangeBound(d1, DateRangePrecision.Second), Is.False);
+            Assert.That(boundary1 != new DateRangeBound(d1, DateRangePrecision.Second), Is.True);
+            Assert.That(boundary1.Equals(new DateRangeBound(d1, DateRangePrecision.Second)), Is.False);
+            Assert.That(boundary1.Equals(null), Is.False);
         }
     }
 }

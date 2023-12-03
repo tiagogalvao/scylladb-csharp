@@ -47,7 +47,7 @@ namespace Cassandra.Tests.DataStax.Cloud
             chain.ChainPolicy.ExtraStore.Add(ca);
             chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
             chain.Build(cert);
-            Assert.True(new CustomCaCertificateValidator(ca, "localhost").Validate(cert, chain, SslPolicyErrors.RemoteCertificateChainErrors | SslPolicyErrors.RemoteCertificateNameMismatch));
+            Assert.That(new CustomCaCertificateValidator(ca, "localhost").Validate(cert, chain, SslPolicyErrors.RemoteCertificateChainErrors | SslPolicyErrors.RemoteCertificateNameMismatch), Is.True);
         }
 
         /// <summary>
@@ -92,8 +92,8 @@ namespace Cassandra.Tests.DataStax.Cloud
             var chain = new X509Chain();
             chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
             chain.Build(cert);
-            Assert.AreEqual("*.db.astra.datastax.com", cert.GetNameInfo(X509NameType.SimpleName, false));
-            Assert.True(new CustomCaCertificateValidator(ca, "3bdf7865-b9af-43d3-b76c-9ed0b57b2c2f-us-east-1.db.astra.datastax.com").Validate(cert, chain, SslPolicyErrors.RemoteCertificateChainErrors | SslPolicyErrors.RemoteCertificateNameMismatch));
+            Assert.That("*.db.astra.datastax.com", Is.EqualTo(cert.GetNameInfo(X509NameType.SimpleName, false)));
+            Assert.That(new CustomCaCertificateValidator(ca, "3bdf7865-b9af-43d3-b76c-9ed0b57b2c2f-us-east-1.db.astra.datastax.com").Validate(cert, chain, SslPolicyErrors.RemoteCertificateChainErrors | SslPolicyErrors.RemoteCertificateNameMismatch), Is.True);
         }
 
         /// <summary>
@@ -109,8 +109,8 @@ namespace Cassandra.Tests.DataStax.Cloud
             var chain = new X509Chain();
             chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
             chain.Build(cert);
-            Assert.AreEqual("*.example.com", cert.GetNameInfo(X509NameType.SimpleName, false));
-            Assert.True(new CustomCaCertificateValidator(cert, "test123.example.com").Validate(cert, chain, SslPolicyErrors.RemoteCertificateChainErrors | SslPolicyErrors.RemoteCertificateNameMismatch));
+            Assert.That("*.example.com", Is.EqualTo(cert.GetNameInfo(X509NameType.SimpleName, false)));
+            Assert.That(new CustomCaCertificateValidator(cert, "test123.example.com").Validate(cert, chain, SslPolicyErrors.RemoteCertificateChainErrors | SslPolicyErrors.RemoteCertificateNameMismatch), Is.True);
         }
 
         /// <summary>
@@ -126,8 +126,8 @@ namespace Cassandra.Tests.DataStax.Cloud
             var chain = new X509Chain();
             chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
             chain.Build(cert);
-            Assert.AreEqual("*.example.com", cert.GetNameInfo(X509NameType.SimpleName, false));
-            Assert.True(new CustomCaCertificateValidator(cert, "test123.customdomain.com").Validate(cert, chain, SslPolicyErrors.RemoteCertificateChainErrors | SslPolicyErrors.RemoteCertificateNameMismatch));
+            Assert.That("*.example.com", Is.EqualTo(cert.GetNameInfo(X509NameType.SimpleName, false)));
+            Assert.That(new CustomCaCertificateValidator(cert, "test123.customdomain.com").Validate(cert, chain, SslPolicyErrors.RemoteCertificateChainErrors | SslPolicyErrors.RemoteCertificateNameMismatch), Is.True);
         }
 
         /// <summary>
@@ -144,8 +144,8 @@ namespace Cassandra.Tests.DataStax.Cloud
             var chain = new X509Chain();
             chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
             chain.Build(cert);
-            Assert.AreEqual("*.example.com", cert.GetNameInfo(X509NameType.SimpleName, false));
-            Assert.True(new CustomCaCertificateValidator(cert, "test123.example.com").Validate(cert, chain, SslPolicyErrors.RemoteCertificateChainErrors | SslPolicyErrors.RemoteCertificateNameMismatch));
+            Assert.That("*.example.com", Is.EqualTo(cert.GetNameInfo(X509NameType.SimpleName, false)));
+            Assert.That(new CustomCaCertificateValidator(cert, "test123.example.com").Validate(cert, chain, SslPolicyErrors.RemoteCertificateChainErrors | SslPolicyErrors.RemoteCertificateNameMismatch), Is.True);
         }
 
         /// <summary>
@@ -162,8 +162,8 @@ namespace Cassandra.Tests.DataStax.Cloud
             var chain = new X509Chain();
             chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
             chain.Build(cert);
-            Assert.AreEqual("*.example.com", cert.GetNameInfo(X509NameType.SimpleName, false));
-            Assert.False(new CustomCaCertificateValidator(cert, "test123.customdomain.com").Validate(cert, chain, SslPolicyErrors.RemoteCertificateChainErrors | SslPolicyErrors.RemoteCertificateNameMismatch));
+            Assert.That("*.example.com", Is.EqualTo(cert.GetNameInfo(X509NameType.SimpleName, false)));
+            Assert.That(new CustomCaCertificateValidator(cert, "test123.customdomain.com").Validate(cert, chain, SslPolicyErrors.RemoteCertificateChainErrors | SslPolicyErrors.RemoteCertificateNameMismatch), Is.False);
         }
     }
 }

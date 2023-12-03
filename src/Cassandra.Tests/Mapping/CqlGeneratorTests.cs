@@ -21,6 +21,7 @@ using Cassandra.Mapping.Statements;
 using Cassandra.Mapping.Utils;
 using Cassandra.Tests.Mapping.Pocos;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.Mapping
 {
@@ -34,7 +35,7 @@ namespace Cassandra.Tests.Mapping
             var pocoFactory = new PocoDataFactory(types);
             var cqlGenerator = new CqlGenerator(pocoFactory);
             var cql = cqlGenerator.GenerateUpdate<ExplicitColumnsUser>();
-            Assert.AreEqual("UPDATE users SET AGE = ?, Name = ? WHERE UserId = ?", cql);
+            Assert.That("UPDATE users SET AGE = ?, Name = ? WHERE UserId = ?", Is.EqualTo(cql));
         }
 
         [Test]
@@ -49,7 +50,7 @@ namespace Cassandra.Tests.Mapping
             var pocoFactory = new PocoDataFactory(types);
             var cqlGenerator = new CqlGenerator(pocoFactory);
             var cql = cqlGenerator.GenerateUpdate<ExplicitColumnsUser>();
-            Assert.AreEqual(@"UPDATE ""users"" SET ""AGE"" = ?, ""Name"" = ? WHERE ""UserId"" = ?", cql);
+            Assert.That(@"UPDATE ""users"" SET ""AGE"" = ?, ""Name"" = ? WHERE ""UserId"" = ?", Is.EqualTo(cql));
         }
 
         [Test]
@@ -64,7 +65,7 @@ namespace Cassandra.Tests.Mapping
             var pocoFactory = new PocoDataFactory(types);
             var cqlGenerator = new CqlGenerator(pocoFactory);
             var cql = cqlGenerator.GenerateUpdate<ExplicitColumnsUser>();
-            Assert.AreEqual("UPDATE keyspace1.users SET AGE = ?, Name = ? WHERE UserId = ?", cql);
+            Assert.That("UPDATE keyspace1.users SET AGE = ?, Name = ? WHERE UserId = ?", Is.EqualTo(cql));
         }
 
         [Test]
@@ -76,7 +77,7 @@ namespace Cassandra.Tests.Mapping
             var cqlGenerator = new CqlGenerator(pocoFactory);
             var cql = Cql.New("SET Name = ? WHERE UserId = ?", "New name", Guid.Empty);
             cqlGenerator.PrependUpdate<ExplicitColumnsUser>(cql);
-            Assert.AreEqual("UPDATE users SET Name = ? WHERE UserId = ?", cql.Statement);
+            Assert.That("UPDATE users SET Name = ? WHERE UserId = ?", Is.EqualTo(cql.Statement));
         }
 
         [Test]
@@ -91,7 +92,7 @@ namespace Cassandra.Tests.Mapping
             var cqlGenerator = new CqlGenerator(pocoFactory);
             var cql = Cql.New("SET Name = ? WHERE UserId = ?", "New name", Guid.Empty);
             cqlGenerator.PrependUpdate<ExplicitColumnsUser>(cql);
-            Assert.AreEqual("UPDATE keyspace1.users SET Name = ? WHERE UserId = ?", cql.Statement);
+            Assert.That("UPDATE keyspace1.users SET Name = ? WHERE UserId = ?", Is.EqualTo(cql.Statement));
         }
 
         [Test]
@@ -106,7 +107,7 @@ namespace Cassandra.Tests.Mapping
             var cqlGenerator = new CqlGenerator(pocoFactory);
             var cql = Cql.New(@"SET ""Name"" = ? WHERE ""UserId"" = ?", "New name", Guid.Empty);
             cqlGenerator.PrependUpdate<ExplicitColumnsUser>(cql);
-            Assert.AreEqual(@"UPDATE ""users"" SET ""Name"" = ? WHERE ""UserId"" = ?", cql.Statement);
+            Assert.That(@"UPDATE ""users"" SET ""Name"" = ? WHERE ""UserId"" = ?", Is.EqualTo(cql.Statement));
         }
 
         [Test]
@@ -118,7 +119,7 @@ namespace Cassandra.Tests.Mapping
             var cqlGenerator = new CqlGenerator(pocoFactory);
             var cql = Cql.New("WHERE UserId = ?", Guid.Empty);
             cqlGenerator.AddSelect<ExplicitColumnsUser>(cql);
-            Assert.AreEqual("SELECT AGE, Name, UserId FROM users WHERE UserId = ?", cql.Statement);
+            Assert.That("SELECT AGE, Name, UserId FROM users WHERE UserId = ?", Is.EqualTo(cql.Statement));
         }
 
         [Test]
@@ -133,7 +134,7 @@ namespace Cassandra.Tests.Mapping
             var cqlGenerator = new CqlGenerator(pocoFactory);
             var cql = Cql.New("WHERE UserId = ?", Guid.Empty);
             cqlGenerator.AddSelect<ExplicitColumnsUser>(cql);
-            Assert.AreEqual("SELECT AGE, Name, UserId FROM keyspace1.users WHERE UserId = ?", cql.Statement);
+            Assert.That("SELECT AGE, Name, UserId FROM keyspace1.users WHERE UserId = ?", Is.EqualTo(cql.Statement));
         }
 
         [Test]
@@ -149,7 +150,7 @@ namespace Cassandra.Tests.Mapping
             var cqlGenerator = new CqlGenerator(pocoFactory);
             var cql = Cql.New(@"WHERE ""UserId"" = ?", Guid.Empty);
             cqlGenerator.AddSelect<ExplicitColumnsUser>(cql);
-            Assert.AreEqual(@"SELECT ""AGE"", ""Name"", ""UserId"" FROM ""users"" WHERE ""UserId"" = ?", cql.Statement);
+            Assert.That(@"SELECT ""AGE"", ""Name"", ""UserId"" FROM ""users"" WHERE ""UserId"" = ?", Is.EqualTo(cql.Statement));
         }
 
         [Test]
@@ -160,7 +161,7 @@ namespace Cassandra.Tests.Mapping
             var pocoFactory = new PocoDataFactory(types);
             var cqlGenerator = new CqlGenerator(pocoFactory);
             var cql = cqlGenerator.GenerateDelete<ExplicitColumnsUser>();
-            Assert.AreEqual("DELETE FROM USERS WHERE UserId = ?", cql);
+            Assert.That("DELETE FROM USERS WHERE UserId = ?", Is.EqualTo(cql));
         }
 
         [Test]
@@ -174,7 +175,7 @@ namespace Cassandra.Tests.Mapping
             var pocoFactory = new PocoDataFactory(types);
             var cqlGenerator = new CqlGenerator(pocoFactory);
             var cql = cqlGenerator.GenerateDelete<ExplicitColumnsUser>();
-            Assert.AreEqual("DELETE FROM keyspace1.USERS WHERE UserId = ?", cql);
+            Assert.That("DELETE FROM keyspace1.USERS WHERE UserId = ?", Is.EqualTo(cql));
         }
 
         [Test]
@@ -189,7 +190,7 @@ namespace Cassandra.Tests.Mapping
             var pocoFactory = new PocoDataFactory(types);
             var cqlGenerator = new CqlGenerator(pocoFactory);
             var cql = cqlGenerator.GenerateDelete<ExplicitColumnsUser>();
-            Assert.AreEqual(@"DELETE FROM ""USERS"" WHERE ""ID"" = ?", cql);
+            Assert.That(@"DELETE FROM ""USERS"" WHERE ""ID"" = ?", Is.EqualTo(cql));
         }
 
         [Test]
@@ -203,7 +204,7 @@ namespace Cassandra.Tests.Mapping
             var pocoFactory = new PocoDataFactory(types);
             var cqlGenerator = new CqlGenerator(pocoFactory);
             var cql = cqlGenerator.GenerateInsert<ExplicitColumnsUser>(true, Array.Empty<object>(), out object[] queryParameters);
-            Assert.AreEqual(@"INSERT INTO USERS (ID, Name, UserAge) VALUES (?, ?, ?)", cql);
+            Assert.That(@"INSERT INTO USERS (ID, Name, UserAge) VALUES (?, ?, ?)", Is.EqualTo(cql));
         }
 
         [Test]
@@ -218,7 +219,7 @@ namespace Cassandra.Tests.Mapping
             var pocoFactory = new PocoDataFactory(types);
             var cqlGenerator = new CqlGenerator(pocoFactory);
             var cql = cqlGenerator.GenerateInsert<ExplicitColumnsUser>(true, Array.Empty<object>(), out object[] queryParameters);
-            Assert.AreEqual(@"INSERT INTO keyspace1.USERS (ID, Name, UserAge) VALUES (?, ?, ?)", cql);
+            Assert.That(@"INSERT INTO keyspace1.USERS (ID, Name, UserAge) VALUES (?, ?, ?)", Is.EqualTo(cql));
         }
 
         [Test]
@@ -233,11 +234,11 @@ namespace Cassandra.Tests.Mapping
             var cqlGenerator = new CqlGenerator(pocoFactory);
             var values = new object[] {Guid.NewGuid(), null, 100};
             var cql = cqlGenerator.GenerateInsert<ExplicitColumnsUser>(false, values, out object[] queryParameters);
-            Assert.AreEqual(@"INSERT INTO USERS (ID, UserAge) VALUES (?, ?)", cql);
+            Assert.That(@"INSERT INTO USERS (ID, UserAge) VALUES (?, ?)", Is.EqualTo(cql));
             CollectionAssert.AreEqual(values.Where(v => v != null), queryParameters);
             
             cql = cqlGenerator.GenerateInsert<ExplicitColumnsUser>(false, values, out queryParameters, true);
-            Assert.AreEqual(@"INSERT INTO USERS (ID, UserAge) VALUES (?, ?) IF NOT EXISTS", cql);
+            Assert.That(@"INSERT INTO USERS (ID, UserAge) VALUES (?, ?) IF NOT EXISTS", Is.EqualTo(cql));
             CollectionAssert.AreEqual(values.Where(v => v != null), queryParameters);
         }
 
@@ -253,11 +254,11 @@ namespace Cassandra.Tests.Mapping
             var cqlGenerator = new CqlGenerator(pocoFactory);
             var values = new object[] { null, "name", 100 };
             var cql = cqlGenerator.GenerateInsert<ExplicitColumnsUser>(false, values, out object[] queryParameters);
-            Assert.AreEqual(@"INSERT INTO USERS (Name, UserAge) VALUES (?, ?)", cql);
+            Assert.That(@"INSERT INTO USERS (Name, UserAge) VALUES (?, ?)", Is.EqualTo(cql));
             CollectionAssert.AreEqual(values.Where(v => v != null), queryParameters);
 
             cql = cqlGenerator.GenerateInsert<ExplicitColumnsUser>(false, values, out queryParameters, true);
-            Assert.AreEqual(@"INSERT INTO USERS (Name, UserAge) VALUES (?, ?) IF NOT EXISTS", cql);
+            Assert.That(@"INSERT INTO USERS (Name, UserAge) VALUES (?, ?) IF NOT EXISTS", Is.EqualTo(cql));
             CollectionAssert.AreEqual(values.Where(v => v != null), queryParameters);
         }
 
@@ -300,7 +301,7 @@ namespace Cassandra.Tests.Mapping
             var pocoFactory = new PocoDataFactory(types);
             var cqlGenerator = new CqlGenerator(pocoFactory);
             var cql = cqlGenerator.GenerateInsert<ExplicitColumnsUser>(true, Array.Empty<object>(), out object[] queryParameters);
-            Assert.AreEqual(@"INSERT INTO ""USERS"" (""Name"", ""UserAge"", ""UserId"") VALUES (?, ?, ?)", cql);
+            Assert.That(@"INSERT INTO ""USERS"" (""Name"", ""UserAge"", ""UserId"") VALUES (?, ?, ?)", Is.EqualTo(cql));
         }
     }
 }

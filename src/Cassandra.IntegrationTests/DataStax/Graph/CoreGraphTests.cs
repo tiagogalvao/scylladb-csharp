@@ -35,6 +35,7 @@ using Cassandra.Tests;
 using Cassandra.Tests.TestHelpers;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.DataStax.Graph
 {
@@ -86,15 +87,15 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 var session = cluster.Connect();
                 var rs = session.ExecuteGraph(new SimpleGraphStatement("g.V().has('name', 'marko').out('knows')"));
                 var resultArray = rs.ToArray();
-                Assert.AreEqual(2, resultArray.Length);
+                Assert.That(2, Is.EqualTo(resultArray.Length));
                 foreach (Vertex v in resultArray)
                 {
-                    Assert.NotNull(v);
+                    Assert.That(v, Is.Not.Null);
                     FillVertexProperties(session, v);
-                    Assert.AreEqual("person", v.Label);
-                    Assert.True(v.Properties.ContainsKey("name"));
+                    Assert.That("person", Is.EqualTo(v.Label));
+                    Assert.That(v.Properties.ContainsKey("name"), Is.True);
                 }
-                Assert.NotNull(rs);
+                Assert.That(rs, Is.Not.Null);
             }
         }
 
@@ -109,15 +110,15 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 var session = cluster.Connect();
                 var rs = session.ExecuteGraph(new SimpleGraphStatement("g.E().hasLabel('created')"));
                 var resultArray = rs.To<IEdge>().ToArray();
-                Assert.AreEqual(4, resultArray.Length);
+                Assert.That(4, Is.EqualTo(resultArray.Length));
                 foreach (var edge in resultArray)
                 {
-                    Assert.NotNull(edge);
+                    Assert.That(edge, Is.Not.Null);
                     FillEdgeProperties(session, edge);
-                    Assert.AreEqual("created", edge.Label);
-                    Assert.NotNull(edge.GetProperty("weight"));
+                    Assert.That("created", Is.EqualTo(edge.Label));
+                    Assert.That(edge.GetProperty("weight"), Is.Not.Null);
                 }
-                Assert.NotNull(rs);
+                Assert.That(rs, Is.Not.Null);
             }
         }
 
@@ -133,12 +134,12 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 session.ExecuteGraph(new SimpleGraphStatement(
                     "g.addV('movie').property('title', 'Star Wars').property('tags', ['science-fiction', 'adventure'])"));
                 var rs = session.ExecuteGraph(new SimpleGraphStatement("g.V().has('title', 'Star Wars')"));
-                Assert.NotNull(rs);
+                Assert.That(rs, Is.Not.Null);
                 var resultArray = rs.ToArray();
-                Assert.AreEqual(1, resultArray.Length);
+                Assert.That(1, Is.EqualTo(resultArray.Length));
                 var starWarsVertex = resultArray[0].ToVertex();
                 FillVertexProperties(session, starWarsVertex);
-                Assert.AreEqual("Star Wars", starWarsVertex.GetProperty("title").Value.ToString());
+                Assert.That("Star Wars", Is.EqualTo(starWarsVertex.GetProperty("title").Value.ToString()));
                 var tags = starWarsVertex.GetProperties("tags").SelectMany(p => p.Value.To<IEnumerable<string>>());
                 var expectedTags = new List<string>() { "science-fiction", "adventure" };
                 CollectionAssert.AreEquivalent(expectedTags, tags);
@@ -157,12 +158,12 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 session.ExecuteGraph(new SimpleGraphStatement(
                     "g.addV('movie').property('title', 'Harry Potter').property('tags', ['fantasy', 'adventure', 'drama'])"));
                 var rs = session.ExecuteGraph(new SimpleGraphStatement("g.V().has('title', 'Harry Potter').elementMap()"));
-                Assert.NotNull(rs);
+                Assert.That(rs, Is.Not.Null);
                 var resultArray = rs.ToArray();
-                Assert.AreEqual(1, resultArray.Length);
+                Assert.That(1, Is.EqualTo(resultArray.Length));
                 var harryPotterElementMap = resultArray[0].To<ElementMap>();
-                Assert.AreEqual("movie", harryPotterElementMap.Label);
-                Assert.AreEqual("Harry Potter", harryPotterElementMap.GetProperty("title").Value.ToString());
+                Assert.That("movie", Is.EqualTo(harryPotterElementMap.Label));
+                Assert.That("Harry Potter", Is.EqualTo(harryPotterElementMap.GetProperty("title").Value.ToString()));
                 var tags = harryPotterElementMap.GetProperty("tags").Value.To<IEnumerable<string>>();
                 var expectedTags = new List<string>() { "fantasy", "adventure", "drama" };
                 CollectionAssert.AreEquivalent(expectedTags, tags);
@@ -180,14 +181,14 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 var session = cluster.Connect();
                 var rs = session.ExecuteGraph(new SimpleGraphStatement("g.V().has('name', namedParam)", new { namedParam = "marko" }));
 
-                Assert.NotNull(rs);
+                Assert.That(rs, Is.Not.Null);
                 var resultArray = rs.ToArray();
-                Assert.AreEqual(1, resultArray.Length);
+                Assert.That(1, Is.EqualTo(resultArray.Length));
                 var vertex = resultArray[0].To<IVertex>();
-                Assert.NotNull(vertex);
-                Assert.AreEqual("person", vertex.Label);
+                Assert.That(vertex, Is.Not.Null);
+                Assert.That("person", Is.EqualTo(vertex.Label));
                 FillVertexProperties(session, vertex);
-                Assert.AreEqual("marko", vertex.GetProperty("name").Value.ToString());
+                Assert.That("marko", Is.EqualTo(vertex.GetProperty("name").Value.ToString()));
             }
         }
 
@@ -207,15 +208,15 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 var createChars = session.ExecuteGraph(new SimpleGraphStatement("characters.each { character -> " +
                                                                                     "    g.addV('character').property('characterName', character).next();" +
                                                                                 "};", new { characters = names }));
-                Assert.AreEqual(names.Length, createChars.ToArray().Length);
+                Assert.That(names.Length, Is.EqualTo(createChars.ToArray().Length));
 
                 var rs = session.ExecuteGraph(new SimpleGraphStatement("g.V().hasLabel('character').values('characterName')"));
                 var resultArray = rs.ToArray();
-                Assert.AreEqual(names.Length, resultArray.Length);
+                Assert.That(names.Length, Is.EqualTo(resultArray.Length));
 
                 foreach (var name in resultArray)
                 {
-                    Assert.True(names.Contains(name.ToString()));
+                    Assert.That(names.Contains(name.ToString()), Is.True);
                 }
             }
         }
@@ -251,26 +252,26 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 var rs = session.ExecuteGraph(
                     new SimpleGraphStatement("g.V().hasLabel('scientist').has('scientist_name', name)", new { name }));
                 Vertex einstein = rs.FirstOrDefault();
-                Assert.NotNull(einstein);
-                Assert.AreEqual("scientist", einstein.Label);
+                Assert.That(einstein, Is.Not.Null);
+                Assert.That("scientist", Is.EqualTo(einstein.Label));
                 FillVertexProperties(session, einstein);
                 // Vertices contain an array of values per each property
-                Assert.AreEqual(new[] { true, true, true },
-                                new[] { "scientist_name", "year_born", "field" }.Select(propName =>
-                                      einstein.Properties[propName].IsArray));
-                Assert.AreEqual(name, einstein.GetProperty("scientist_name").Value.ToString());
-                Assert.AreEqual(year, einstein.GetProperty("year_born").Value.To<int>());
-                Assert.AreEqual(field, einstein.GetProperty("field").Value.ToString());
+                Assert.That(new[] { true, true, true },
+                    Is.EqualTo(new[] { "scientist_name", "year_born", "field" }.Select(propName =>
+                                      einstein.Properties[propName].IsArray)));
+                Assert.That(name, Is.EqualTo(einstein.GetProperty("scientist_name").Value.ToString()));
+                Assert.That(year, Is.EqualTo(einstein.GetProperty("year_born").Value.To<int>()));
+                Assert.That(field, Is.EqualTo(einstein.GetProperty("field").Value.ToString()));
 
                 var citizenships = session.ExecuteGraph(new SimpleGraphStatement(
                     "g.V().hasLabel('scientist').has('scientist_name', name)" +
                     ".outE('had_citizenship').inV().values('country_name')", new { name }));
                 var citizenshipArray = citizenships.ToArray();
-                Assert.AreEqual(citizenship.Length, citizenshipArray.Length);
+                Assert.That(citizenship.Length, Is.EqualTo(citizenshipArray.Length));
 
                 foreach (var countryName in citizenshipArray)
                 {
-                    Assert.True(citizenship.Contains(countryName.ToString()));
+                    Assert.That(citizenship.Contains(countryName.ToString()), Is.True);
                 }
             }
         }
@@ -288,14 +289,14 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 parameter.Add("namedParam", "marko");
                 var rs = session.ExecuteGraph(new SimpleGraphStatement(parameter, "g.V().has('name', namedParam)"));
 
-                Assert.NotNull(rs);
+                Assert.That(rs, Is.Not.Null);
                 var resultArray = rs.ToArray();
-                Assert.AreEqual(1, resultArray.Length);
+                Assert.That(1, Is.EqualTo(resultArray.Length));
                 var vertex = resultArray[0].To<IVertex>();
-                Assert.NotNull(vertex);
-                Assert.AreEqual("person", vertex.Label);
+                Assert.That(vertex, Is.Not.Null);
+                Assert.That("person", Is.EqualTo(vertex.Label));
                 FillVertexProperties(session, vertex);
-                Assert.AreEqual("marko", vertex.GetProperty("name").Value.ToString());
+                Assert.That("marko", Is.EqualTo(vertex.GetProperty("name").Value.ToString()));
             }
         }
 
@@ -310,11 +311,11 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 var session = cluster.Connect();
                 var rs = session.ExecuteGraph(new SimpleGraphStatement("[a,b]", new { a = 10, b = 20 }));
 
-                Assert.NotNull(rs);
+                Assert.That(rs, Is.Not.Null);
                 var resultArray = rs.ToArray();
-                Assert.AreEqual(2, resultArray.Length);
-                Assert.AreEqual(10, resultArray[0].ToInt32());
-                Assert.AreEqual(20, resultArray[1].ToInt32());
+                Assert.That(2, Is.EqualTo(resultArray.Length));
+                Assert.That(10, Is.EqualTo(resultArray[0].ToInt32()));
+                Assert.That(20, Is.EqualTo(resultArray[1].ToInt32()));
             }
         }
 
@@ -332,25 +333,25 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 var markoVertex = rs.To<IVertex>().First();
 
                 var rsById = session.ExecuteGraph(new SimpleGraphStatement("g.V(vertexId)", new { vertexId = markoVertex.Id }));
-                Assert.NotNull(rsById);
+                Assert.That(rsById, Is.Not.Null);
                 var byIdResultArray = rsById.ToArray();
-                Assert.AreEqual(1, byIdResultArray.Length);
+                Assert.That(1, Is.EqualTo(byIdResultArray.Length));
 
                 IVertex byIdMarkoVertex = (Vertex)byIdResultArray[0];
-                Assert.NotNull(byIdMarkoVertex);
-                Assert.AreEqual(markoVertex.Id, byIdMarkoVertex.Id);
-                Assert.AreEqual(markoVertex.Label, byIdMarkoVertex.Label);
+                Assert.That(byIdMarkoVertex, Is.Not.Null);
+                Assert.That(markoVertex.Id, Is.EqualTo(byIdMarkoVertex.Id));
+                Assert.That(markoVertex.Label, Is.EqualTo(byIdMarkoVertex.Label));
 
-                Assert.AreEqual(0, byIdMarkoVertex.GetProperties().Count());
-                Assert.AreEqual(0, markoVertex.GetProperties().Count());
+                Assert.That(0, Is.EqualTo(byIdMarkoVertex.GetProperties().Count()));
+                Assert.That(0, Is.EqualTo(markoVertex.GetProperties().Count()));
 
                 FillVertexProperties(session, byIdMarkoVertex);
                 FillVertexProperties(session, markoVertex);
 
-                Assert.AreEqual(markoVertex.GetProperty("name").Value.ToString(),
-                    byIdMarkoVertex.GetProperty("name").Value.ToString());
-                Assert.AreEqual(markoVertex.GetProperties("name").First().Value.ToString(),
-                    byIdMarkoVertex.GetProperties("name").First().Value.ToString());
+                Assert.That(markoVertex.GetProperty("name").Value.ToString(),
+                    Is.EqualTo(byIdMarkoVertex.GetProperty("name").Value.ToString()));
+                Assert.That(markoVertex.GetProperties("name").First().Value.ToString(),
+                    Is.EqualTo(byIdMarkoVertex.GetProperties("name").First().Value.ToString()));
             }
         }
 
@@ -370,23 +371,23 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
 
                 var rsById = session.ExecuteGraph(
                     new SimpleGraphStatement("g.E(edgeId)", new { edgeId = markoKnowsVadasEdge.Id }));
-                Assert.NotNull(rsById);
+                Assert.That(rsById, Is.Not.Null);
                 var byIdResultArray = rsById.ToArray();
-                Assert.AreEqual(1, byIdResultArray.Length);
+                Assert.That(1, Is.EqualTo(byIdResultArray.Length));
 
                 IEdge byIdMarkoEdge = (Edge)byIdResultArray[0];
-                Assert.NotNull(byIdMarkoEdge);
-                Assert.AreEqual(markoKnowsVadasEdge.Id, byIdMarkoEdge.Id);
-                Assert.AreEqual(markoKnowsVadasEdge.Label, byIdMarkoEdge.Label);
+                Assert.That(byIdMarkoEdge, Is.Not.Null);
+                Assert.That(markoKnowsVadasEdge.Id, Is.EqualTo(byIdMarkoEdge.Id));
+                Assert.That(markoKnowsVadasEdge.Label, Is.EqualTo(byIdMarkoEdge.Label));
 
-                Assert.AreEqual(0, markoKnowsVadasEdge.GetProperties().Count());
-                Assert.AreEqual(0, byIdMarkoEdge.GetProperties().Count());
+                Assert.That(0, Is.EqualTo(markoKnowsVadasEdge.GetProperties().Count()));
+                Assert.That(0, Is.EqualTo(byIdMarkoEdge.GetProperties().Count()));
 
                 FillEdgeProperties(session, byIdMarkoEdge);
                 FillEdgeProperties(session, markoKnowsVadasEdge);
 
-                Assert.AreEqual(markoKnowsVadasEdge.GetProperty("weight").Value.ToDouble(),
-                                byIdMarkoEdge.GetProperty("weight").Value.ToDouble());
+                Assert.That(markoKnowsVadasEdge.GetProperty("weight").Value.ToDouble(),
+                    Is.EqualTo(byIdMarkoEdge.GetProperty("weight").Value.ToDouble()));
             }
         }
 
@@ -408,34 +409,34 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 var rs = session.ExecuteGraph(new SimpleGraphStatement(graphQuery));
 
                 var resultArray = rs.ToArray();
-                Assert.AreEqual(2, resultArray.Length);
+                Assert.That(2, Is.EqualTo(resultArray.Length));
 
                 foreach (var graphResult in resultArray)
                 {
                     var labels = graphResult.Get<GraphNode[]>("labels");
-                    Assert.AreEqual(5, labels.Length);
+                    Assert.That(5, Is.EqualTo(labels.Length));
 
-                    Assert.AreEqual(1, labels[0].ToArray().Length);
-                    Assert.AreEqual("a", labels[0].ToArray()[0].ToString());
+                    Assert.That(1, Is.EqualTo(labels[0].ToArray().Length));
+                    Assert.That("a", Is.EqualTo(labels[0].ToArray()[0].ToString()));
 
-                    Assert.AreEqual(1, labels[1].ToArray().Length);
-                    Assert.AreEqual("b", labels[1].ToArray()[0].ToString());
+                    Assert.That(1, Is.EqualTo(labels[1].ToArray().Length));
+                    Assert.That("b", Is.EqualTo(labels[1].ToArray()[0].ToString()));
 
-                    Assert.AreEqual(2, labels[2].ToArray().Length);
-                    Assert.AreEqual("c", labels[2].ToArray()[0].ToString());
-                    Assert.AreEqual("d", labels[2].ToArray()[1].ToString());
+                    Assert.That(2, Is.EqualTo(labels[2].ToArray().Length));
+                    Assert.That("c", Is.EqualTo(labels[2].ToArray()[0].ToString()));
+                    Assert.That("d", Is.EqualTo(labels[2].ToArray()[1].ToString()));
 
-                    Assert.AreEqual(3, labels[3].ToArray().Length);
-                    Assert.AreEqual("e", labels[3].ToArray()[0].ToString());
-                    Assert.AreEqual("f", labels[3].ToArray()[1].ToString());
-                    Assert.AreEqual("g", labels[3].ToArray()[2].ToString());
+                    Assert.That(3, Is.EqualTo(labels[3].ToArray().Length));
+                    Assert.That("e", Is.EqualTo(labels[3].ToArray()[0].ToString()));
+                    Assert.That("f", Is.EqualTo(labels[3].ToArray()[1].ToString()));
+                    Assert.That("g", Is.EqualTo(labels[3].ToArray()[2].ToString()));
 
-                    Assert.AreEqual(1, labels[4].ToArray().Length);
-                    Assert.AreEqual("h", labels[4].ToArray()[0].ToString());
+                    Assert.That(1, Is.EqualTo(labels[4].ToArray().Length));
+                    Assert.That("h", Is.EqualTo(labels[4].ToArray()[0].ToString()));
 
                     var path = graphResult.ToPath();
                     var objects = path.Objects.ToList();
-                    Assert.AreEqual(5, objects.Count);
+                    Assert.That(5, Is.EqualTo(objects.Count));
 
                     var marko = objects[0].To<IVertex>();
                     var knows = objects[1].To<IEdge>();
@@ -443,17 +444,17 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                     var created = objects[3].To<IEdge>();
                     var software = objects[4].To<IVertex>();
 
-                    Assert.AreEqual("person", marko.Label);
-                    Assert.AreEqual("person", josh.Label);
-                    Assert.AreEqual("software", software.Label);
+                    Assert.That("person", Is.EqualTo(marko.Label));
+                    Assert.That("person", Is.EqualTo(josh.Label));
+                    Assert.That("software", Is.EqualTo(software.Label));
 
-                    Assert.AreEqual("created", created.Label);
-                    Assert.AreEqual("person", created.OutVLabel);
-                    Assert.AreEqual("software", created.InVLabel);
+                    Assert.That("created", Is.EqualTo(created.Label));
+                    Assert.That("person", Is.EqualTo(created.OutVLabel));
+                    Assert.That("software", Is.EqualTo(created.InVLabel));
 
-                    Assert.AreEqual("knows", knows.Label);
-                    Assert.AreEqual("person", knows.OutVLabel);
-                    Assert.AreEqual("person", knows.InVLabel);
+                    Assert.That("knows", Is.EqualTo(knows.Label));
+                    Assert.That("person", Is.EqualTo(knows.OutVLabel));
+                    Assert.That("person", Is.EqualTo(knows.InVLabel));
 
                     // DSE only with GraphSON1 provides properties by default
                     FillVertexProperties(session, marko);
@@ -462,21 +463,21 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                     FillEdgeProperties(session, created);
                     FillEdgeProperties(session, knows);
 
-                    Assert.AreEqual("marko", marko.GetProperty("name").Value.To<string>());
-                    Assert.AreEqual(29, marko.GetProperty("age").Value.To<int>());
-                    Assert.AreEqual("josh", josh.GetProperty("name").Value.To<string>());
-                    Assert.AreEqual(32, josh.GetProperty("age").Value.To<int>());
-                    Assert.AreEqual("java", software.GetProperty("lang").Value.To<string>());
+                    Assert.That("marko", Is.EqualTo(marko.GetProperty("name").Value.To<string>()));
+                    Assert.That(29, Is.EqualTo(marko.GetProperty("age").Value.To<int>()));
+                    Assert.That("josh", Is.EqualTo(josh.GetProperty("name").Value.To<string>()));
+                    Assert.That(32, Is.EqualTo(josh.GetProperty("age").Value.To<int>()));
+                    Assert.That("java", Is.EqualTo(software.GetProperty("lang").Value.To<string>()));
                     if (software.GetProperty("name").Value.To<string>() == "lop")
                     {
-                        Assert.AreEqual(0.4f, created.GetProperty("weight").Value.ToFloat());
+                        Assert.That(0.4f, Is.EqualTo(created.GetProperty("weight").Value.ToFloat()));
                     }
                     else
                     {
-                        Assert.AreEqual(1.0f, created.GetProperty("weight").Value.ToFloat());
-                        Assert.AreEqual("ripple", software.GetProperty("name").Value.To<string>());
+                        Assert.That(1.0f, Is.EqualTo(created.GetProperty("weight").Value.ToFloat()));
+                        Assert.That("ripple", Is.EqualTo(software.GetProperty("name").Value.To<string>()));
                     }
-                    Assert.AreEqual(1f, knows.GetProperty("weight").Value.ToFloat());
+                    Assert.That(1f, Is.EqualTo(knows.GetProperty("weight").Value.ToFloat()));
                 }
             }
         }
@@ -493,7 +494,7 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 var ex = Assert.Throws<InvalidQueryException>(
                     () => session.ExecuteGraph(new SimpleGraphStatement("g.V().hasLabel('notALabel')")));
 
-                Assert.IsTrue(ex.Message.Contains("Unknown vertex label 'notALabel'"), ex.Message);
+                Assert.That(ex.Message.Contains("Unknown vertex label 'notALabel'"), Is.True, ex.Message);
             }
         }
 
@@ -517,7 +518,7 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 catch
                 {
                     stopwatch.Stop();
-                    Assert.GreaterOrEqual(stopwatch.ElapsedMilliseconds, timeout - timeoutThreshold);
+                    Assert.That(stopwatch.ElapsedMilliseconds, Is.GreaterThanOrEqualTo(timeout - timeoutThreshold));
                 }
             }
         }
@@ -544,9 +545,9 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 catch
                 {
                     stopwatch.Stop();
-                    Assert.GreaterOrEqual(stopwatch.ElapsedMilliseconds, stmtTimeout - stmtTimeoutThreshold);
-                    Assert.Less(stopwatch.ElapsedMilliseconds, stmtTimeout + stmtTimeoutThreshold);
-                    Assert.Less(stopwatch.ElapsedMilliseconds, timeout);
+                    Assert.That(stopwatch.ElapsedMilliseconds, Is.GreaterThanOrEqualTo(stmtTimeout - stmtTimeoutThreshold));
+                    Assert.That(stopwatch.ElapsedMilliseconds, Is.LessThan(stmtTimeout + stmtTimeoutThreshold));
+                    Assert.That(stopwatch.ElapsedMilliseconds, Is.LessThan(timeout));
                 }
             }
         }
@@ -575,8 +576,8 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 finally
                 {
                     stopwatch.Stop();
-                    Assert.GreaterOrEqual(stopwatch.ElapsedMilliseconds, timeout - timeoutThreshold);
-                    Assert.GreaterOrEqual(stopwatch.ElapsedMilliseconds, stmtSleep - stmtSleepThreashold);
+                    Assert.That(stopwatch.ElapsedMilliseconds, Is.GreaterThanOrEqualTo(timeout - timeoutThreshold));
+                    Assert.That(stopwatch.ElapsedMilliseconds, Is.GreaterThanOrEqualTo(stmtSleep - stmtSleepThreashold));
                 }
             }
         }
@@ -601,9 +602,9 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                             new [] { "a" }, new [] {"b"}, new[] { "c", "d" }, new[] { "e", "f", "g" }, new [] { "h" }
                         }, path.Labels);
                     var person = path.Objects.First().To<IVertex>();
-                    Assert.AreEqual("person", person.Label);
+                    Assert.That("person", Is.EqualTo(person.Label));
                     FillVertexProperties(session, person);
-                    Assert.NotNull(person.GetProperty("name"));
+                    Assert.That(person.GetProperty("name"), Is.Not.Null);
                 }
             }
         }
@@ -680,7 +681,7 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                     session.ExecuteGraph(
                         new SimpleGraphStatement("g.with('allow-filtering').V().hasLabel(vertexLabel).has('pk', pk).has(propertyName, val).next()", parameters));
                 var first = rs.FirstOrDefault();
-                Assert.NotNull(first);
+                Assert.That(first, Is.Not.Null);
                 vertex = first.To<IVertex>();
                 var expected = expectedValue ?? value;
                 CoreGraphTests.ValidateVertexResult(
@@ -697,7 +698,7 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
             var propertyName = "prop" + id;
             var vertex = IncludeAndQueryVertex(vertexLabel, propertyName, type, value, value.ToString(), null, verifyToString);
             var propObject = vertex.GetProperty(propertyName).Value.To<T>();
-            Assert.AreEqual(value, propObject);
+            Assert.That(value, Is.EqualTo(propObject));
         }
 
         [Test]
@@ -832,7 +833,7 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 var rs = session.ExecuteGraph(new SimpleGraphStatement(
                     "g.V().hasLabel('person').aggregate('x').by('age').cap('x')"));
                 var resultArray = rs.ToArray();
-                Assert.AreEqual(1, resultArray.Length);
+                Assert.That(1, Is.EqualTo(resultArray.Length));
                 var node = resultArray[0];
 
                 CollectionAssert.AreEquivalent(expectedList, node.To<IEnumerable<int>>());
@@ -887,15 +888,15 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 var rs = session.ExecuteGraph(new SimpleGraphStatement(
                     "g.with('allow-filtering').V().hasLabel('users_contacts').has('id', 305).properties('contacts')"));
                 var resultArray = rs.ToArray();
-                Assert.AreEqual(1, resultArray.Length);
+                Assert.That(1, Is.EqualTo(resultArray.Length));
                 var queriedContacts = resultArray[0].To<IVertexProperty>().Value.To<List<Contact>>();
-                Assert.AreEqual(contacts, queriedContacts);
+                Assert.That(contacts, Is.EqualTo(queriedContacts));
                 var queriedContactObjects = resultArray[0].To<IVertexProperty>().Value.To<List<dynamic>>().Select(o => (Contact)o);
-                Assert.AreEqual(contacts, queriedContactObjects);
+                Assert.That(contacts, Is.EqualTo(queriedContactObjects));
                 var contactsDict = resultArray[0].To<IVertexProperty>().Value.To<List<IDictionary<string, GraphNode>>>();
                 var expectedContact = contacts.Single();
                 var dbC = contactsDict.Single();
-                Assert.AreEqual(expectedContact.Emails, dbC["emails"].To<IEnumerable<string>>());
+                Assert.That(expectedContact.Emails, Is.EqualTo(dbC["emails"].To<IEnumerable<string>>()));
                 CollectionAssert.AreEquivalent(expectedContact.Phones, dbC["phones"].To<IEnumerable<Phone>>());
                 CollectionAssert.AreEquivalent(expectedContact.Phones, dbC["phones"].To<IEnumerable<GraphNode>>().Select(g => g.To<Phone>()));
                 CollectionAssert.AreEquivalent(expectedContact.Phones.Select(p => p.Alias), dbC["phones"].To<IEnumerable<IDictionary<string, object>>>().Select(dict => (string) dict["alias"]));
@@ -930,11 +931,11 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 var rs = session.ExecuteGraph(new SimpleGraphStatement(
                     "g.with('allow-filtering').V().hasLabel('test_udts').has('id', 305).properties('test_udt')"));
                 var resultArray = rs.ToArray();
-                Assert.AreEqual(1, resultArray.Length);
+                Assert.That(1, Is.EqualTo(resultArray.Length));
                 var dbTestUdt = resultArray[0].To<IVertexProperty>().Value.To<TestUdt>();
-                Assert.AreEqual(dbTestUdt.NullableInt, testudt.NullableInt);
-                Assert.AreEqual(dbTestUdt.Name, testudt.Name);
-                Assert.AreEqual(dbTestUdt.Phone, testudt.Phone);
+                Assert.That(dbTestUdt.NullableInt, Is.EqualTo(testudt.NullableInt));
+                Assert.That(dbTestUdt.Name, Is.EqualTo(testudt.Name));
+                Assert.That(dbTestUdt.Phone, Is.EqualTo(testudt.Phone));
             }
         }
         
@@ -965,11 +966,11 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 var rs = session.ExecuteGraph(new SimpleGraphStatement(
                     "g.with('allow-filtering').V().hasLabel('users_contacts').has('id', 1923).properties('contacts')"));
                 var resultArray = rs.ToArray();
-                Assert.AreEqual(1, resultArray.Length);
+                Assert.That(1, Is.EqualTo(resultArray.Length));
                 var contactsDict = resultArray[0].To<IVertexProperty>().Value.To<List<IDictionary<string, GraphNode>>>();
                 var expectedContact = contacts.Single();
                 var dbC = contactsDict.Single();
-                Assert.AreEqual(expectedContact.Emails, dbC["emails"].To<IEnumerable<string>>());
+                Assert.That(expectedContact.Emails, Is.EqualTo(dbC["emails"].To<IEnumerable<string>>()));
                 var phones = dbC["phones"].To<IEnumerable<IDictionary<string, object>>>().ToList();
                 CollectionAssert.AreEquivalent(expectedContact.Phones.Select(p => p.Alias), phones.Select(dict => (string) dict["alias"]));
                 CollectionAssert.AreEquivalent(
@@ -982,8 +983,8 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                     ".property('id', 1923)" +
                     ".property('contacts', contacts)", new { contacts })));
 
-                Assert.IsTrue(ex.Message.Contains("Wrong property type provided for property 'contacts'") 
-                              && ex.Message.Contains("Provided type 'LinkedHashMap' is not compatible with expected type 'UDTValue'"),
+                Assert.That(ex.Message.Contains("Wrong property type provided for property 'contacts'") 
+                              && ex.Message.Contains("Provided type 'LinkedHashMap' is not compatible with expected type 'UDTValue'"), Is.True,
                     ex.Message);
                 
                 ex = Assert.Throws<InvalidQueryException>(() => session.ExecuteGraph(new SimpleGraphStatement(
@@ -991,8 +992,8 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                     ".property('id', 1923)" +
                     ".property('contacts', contactsDict)", new { contactsDict })));
 
-                Assert.IsTrue(ex.Message.Contains("Wrong property type provided for property 'contacts'") 
-                              && ex.Message.Contains("Provided type 'LinkedHashMap' is not compatible with expected type 'UDTValue'"),
+                Assert.That(ex.Message.Contains("Wrong property type provided for property 'contacts'") 
+                              && ex.Message.Contains("Provided type 'LinkedHashMap' is not compatible with expected type 'UDTValue'"), Is.True,
                     ex.Message);
 
             }
@@ -1026,13 +1027,13 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 var rs = session.ExecuteGraph(new SimpleGraphStatement(
                     "g.with('allow-filtering').V().hasLabel('tuple_test').has('id', 1313).properties('tuple_property')"));
                 var resultArray = rs.ToArray();
-                Assert.AreEqual(1, resultArray.Length);
+                Assert.That(1, Is.EqualTo(resultArray.Length));
                 var dbTuple = resultArray[0]
                               .To<IVertexProperty>().Value
                               .To<Tuple<Phone, DateTimeOffset?, Guid, IEnumerable<string>, ISet<int>, IDictionary<string, int?>>>();
-                Assert.AreEqual(tuple.Item1, dbTuple.Item1);
-                Assert.AreEqual(tuple.Item2, dbTuple.Item2);
-                Assert.AreEqual(tuple.Item3, dbTuple.Item3);
+                Assert.That(tuple.Item1, Is.EqualTo(dbTuple.Item1));
+                Assert.That(tuple.Item2, Is.EqualTo(dbTuple.Item2));
+                Assert.That(tuple.Item3, Is.EqualTo(dbTuple.Item3));
                 CollectionAssert.AreEqual(tuple.Item4, dbTuple.Item4);
                 CollectionAssert.AreEquivalent(tuple.Item5, dbTuple.Item5);
                 CollectionAssert.AreEquivalent(tuple.Item6, dbTuple.Item6);
@@ -1220,7 +1221,7 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
         {
             var expectedList = expected.ToList();
             var actualList = actual.ToList();
-            Assert.AreEqual(expectedList.Count, actualList.Count);
+            Assert.That(expectedList.Count, Is.EqualTo(actualList.Count));
             for (var i = 0; i < expectedList.Count; i++)
             {
                 CollectionAssert.AreEquivalent(
@@ -1255,7 +1256,7 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                     var stmt = new SimpleGraphStatement("g.addV(vertexLabel).property('uuid', pk).property(propertyName, val)", parameters);
                     session.ExecuteGraph(stmt);
                     var rs = session.ExecuteGraph(new SimpleGraphStatement("g.with('allow-filtering').V().hasLabel(vertexLabel).has('uuid', pk).has(propertyName, val).properties(propertyName).value()", parameters));
-                    Assert.AreEqual(value, rs.Single().To<Duration>());
+                    Assert.That(value, Is.EqualTo(rs.Single().To<Duration>()));
                 }
             }
         }
@@ -1268,10 +1269,10 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
             statement.SetGraphLanguage(CoreGraphTests.BytecodeJson);
             var rs = await _session.ExecuteGraphAsync(statement).ConfigureAwait(false);
             var results = rs.To<IVertex>().ToArray();
-            Assert.Greater(results.Length, 0);
+            Assert.That(results.Length, Is.GreaterThan(0));
             foreach (var vertex in results)
             {
-                Assert.AreEqual("person", vertex.Label);
+                Assert.That("person", Is.EqualTo(vertex.Label));
             }
         }
 
@@ -1283,10 +1284,10 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
             statement.SetGraphLanguage(CoreGraphTests.BytecodeJson);
             var rs = await _session.ExecuteGraphAsync(statement).ConfigureAwait(false);
             var results = rs.To<IEdge>().ToArray();
-            Assert.Greater(results.Length, 0);
+            Assert.That(results.Length, Is.GreaterThan(0));
             foreach (var edge in results)
             {
-                Assert.AreEqual("created", edge.Label);
+                Assert.That("created", Is.EqualTo(edge.Label));
             }
         }
 
@@ -1320,12 +1321,12 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
             statement.SetGraphLanguage(CoreGraphTests.BytecodeJson);
             var rs = await _session.ExecuteGraphAsync(statement).ConfigureAwait(false);
             var results = rs.ToArray();
-            Assert.AreEqual(1, results.Length);
+            Assert.That(1, Is.EqualTo(results.Length));
             var stephen = results.First().To<IVertex>();
             FillVertexProperties(_session, stephen);
-            Assert.AreEqual("stephen", stephen.GetProperty("name").Value.ToString());
-            Assert.AreEqual(LocalDate.Parse("1981-09-14"), stephen.GetProperty("localdate").Value.To<LocalDate>());
-            Assert.AreEqual(LocalTime.Parse("12:50"), stephen.GetProperty("localtime").Value.To<LocalTime>());
+            Assert.That("stephen", Is.EqualTo(stephen.GetProperty("name").Value.ToString()));
+            Assert.That(LocalDate.Parse("1981-09-14"), Is.EqualTo(stephen.GetProperty("localdate").Value.To<LocalDate>()));
+            Assert.That(LocalTime.Parse("12:50"), Is.EqualTo(stephen.GetProperty("localtime").Value.To<LocalTime>()));
         }
 
         [TestCase(CoreGraphTests.BytecodeJson, "{\"@type\": \"g:Bytecode\", \"@value\": {\"step\": " +
@@ -1338,8 +1339,8 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
             statement.SetGraphLanguage(graphsonLanguage);
             var rs = _session.ExecuteGraph(statement);
             var results = rs.To<IProperty>().ToArray();
-            Assert.Greater(results.Length, 1);
-            Assert.True(results.Any(prop => prop.Name == "weight" && Math.Abs(prop.Value.To<double>() - 0.5) < 0.001));
+            Assert.That(results.Length, Is.GreaterThan(1));
+            Assert.That(results.Any(prop => prop.Name == "weight" && Math.Abs(prop.Value.To<double>() - 0.5) < 0.001), Is.True);
         }
 
         [TestCase(CoreGraphTests.BytecodeJson, "{\"@type\": \"g:Bytecode\", \"@value\": {\"step\": " +
@@ -1351,8 +1352,8 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
             statement.SetGraphLanguage(graphsonLanguage);
             var rs = _session.ExecuteGraph(statement);
             var results = rs.To<IVertexProperty>().ToArray();
-            Assert.Greater(results.Length, 1);
-            Assert.True(results.Any(prop => prop.Label == "name" && prop.Value.ToString() == "marko"));
+            Assert.That(results.Length, Is.GreaterThan(1));
+            Assert.That(results.Any(prop => prop.Label == "name" && prop.Value.ToString() == "marko"), Is.True);
         }
 
         [Test]
@@ -1364,7 +1365,7 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 .SetGraphLanguage(CoreGraphTests.BytecodeJson);
             var rs = await _session.ExecuteGraphAsync(statement).ConfigureAwait(false);
             Assert.That(rs.To<string>(), Is.EquivalentTo(new[] { "created", "knows", "knows" }));
-            Assert.AreEqual(GraphProtocol.GraphSON3, rs.GraphProtocol);
+            Assert.That(GraphProtocol.GraphSON3, Is.EqualTo(rs.GraphProtocol));
         }
 
         [Test]
@@ -1374,7 +1375,7 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 .SetGraphLanguage(CoreGraphTests.GremlinGroovy);
             var rs = await _session.ExecuteGraphAsync(statement).ConfigureAwait(false);
             Assert.That(rs.To<string>(), Is.EquivalentTo(new[] { "created", "knows", "knows" }));
-            Assert.AreEqual(GraphProtocol.GraphSON3, rs.GraphProtocol);
+            Assert.That(GraphProtocol.GraphSON3, Is.EqualTo(rs.GraphProtocol));
         }
 
         [TestDseVersion(6, 8)]
@@ -1383,7 +1384,7 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
         {
             var statement = new SimpleGraphStatement("g.V().hasLabel('person').has('name', 'marko').outE().label()");
             var rs = await _session.ExecuteGraphAsync(statement).ConfigureAwait(false);
-            Assert.AreEqual(GraphProtocol.GraphSON3, rs.GraphProtocol);
+            Assert.That(GraphProtocol.GraphSON3, Is.EqualTo(rs.GraphProtocol));
         }
 
         [TestCase(GraphProtocol.GraphSON1, "Graph protocol 'GRAPHSON_1_0' incompatible")]
@@ -1395,19 +1396,19 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 "g.V().hasLabel('person').has('name', 'marko').outE().label()")
                 .SetGraphProtocolVersion(protocol);
             var ex = Assert.Throws<InvalidQueryException>(() => _session.ExecuteGraph(statement));
-            Assert.IsTrue(ex.Message.Contains(msg), ex.Message);
+            Assert.That(ex.Message.Contains(msg), Is.True, ex.Message);
         }
 
         private static void ValidateVertexResult(
             ISession session, IVertex vertex, string vertexLabel, string propertyName,
             string expectedValueString, Func<object, string> toStringFunc, object value, Type type, bool verifyToString)
         {
-            Assert.AreEqual(vertex.Label, vertexLabel);
+            Assert.That(vertex.Label, Is.EqualTo(vertexLabel));
             FillVertexProperties(session, vertex);
-            Assert.AreEqual(value, vertex.GetProperty(propertyName).Value.To(type));
+            Assert.That(value, Is.EqualTo(vertex.GetProperty(propertyName).Value.To(type)));
             if (verifyToString)
             {
-                Assert.AreEqual(expectedValueString, toStringFunc(vertex.GetProperty(propertyName).Value.To(type)));
+                Assert.That(expectedValueString, Is.EqualTo(toStringFunc(vertex.GetProperty(propertyName).Value.To(type))));
             }
         }
 

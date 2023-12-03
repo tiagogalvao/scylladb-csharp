@@ -191,7 +191,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqTable
         {
             var uniqueTableName = TestUtils.GetUniqueTableName();
             var table = new Table<AllDataTypesEntity>(Session, new MappingConfiguration(), uniqueTableName);
-            Assert.AreEqual(uniqueTableName, table.Name);
+            Assert.That(uniqueTableName, Is.EqualTo(table.Name));
             table.Create();
             VerifyStatement(
                 QueryType.Query, 
@@ -204,7 +204,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqTable
         {
             var uniqueTableName = TestUtils.GetUniqueTableName();
             var table = new Table<AllDataTypesEntity>(Session, new MappingConfiguration(), uniqueTableName);
-            Assert.AreEqual(uniqueTableName, table.Name);
+            Assert.That(uniqueTableName, Is.EqualTo(table.Name));
             table.CreateAsync().GetAwaiter().GetResult();
             VerifyStatement(
                 QueryType.Query, 
@@ -236,8 +236,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqTable
 
             var ex = Assert.Throws<AlreadyExistsException>(() => table.Create());
 
-            Assert.AreEqual(tableName, ex.Table);
-            Assert.AreEqual(_uniqueKsName, ex.Keyspace);
+            Assert.That(tableName, Is.EqualTo(ex.Table));
+            Assert.That(_uniqueKsName, Is.EqualTo(ex.Keyspace));
         }
 
         [Test, TestCassandraVersion(2, 0)]
@@ -261,8 +261,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqTable
 
             var ex = Assert.Throws<AlreadyExistsException>(() => table.Create());
 
-            Assert.AreEqual(tableName, ex.Table);
-            Assert.AreEqual(_uniqueKsName, ex.Keyspace);
+            Assert.That(tableName, Is.EqualTo(ex.Table));
+            Assert.That(_uniqueKsName, Is.EqualTo(ex.Keyspace));
         }
 
         /// <summary>
@@ -455,7 +455,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqTable
                 " AND durable_writes = true",
                 1);
 
-            Assert.AreNotEqual(_uniqueKsName, newUniqueKsName);
+            Assert.That(_uniqueKsName, Is.Not.EqualTo(newUniqueKsName));
             var table2 = new Table<AllDataTypesEntity>(Session, mappingConfig, sharedTableName, newUniqueKsName);
             table2.Create();
 
@@ -494,7 +494,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqTable
             }
             catch (InvalidOperationException e)
             {
-                Assert.AreEqual("No partition key defined", e.Message);
+                Assert.That("No partition key defined", Is.EqualTo(e.Message));
             }
         }
 
@@ -513,7 +513,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqTable
             }
             catch (InvalidOperationException e)
             {
-                Assert.AreEqual("No partition key defined", e.Message);
+                Assert.That("No partition key defined", Is.EqualTo(e.Message));
             }
         }
 
@@ -546,10 +546,10 @@ namespace Cassandra.IntegrationTests.Linq.LinqTable
             SessionCluster.RefreshSchema(_uniqueKsName, "tbl_frozen_tuple");
 
             var tableMeta = SessionCluster.Metadata.GetTable(_uniqueKsName, "tbl_frozen_tuple");
-            Assert.NotNull(tableMeta);
-            Assert.AreEqual(2, tableMeta.TableColumns.Length);
+            Assert.That(tableMeta, Is.Not.Null);
+            Assert.That(2, Is.EqualTo(tableMeta.TableColumns.Length));
             var column = tableMeta.ColumnsByName["t"];
-            Assert.AreEqual(ColumnTypeCode.Tuple, column.TypeCode);
+            Assert.That(ColumnTypeCode.Tuple, Is.EqualTo(column.TypeCode));
         }
 
         [Test, TestCassandraVersion(2, 0, 7)]
@@ -590,7 +590,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqTable
             SessionCluster.RefreshSchema(_uniqueKsName, "tbl_with_counter_static");
 
             var tableMeta = SessionCluster.Metadata.GetTable(_uniqueKsName, "tbl_with_counter_static");
-            Assert.AreEqual(4, tableMeta.TableColumns.Length);
+            Assert.That(4, Is.EqualTo(tableMeta.TableColumns.Length));
         }
 
         /// <summary>
@@ -652,8 +652,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqTable
             var listOfAllDataTypesObjects = 
                 (from x in table where x.StringType.Equals(uniqueKey) select x)
                 .Execute().ToList();
-            Assert.NotNull(listOfAllDataTypesObjects);
-            Assert.AreEqual(1, listOfAllDataTypesObjects.Count);
+            Assert.That(listOfAllDataTypesObjects, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(listOfAllDataTypesObjects.Count));
             var actualDataTypesEntityRow = listOfAllDataTypesObjects.First();
             expectedDataTypesEntityRow.AssertEquals(actualDataTypesEntityRow);
         }
@@ -691,8 +691,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqTable
                  where x.StringType.Equals(uniqueKey) 
                  select x)
                 .Execute().ToList();
-            Assert.NotNull(listOfAllDataTypesObjects);
-            Assert.AreEqual(1, listOfAllDataTypesObjects.Count);
+            Assert.That(listOfAllDataTypesObjects, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(listOfAllDataTypesObjects.Count));
             var actualDataTypesEntityRow = listOfAllDataTypesObjects.First();
             expectedDataTypesEntityRow.AssertEquals(actualDataTypesEntityRow);
         }

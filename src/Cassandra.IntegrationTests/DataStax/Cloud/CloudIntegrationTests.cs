@@ -33,6 +33,7 @@ using Cassandra.Mapping;
 using Cassandra.Tests;
 using Cassandra.Tests.TestAttributes;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.DataStax.Cloud
 {
@@ -52,9 +53,9 @@ namespace Cassandra.IntegrationTests.DataStax.Cloud
                     b => b
                          .WithSocketOptions(new SocketOptions().SetReadTimeoutMillis(5000).SetConnectTimeoutMillis(10000))
                          .WithQueryTimeout(5000)));
-            Assert.IsTrue(ex.Message.Contains("https://192.0.2.255:30443/metadata"), ex.Message);
-            Assert.IsTrue(ex.Message.Contains("There was an error fetching the metadata information"), ex.Message);
-            Assert.IsTrue(ex.Message.Contains("Please make sure your cluster is not parked or terminated."), ex.Message);
+            ClassicAssert.IsTrue(ex.Message.Contains("https://192.0.2.255:30443/metadata"), ex.Message);
+            ClassicAssert.IsTrue(ex.Message.Contains("There was an error fetching the metadata information"), ex.Message);
+            ClassicAssert.IsTrue(ex.Message.Contains("Please make sure your cluster is not parked or terminated."), ex.Message);
         }
 
         [Test]
@@ -66,7 +67,7 @@ namespace Cassandra.IntegrationTests.DataStax.Cloud
                        .WithReconnectionPolicy(new ConstantReconnectionPolicy(40))
                        .WithQueryOptions(new QueryOptions().SetDefaultIdempotence(true))).ConfigureAwait(false);
 
-            Assert.IsTrue(session.Cluster.AllHosts().All(h => h.IsUp));
+            Assert.That(session.Cluster.AllHosts().All(h => h.IsUp), Is.True);
             var restarted = true;
             var t = Task.Run(async () =>
             {
@@ -80,9 +81,9 @@ namespace Cassandra.IntegrationTests.DataStax.Cloud
                         () =>
                         {
                             var dict = Session.Cluster.Metadata.TokenToReplicasMap.GetByKeyspace("system_distributed");
-                            Assert.AreEqual(3, dict.First().Value.Count);
-                            Assert.AreEqual(3, Session.Cluster.AllHosts().Count);
-                            Assert.IsTrue(Session.Cluster.AllHosts().All(h => h.IsUp));
+                            Assert.That(3, Is.EqualTo(dict.First().Value.Count));
+                            Assert.That(3, Is.EqualTo(Session.Cluster.AllHosts().Count));
+                            Assert.That(Session.Cluster.AllHosts().All(h => h.IsUp), Is.True);
                         },
                         20,
                         500);
@@ -144,19 +145,19 @@ namespace Cassandra.IntegrationTests.DataStax.Cloud
         public void Should_FailFast_When_ConfigJsonDoesNotHaveCredentialsAndUserDoesNotProvideCredentials()
         {
             var ex = Assert.Throws<ArgumentException>(() => CreateTemporaryCluster("creds-v1-wo-creds.zip", withCredentials: false));
-            Assert.AreEqual(
+            Assert.That(
                 ex.Message, 
-                "No credentials were provided. When using the secure connection bundle, " +
-                "your cluster's credentials must be provided via the Builder.WithCredentials() method.");
+                Is.EqualTo("No credentials were provided. When using the secure connection bundle, " +
+                           "your cluster's credentials must be provided via the Builder.WithCredentials() method."));
         }
 
         [Test]
         public void Should_SetAuthProvider()
         {
-            Assert.IsNotNull(Session.Cluster.Configuration.AuthProvider.GetType());
-            Assert.AreEqual(typeof(PlainTextAuthProvider), Session.Cluster.Configuration.AuthProvider.GetType());
+            Assert.That(Session.Cluster.Configuration.AuthProvider.GetType(), Is.Not.Null);
+            Assert.That(typeof(PlainTextAuthProvider), Is.EqualTo(Session.Cluster.Configuration.AuthProvider.GetType()));
             var provider = (PlainTextAuthProvider)Session.Cluster.Configuration.AuthProvider;
-            Assert.AreEqual("user1", provider.Username);
+            Assert.That("user1", Is.EqualTo(provider.Username));
         }
 
         [Test]
@@ -170,13 +171,13 @@ namespace Cassandra.IntegrationTests.DataStax.Cloud
                 var rs = await session.ExecuteAsync(new SimpleStatement("SELECT * FROM system.local")).ConfigureAwait(false);
                 var row = rs.First();
                 var host = session.Cluster.GetHost(new IPEndPoint(rs.Info.QueriedHost.Address, rs.Info.QueriedHost.Port));
-                Assert.IsNotNull(host);
+                Assert.That(host, Is.Not.Null);
                 queriedHosts.Add(rs.Info.QueriedHost.Address);
-                Assert.AreEqual(host.HostId, row.GetValue<Guid>("host_id"));
-                Assert.AreEqual(host.Address, new IPEndPoint(row.GetValue<IPAddress>("rpc_address"), port));
+                Assert.That(host.HostId, Is.EqualTo(row.GetValue<Guid>("host_id")));
+                Assert.That(host.Address, Is.EqualTo(new IPEndPoint(row.GetValue<IPAddress>("rpc_address"), port)));
             }
 
-            Assert.AreEqual(3, queriedHosts.Count);
+            Assert.That(3, Is.EqualTo(queriedHosts.Count));
         }
 
         [Test]
@@ -184,7 +185,7 @@ namespace Cassandra.IntegrationTests.DataStax.Cloud
         {
             var rs = await Session.ExecuteAsync(new SimpleStatement("select * from system.peers")).ConfigureAwait(false);
             var allRs = rs.ToList();
-            Assert.AreEqual(2, allRs.Count);
+            Assert.That(2, Is.EqualTo(allRs.Count));
         }
 
         [Test]
@@ -200,7 +201,7 @@ namespace Cassandra.IntegrationTests.DataStax.Cloud
             Thread.Sleep(1000);
             TestHelper.RetryAssert(() =>
             {
-                Assert.True(Session.Cluster.Metadata.CheckSchemaAgreementAsync().Result);
+                Assert.That(Session.Cluster.Metadata.CheckSchemaAgreementAsync().Result, Is.True);
             }, 500, 150);
             var ps = Session.Prepare($"INSERT INTO {policyTestTools.TableName} (k1, k2, i) VALUES (?, ?, ?)");
             var traces = new List<QueryTrace>();
@@ -208,7 +209,7 @@ namespace Cassandra.IntegrationTests.DataStax.Cloud
             {
                 var statement = ps.Bind(i.ToString(), i, i).EnableTracing();
                 //Routing key is calculated by the driver
-                Assert.NotNull(statement.RoutingKey);
+                Assert.That(statement.RoutingKey, Is.Not.Null);
                 var rs = Session.Execute(statement);
                 traces.Add(rs.Info.QueryTrace);
             }
@@ -216,7 +217,7 @@ namespace Cassandra.IntegrationTests.DataStax.Cloud
             foreach (var t in traces)
             {
                 //The coordinator must be the only one executing the query
-                Assert.True(t.Events.All(e => e.Source.ToString() == t.Coordinator.ToString()), "There were trace events from another host for coordinator " + t.Coordinator);
+                Assert.That(t.Events.All(e => e.Source.ToString() == t.Coordinator.ToString()), Is.True, "There were trace events from another host for coordinator " + t.Coordinator);
             }
         }
 
@@ -239,7 +240,7 @@ namespace Cassandra.IntegrationTests.DataStax.Cloud
             }
             //Check that there were hops
             var hopsPerQuery = traces.Select(t => t.Events.Any(e => e.Source.ToString() == t.Coordinator.ToString()));
-            Assert.True(hopsPerQuery.Any(v => v));
+            Assert.That(hopsPerQuery.Any(v => v), Is.True);
         }
 
         [Test]
@@ -260,10 +261,10 @@ namespace Cassandra.IntegrationTests.DataStax.Cloud
             }
             //Check that there were hops
             var hopsPerQuery = traces.Select(t => t.Events.Any(e => e.Source.ToString() == t.Coordinator.ToString()));
-            Assert.True(hopsPerQuery.Any(v => v));
+            Assert.That(hopsPerQuery.Any(v => v), Is.True);
             var tracesPerCoordinator = traces.GroupBy(t => t.Coordinator).ToDictionary(t => t.Key, t => t.Count());
-            Assert.AreEqual(3, tracesPerCoordinator.Count);
-            Assert.IsTrue(tracesPerCoordinator.All(kvp => kvp.Value == 3));
+            Assert.That(3, Is.EqualTo(tracesPerCoordinator.Count));
+            Assert.That(tracesPerCoordinator.All(kvp => kvp.Value == 3), Is.True);
         }
 
         [Test]
@@ -291,12 +292,12 @@ namespace Cassandra.IntegrationTests.DataStax.Cloud
                         "bundles",
                         "creds-v1.zip"));
 
-            Assert.IsNotNull(scb.CaCert);
-            Assert.IsNotNull(scb.ClientCert);
-            Assert.IsFalse(string.IsNullOrWhiteSpace(scb.Config.CertificatePassword));
-            Assert.IsTrue(scb.ClientCert.HasPrivateKey);
-            Assert.AreEqual(30443, scb.Config.Port);
-            Assert.AreEqual("localhost", scb.Config.Host);
+            Assert.That(scb.CaCert, Is.Not.Null);
+            Assert.That(scb.ClientCert, Is.Not.Null);
+            Assert.That(string.IsNullOrWhiteSpace(scb.Config.CertificatePassword), Is.False);
+            Assert.That(scb.ClientCert.HasPrivateKey, Is.True);
+            Assert.That(30443, Is.EqualTo(scb.Config.Port));
+            Assert.That("localhost", Is.EqualTo(scb.Config.Host));
         }
 
         [Test]
@@ -310,16 +311,16 @@ namespace Cassandra.IntegrationTests.DataStax.Cloud
                         profile.WithSerialConsistencyLevel(ConsistencyLevel.LocalSerial))
                     .WithDerivedProfile("derived", "profile", profile =>
                         profile.WithConsistencyLevel(ConsistencyLevel.LocalQuorum)))).ConfigureAwait(false);
-            Assert.AreEqual(ConsistencyLevel.LocalQuorum, Cluster.Configuration.DefaultRequestOptions.ConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.LocalQuorum, Cluster.Configuration.QueryOptions.GetConsistencyLevel());
-            Assert.AreEqual(ConsistencyLevel.Serial, Cluster.Configuration.DefaultRequestOptions.SerialConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.Serial, Cluster.Configuration.QueryOptions.GetSerialConsistencyLevel());
+            Assert.That(ConsistencyLevel.LocalQuorum, Is.EqualTo(Cluster.Configuration.DefaultRequestOptions.ConsistencyLevel));
+            Assert.That(ConsistencyLevel.LocalQuorum, Is.EqualTo(Cluster.Configuration.QueryOptions.GetConsistencyLevel()));
+            Assert.That(ConsistencyLevel.Serial, Is.EqualTo(Cluster.Configuration.DefaultRequestOptions.SerialConsistencyLevel));
+            Assert.That(ConsistencyLevel.Serial, Is.EqualTo(Cluster.Configuration.QueryOptions.GetSerialConsistencyLevel()));
 
             var ks = TestUtils.GetUniqueKeyspaceName().ToLower();
             const string createKeyspaceQuery = "CREATE KEYSPACE {0} WITH replication = {{ 'class' : '{1}', {2} }}";
             session.Execute(string.Format(createKeyspaceQuery, ks, "SimpleStrategy", "'replication_factor' : 3"));
             TestHelper.RetryAssert(
-                () => Assert.IsTrue(session.Cluster.Metadata.CheckSchemaAgreementAsync().Result),
+                () => Assert.That(session.Cluster.Metadata.CheckSchemaAgreementAsync().Result, Is.True),
                 1000, 60);
             var table = new Table<Author>(session, MappingConfiguration.Global, "author", ks);
             TestHelper.RetryAssert(() =>
@@ -336,15 +337,15 @@ namespace Cassandra.IntegrationTests.DataStax.Cloud
                     });
 
                     rs = session.Execute($"INSERT INTO {ks}.author(authorid) VALUES ('auth')", "derived");
-                    Assert.AreEqual(ConsistencyLevel.LocalQuorum, rs.Info.AchievedConsistency);
+                    Assert.That(ConsistencyLevel.LocalQuorum, Is.EqualTo(rs.Info.AchievedConsistency));
 
                     rs = session.Execute($"INSERT INTO {ks}.author(authorid) VALUES ('auth') IF NOT EXISTS", "derived");
-                    Assert.IsTrue(string.Compare(rs.First()["[applied]"].ToString(), "false", StringComparison.OrdinalIgnoreCase) == 0);
+                    ClassicAssert.IsTrue(string.Compare(rs.First()["[applied]"].ToString(), "false", StringComparison.OrdinalIgnoreCase) == 0);
 
                     rs = session.Execute($"SELECT authorid FROM {ks}.author WHERE authorid = 'auth'", "derived");
                     var row = rs.First();
-                    Assert.AreEqual(ConsistencyLevel.LocalQuorum, rs.Info.AchievedConsistency);
-                    Assert.AreEqual("auth", row["authorid"].ToString());
+                    Assert.That(ConsistencyLevel.LocalQuorum, Is.EqualTo(rs.Info.AchievedConsistency));
+                    Assert.That("auth", Is.EqualTo(row["authorid"].ToString()));
                 }
                 catch (QueryTimeoutException) {}
             }, 1000, 10);
@@ -353,19 +354,19 @@ namespace Cassandra.IntegrationTests.DataStax.Cloud
         private void AssertCaMismatchSslError(NoHostAvailableException ex)
         {
             var ex2 = ex.InnerException;
-            Assert.IsTrue(ex2 is HttpRequestException, ex2.ToString());
+            Assert.That(ex2 is HttpRequestException, Is.True, ex2.ToString());
             var ex3 = ex2.InnerException;
-            Assert.IsTrue(ex2 is HttpRequestException, ex2.ToString());
-            Assert.IsTrue(ex2.Message.Contains("The SSL connection could not be established"), ex2.Message);
+            Assert.That(ex2 is HttpRequestException, Is.True, ex2.ToString());
+            Assert.That(ex2.Message.Contains("The SSL connection could not be established"), Is.True, ex2.Message);
         }
 
         private void AssertIsSslError(NoHostAvailableException ex)
         {
             var ex2 = ex.InnerException;
-            Assert.IsTrue(ex2 is HttpRequestException, ex2.ToString());
+            Assert.That(ex2 is HttpRequestException, Is.True, ex2.ToString());
 
             // SocketsHttpHandler
-            Assert.IsTrue(ex2.Message.Contains("The SSL connection could not be established"), ex2.Message);
+            Assert.That(ex2.Message.Contains("The SSL connection could not be established"), Is.True, ex2.Message);
         }
     }
 }

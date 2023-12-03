@@ -48,7 +48,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                 .DeleteIf(m => m.MainActor == actualMovie.MainActor);
 
             var appliedInfo = deleteIfStatement.Execute();
-            Assert.True(appliedInfo.Applied);
+            Assert.That(appliedInfo.Applied, Is.True);
         }
 
         [Test, TestCassandraVersion(2, 0)]
@@ -69,9 +69,9 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                                     .DeleteIf(m => m.MainActor == random.Get());
 
             var appliedInfo = deleteIfStatement.Execute();
-            Assert.False(appliedInfo.Applied);
-            Assert.NotNull(appliedInfo.Existing);
-            Assert.AreEqual(actualMovie.MainActor, appliedInfo.Existing.MainActor);
+            Assert.That(appliedInfo.Applied, Is.False);
+            Assert.That(appliedInfo.Existing, Is.Not.Null);
+            Assert.That(actualMovie.MainActor, Is.EqualTo(appliedInfo.Existing.MainActor));
         }
 
         [Test, TestCassandraVersion(2, 1, 2)]
@@ -95,7 +95,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
             }
             catch (InvalidQueryException e)
             {
-                Assert.AreEqual(expectedErrMsg, e.Message);
+                Assert.That(expectedErrMsg, Is.EqualTo(e.Message));
             }
         }
 
@@ -156,8 +156,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
             var deleteIfQuery = selectQuery.DeleteIf(m => m.IntType == entityToDelete.IntType);
 
             var appliedInfo = deleteIfQuery.Execute();
-            Assert.False(appliedInfo.Applied);
-            Assert.IsNull(appliedInfo.Existing);
+            Assert.That(appliedInfo.Applied, Is.False);
+            Assert.That(appliedInfo.Existing, Is.Null);
         }
     }
 }

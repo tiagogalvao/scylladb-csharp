@@ -63,7 +63,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
                       .ThenRowsSuccess(ManyDataTypesPoco.GetColumnsAndTypes(), r => r.WithRow(manyTypesInstance.GetParameters())));
 
             var instancesQueried = mapper.Fetch<ManyDataTypesPoco>(cqlSelect).ToList();
-            Assert.AreEqual(1, instancesQueried.Count);
+            Assert.That(1, Is.EqualTo(instancesQueried.Count));
             instancesQueried[0].AssertEquals(manyTypesInstance);
         }
 
@@ -85,7 +85,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
                       .ThenServerError(ServerError.Invalid, expectedErrMsg));
 
             var e = Assert.Throws<InvalidOperationException>(() => table.Create());
-            Assert.AreEqual(expectedErrMsg, e.Message);
+            Assert.That(expectedErrMsg, Is.EqualTo(e.Message));
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
                       .ThenRowsSuccess(ManyDataTypesPoco.GetColumnsAndTypes(), r => r.WithRow(manyTypesInstance.GetParameters())));
 
             var objectsRetrieved = mapper.Fetch<ManyDataTypesPoco>(cqlSelect).ToList();
-            Assert.AreEqual(1, objectsRetrieved.Count);
+            Assert.That(1, Is.EqualTo(objectsRetrieved.Count));
             objectsRetrieved[0].AssertEquals(manyTypesInstance);
         }
     }

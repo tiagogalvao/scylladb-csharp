@@ -60,22 +60,22 @@ namespace Cassandra.IntegrationTests.Linq.Structures
 
         public static void AssertEquals(IAllDataTypesEntity expectedEntity, IAllDataTypesEntity actualEntity)
         {
-            Assert.AreEqual(expectedEntity.StringType, actualEntity.StringType);
-            Assert.AreEqual(expectedEntity.GuidType, actualEntity.GuidType);
-            Assert.AreEqual(expectedEntity.DateTimeType.ToString(), actualEntity.DateTimeType.ToString()); // We need 'ToString()' to round to the nearest second
-            Assert.AreEqual(expectedEntity.DateTimeOffsetType.ToString(), actualEntity.DateTimeOffsetType.ToString());
-            Assert.AreEqual(expectedEntity.BooleanType, actualEntity.BooleanType);
-            Assert.AreEqual(expectedEntity.DecimalType, actualEntity.DecimalType);
-            Assert.AreEqual(expectedEntity.DoubleType, actualEntity.DoubleType);
-            Assert.AreEqual(expectedEntity.FloatType, actualEntity.FloatType);
-            Assert.AreEqual(expectedEntity.IntType, actualEntity.IntType);
-            Assert.AreEqual(expectedEntity.Int64Type, actualEntity.Int64Type);
-            Assert.AreEqual(expectedEntity.TimeUuidType, actualEntity.TimeUuidType);
-            Assert.AreEqual(expectedEntity.NullableTimeUuidType, actualEntity.NullableTimeUuidType);
-            Assert.AreEqual(expectedEntity.DictionaryStringLongType, actualEntity.DictionaryStringLongType);
-            Assert.AreEqual(expectedEntity.DictionaryStringStringType, actualEntity.DictionaryStringStringType);
-            Assert.AreEqual(expectedEntity.ListOfGuidsType, actualEntity.ListOfGuidsType);
-            Assert.AreEqual(expectedEntity.ListOfStringsType, actualEntity.ListOfStringsType);
+            Assert.That(expectedEntity.StringType, Is.EqualTo(actualEntity.StringType));
+            Assert.That(expectedEntity.GuidType, Is.EqualTo(actualEntity.GuidType));
+            Assert.That(expectedEntity.DateTimeType.ToString(), Is.EqualTo(actualEntity.DateTimeType.ToString())); // We need 'ToString()' to round to the nearest second
+            Assert.That(expectedEntity.DateTimeOffsetType.ToString(), Is.EqualTo(actualEntity.DateTimeOffsetType.ToString()));
+            Assert.That(expectedEntity.BooleanType, Is.EqualTo(actualEntity.BooleanType));
+            Assert.That(expectedEntity.DecimalType, Is.EqualTo(actualEntity.DecimalType));
+            Assert.That(expectedEntity.DoubleType, Is.EqualTo(actualEntity.DoubleType));
+            Assert.That(expectedEntity.FloatType, Is.EqualTo(actualEntity.FloatType));
+            Assert.That(expectedEntity.IntType, Is.EqualTo(actualEntity.IntType));
+            Assert.That(expectedEntity.Int64Type, Is.EqualTo(actualEntity.Int64Type));
+            Assert.That(expectedEntity.TimeUuidType, Is.EqualTo(actualEntity.TimeUuidType));
+            Assert.That(expectedEntity.NullableTimeUuidType, Is.EqualTo(actualEntity.NullableTimeUuidType));
+            Assert.That(expectedEntity.DictionaryStringLongType, Is.EqualTo(actualEntity.DictionaryStringLongType));
+            Assert.That(expectedEntity.DictionaryStringStringType, Is.EqualTo(actualEntity.DictionaryStringStringType));
+            Assert.That(expectedEntity.ListOfGuidsType, Is.EqualTo(actualEntity.ListOfGuidsType));
+            Assert.That(expectedEntity.ListOfStringsType, Is.EqualTo(actualEntity.ListOfStringsType));
         }
 
         public static bool AssertListContains(List<IAllDataTypesEntity> expectedEntities, IAllDataTypesEntity actualEntity)

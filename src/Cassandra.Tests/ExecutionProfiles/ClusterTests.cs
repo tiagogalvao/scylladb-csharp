@@ -103,10 +103,10 @@ namespace Cassandra.Tests.ExecutionProfiles
             var cluster = Cluster.BuildFrom(initializerMock, new List<string>(), testConfig);
             cluster.Connect();
             
-            Assert.IsTrue(lbps.Skip(1).All(lbp => lbp.InitializeCount == 1));
-            Assert.IsTrue(seps.Skip(1).All(sep => sep.InitializeCount == 1));
-            Assert.AreEqual(0, lbps[0].InitializeCount);
-            Assert.AreEqual(0, seps[0].InitializeCount);
+            Assert.That(lbps.Skip(1).All(lbp => lbp.InitializeCount == 1), Is.True);
+            Assert.That(seps.Skip(1).All(sep => sep.InitializeCount == 1), Is.True);
+            Assert.That(0, Is.EqualTo(lbps[0].InitializeCount));
+            Assert.That(0, Is.EqualTo(seps[0].InitializeCount));
         }
         
         [Test]
@@ -136,8 +136,8 @@ namespace Cassandra.Tests.ExecutionProfiles
             var cluster = Cluster.BuildFrom(initializerMock, new List<string>(), testConfig);
             cluster.Connect();
 
-            Assert.AreEqual(1, lbp.InitializeCount);
-            Assert.AreEqual(1, sep.InitializeCount);
+            Assert.That(1, Is.EqualTo(lbp.InitializeCount));
+            Assert.That(1, Is.EqualTo(sep.InitializeCount));
         }
         
         [Test]
@@ -207,8 +207,8 @@ namespace Cassandra.Tests.ExecutionProfiles
             cluster.Connect();
             cluster.Dispose();
 
-            Assert.IsTrue(seps.Skip(1).All(sep => sep.DisposeCount == 1));
-            Assert.AreEqual(0, seps[0].DisposeCount);
+            Assert.That(seps.Skip(1).All(sep => sep.DisposeCount == 1), Is.True);
+            Assert.That(0, Is.EqualTo(seps[0].DisposeCount));
         }
         
         [Test]
@@ -239,7 +239,7 @@ namespace Cassandra.Tests.ExecutionProfiles
             cluster.Connect();
             cluster.Dispose();
 
-            Assert.AreEqual(1, sep.DisposeCount);
+            Assert.That(1, Is.EqualTo(sep.DisposeCount));
         }
         
         [Test]
@@ -276,8 +276,8 @@ namespace Cassandra.Tests.ExecutionProfiles
             cluster.Connect();
             cluster.Dispose();
 
-            Assert.AreEqual(0, sep1.DisposeCount);
-            Assert.AreEqual(1, sep2.DisposeCount);
+            Assert.That(0, Is.EqualTo(sep1.DisposeCount));
+            Assert.That(1, Is.EqualTo(sep2.DisposeCount));
         }
         
         [Test]
@@ -313,10 +313,10 @@ namespace Cassandra.Tests.ExecutionProfiles
             var cluster = Cluster.BuildFrom(initializerMock, new List<string>(), testConfig);
             cluster.Connect();
             
-            Assert.AreEqual(0, lbp1.InitializeCount);
-            Assert.AreEqual(0, sep1.InitializeCount);
-            Assert.AreEqual(1, lbp2.InitializeCount);
-            Assert.AreEqual(1, sep2.InitializeCount);
+            Assert.That(0, Is.EqualTo(lbp1.InitializeCount));
+            Assert.That(0, Is.EqualTo(sep1.InitializeCount));
+            Assert.That(1, Is.EqualTo(lbp2.InitializeCount));
+            Assert.That(1, Is.EqualTo(sep2.InitializeCount));
         }
         
         private class FakeSpeculativeExecutionPolicy : ISpeculativeExecutionPolicy

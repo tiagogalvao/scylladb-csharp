@@ -96,8 +96,8 @@ namespace Cassandra.IntegrationTests
                 Session.Execute(new SimpleStatement(insertQuery, id, value));
                 var rs = Session.Execute(new SimpleStatement(selectQuery, id));
                 var row = rs.First();
-                Assert.AreEqual(value, row.GetValue<Duration>("c1"));
-                Assert.AreEqual(value.ToString(), row.GetValue<Duration>("c1").ToString());
+                Assert.That(value, Is.EqualTo(row.GetValue<Duration>("c1")));
+                Assert.That(value.ToString(), Is.EqualTo(row.GetValue<Duration>("c1").ToString()));
             }
         }
 
@@ -105,10 +105,10 @@ namespace Cassandra.IntegrationTests
         public void Should_Retrieve_Table_Metadata()
         {
             var tableMetadata = Cluster.Metadata.GetTable(KeyspaceName, "tbl_duration");
-            Assert.NotNull(tableMetadata);
+            Assert.That(tableMetadata, Is.Not.Null);
             var column = tableMetadata.ColumnsByName["c1"];
-            Assert.AreEqual(ColumnTypeCode.Duration, column.TypeCode);
-            Assert.Null(column.TypeInfo);
+            Assert.That(ColumnTypeCode.Duration, Is.EqualTo(column.TypeCode));
+            Assert.That(column.TypeInfo, Is.Null);
         }
         [Test]
         public void Should_Allow_Duration_In_Udt_And_Tuple()
@@ -135,10 +135,10 @@ namespace Cassandra.IntegrationTests
                 Session.Execute(new SimpleStatement(insertQuery, id, udtRangeValue, udtRangeValue, tuple1, tuple1));
                 var rs = Session.Execute(new SimpleStatement(selectQuery, id));
                 var row = rs.First();
-                Assert.AreEqual(udtRangeValue, row.GetValue<UdtDuration>("u"));
-                Assert.AreEqual(udtRangeValue, row.GetValue<UdtDuration>("uf"));
-                Assert.AreEqual(tuple1, row.GetValue<Tuple<Duration, int>>("t"));
-                Assert.AreEqual(tuple1, row.GetValue<Tuple<Duration, int>>("tf"));
+                Assert.That(udtRangeValue, Is.EqualTo(row.GetValue<UdtDuration>("u")));
+                Assert.That(udtRangeValue, Is.EqualTo(row.GetValue<UdtDuration>("uf")));
+                Assert.That(tuple1, Is.EqualTo(row.GetValue<Tuple<Duration, int>>("t")));
+                Assert.That(tuple1, Is.EqualTo(row.GetValue<Tuple<Duration, int>>("tf")));
             }
         }
 
@@ -158,8 +158,8 @@ namespace Cassandra.IntegrationTests
                 Session.Execute(new SimpleStatement(insertQuery, id, list));
                 var rs = Session.Execute(new SimpleStatement(selectQuery, id));
                 var row = rs.First();
-                Assert.AreEqual(id, row.GetValue<Guid>("k"));
-                Assert.AreEqual(list, row.GetValue<List<Duration>>("l"));
+                Assert.That(id, Is.EqualTo(row.GetValue<Guid>("k")));
+                Assert.That(list, Is.EqualTo(row.GetValue<List<Duration>>("l")));
             }
             
         }
@@ -181,8 +181,8 @@ namespace Cassandra.IntegrationTests
                 Session.Execute(preparedStatement.Bind(id, durationExpected));
                 var rs = Session.Execute(preparedSelectStatement.Bind(id));
                 var row = rs.First();
-                Assert.AreEqual(id, row.GetValue<Guid>("pk"));
-                Assert.AreEqual(durationExpected, row.GetValue<Duration>("c1"));
+                Assert.That(id, Is.EqualTo(row.GetValue<Guid>("pk")));
+                Assert.That(durationExpected, Is.EqualTo(row.GetValue<Duration>("c1")));
             }
         }
     }

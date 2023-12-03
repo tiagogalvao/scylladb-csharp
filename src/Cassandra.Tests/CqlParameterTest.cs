@@ -34,19 +34,19 @@ namespace Cassandra.Tests
             // test ParameterName
             var formattedName = ":p1";
             var name2 = ":p2";
-            Assert.AreEqual(formattedName, target.ParameterName);
+            Assert.That(formattedName, Is.EqualTo(target.ParameterName));
             target.ParameterName = name2;
-            Assert.AreEqual(name2, target.ParameterName);
+            Assert.That(name2, Is.EqualTo(target.ParameterName));
 
             // test IsNullable & SourceColumnNullMapping
-            Assert.IsTrue(target.IsNullable);
-            Assert.IsTrue(target.SourceColumnNullMapping);
+            Assert.That(target.IsNullable, Is.True);
+            Assert.That(target.SourceColumnNullMapping, Is.True);
             target.IsNullable = false;
-            Assert.IsFalse(target.IsNullable);
-            Assert.IsFalse(target.SourceColumnNullMapping);
+            Assert.That(target.IsNullable, Is.False);
+            Assert.That(target.SourceColumnNullMapping, Is.False);
 
             // test Direction, only Input is supported
-            Assert.AreEqual(ParameterDirection.Input, target.Direction);
+            Assert.That(ParameterDirection.Input, Is.EqualTo(target.Direction));
             Exception ex = null;
             try
             {
@@ -56,18 +56,18 @@ namespace Cassandra.Tests
             {
                 ex = e;
             }
-            Assert.IsNotNull(ex);
+            Assert.That(ex, Is.Not.Null);
 
             // test Value
-            Assert.AreEqual(value, target.Value);
+            Assert.That(value, Is.EqualTo(target.Value));
             var value2 = "2";
             target.Value = value2;
-            Assert.AreEqual(value2, target.Value);
+            Assert.That(value2, Is.EqualTo(target.Value));
 
             // test Size, it should always return 0
-            Assert.AreEqual(0, target.Size);
+            Assert.That(0, Is.EqualTo(target.Size));
             target.Size = 1;
-            Assert.AreEqual(0, target.Size);
+            Assert.That(0, Is.EqualTo(target.Size));
 
 
         }

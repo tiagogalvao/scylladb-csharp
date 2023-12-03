@@ -28,69 +28,69 @@ namespace Cassandra.Tests
             var target = new CqlParameterCollection();
 
             // test Count
-            Assert.AreEqual(0, target.Count);
+            Assert.That(0, Is.EqualTo(target.Count));
             var p1 = target.Add("p1", 1);
-            Assert.AreEqual(1, target.Count);
+            Assert.That(1, Is.EqualTo(target.Count));
 
             // test SyncRoot
-            Assert.IsNotNull(target.SyncRoot);
-            Assert.AreEqual(target.SyncRoot, target.SyncRoot);
+            Assert.That(target.SyncRoot, Is.Not.Null);
+            Assert.That(target.SyncRoot, Is.EqualTo(target.SyncRoot));
 
             // test IsFixedSize
-            Assert.IsFalse(target.IsFixedSize);
+            Assert.That(target.IsFixedSize, Is.False);
 
             // test IsReadOnly
-            Assert.IsFalse(target.IsReadOnly);
+            Assert.That(target.IsReadOnly, Is.False);
 
             // test IsSynchronized
-            Assert.IsFalse(target.IsSynchronized);
+            Assert.That(target.IsSynchronized, Is.False);
 
             // test Add()
             var p2Index = target.Add(new CqlParameter("p2"));
-            Assert.AreEqual(2, target.Count);
-            Assert.AreEqual(1, p2Index);
+            Assert.That(2, Is.EqualTo(target.Count));
+            Assert.That(1, Is.EqualTo(p2Index));
 
             // test Contains()
             var p3 = new CqlParameter("p3");
-            Assert.IsTrue(target.Contains(p1));
-            Assert.IsFalse(target.Contains(p3));
+            Assert.That(target.Contains(p1), Is.True);
+            Assert.That(target.Contains(p3), Is.False);
 
             // test IndexOf()
-            Assert.AreEqual(0, target.IndexOf(p1));
+            Assert.That(0, Is.EqualTo(target.IndexOf(p1)));
 
             // test Insert();
             target.Insert(0, p3);
-            Assert.AreEqual(0, target.IndexOf(p3));
-            Assert.AreEqual(1, target.IndexOf(p1));
+            Assert.That(0, Is.EqualTo(target.IndexOf(p3)));
+            Assert.That(1, Is.EqualTo(target.IndexOf(p1)));
 
             // test Remove()
             var toBeRemove = new CqlParameter("toberemoved");
             target.Add(toBeRemove);
-            Assert.IsTrue(target.Contains(toBeRemove));
+            Assert.That(target.Contains(toBeRemove));
             target.Remove(toBeRemove);
-            Assert.IsFalse(target.Contains(toBeRemove));
+            Assert.That(target.Contains(toBeRemove), Is.False);
 
             // test RemoveAt()
             target.RemoveAt(0);
-            Assert.AreEqual(2, target.Count);
+            Assert.That(2, Is.EqualTo(target.Count));
             target.RemoveAt("p2");
-            Assert.IsFalse(target.Contains("p2"));
+            Assert.That(target.Contains("p2"), Is.False);
 
             // test CopyTo()
             var arr = new CqlParameter[1];
             target.CopyTo(arr, 0);
-            Assert.AreEqual(arr[0], target[0]);
+            Assert.That(arr[0], Is.EqualTo(target[0]));
 
             // test AddRange()
             var p4p5 = new[] { new CqlParameter("p4"), new CqlParameter("p5") };
             target.AddRange(p4p5);
-            Assert.AreEqual(3, target.Count);
-            Assert.IsTrue(target.Contains(p4p5[0]));
-            Assert.IsTrue(target.Contains(p4p5[1]));
+            Assert.That(3, Is.EqualTo(target.Count));
+            Assert.That(target.Contains(p4p5[0]));
+            Assert.That(target.Contains(p4p5[1]));
 
             // test Clear()
             target.Clear();
-            Assert.AreEqual(0, target.Count);
+            Assert.That(0, Is.EqualTo(target.Count));
         }
     }
 

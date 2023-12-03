@@ -51,10 +51,10 @@ namespace Cassandra.Tests
                                      .AddContactPoint(singleUniqueIp)
                                      .Build();
 
-                Assert.AreEqual(3, cluster.InternalRef.GetResolvedEndpoints().Count);
+                Assert.That(3, Is.EqualTo(cluster.InternalRef.GetResolvedEndpoints().Count));
                 Trace.Flush();
-                Assert.AreEqual(5, listener.Queue.Count(msg => msg.Contains("Found duplicate contact point: 127.100.100.100. Ignoring it.")));
-                Assert.AreEqual(2, listener.Queue.Count(msg => msg.Contains("Found duplicate contact point: 127.100.100.100:9040. Ignoring it.")));
+                Assert.That(5, Is.EqualTo(listener.Queue.Count(msg => msg.Contains("Found duplicate contact point: 127.100.100.100. Ignoring it."))));
+                Assert.That(2, Is.EqualTo(listener.Queue.Count(msg => msg.Contains("Found duplicate contact point: 127.100.100.100:9040. Ignoring it."))));
             }
             finally
             {
@@ -71,7 +71,7 @@ namespace Cassandra.Tests
              .AddContactPoint(ip)
              .Build();
             //No ring was discovered
-            Assert.AreEqual(0, cluster.AllHosts().Count);
+            Assert.That(0, Is.EqualTo(cluster.AllHosts().Count));
         }
 
         [Test]
@@ -109,10 +109,10 @@ namespace Cassandra.Tests
                 for (var i = 0; i < length; i++)
                 {
                     var ex = Assert.Throws<NoHostAvailableException>(() => cluster.Connect());
-                    Assert.AreEqual(1, ex.Errors.Count);
+                    Assert.That(1, Is.EqualTo(ex.Errors.Count));
                 }
                 GC.Collect();
-                Assert.Less(GC.GetTotalMemory(true) / initialLength, 1.3M,
+                Assert.That(GC.GetTotalMemory(true) / initialLength, Is.LessThan(1.3M),
                     "Should not exceed a 20% (1.3) more than was previously allocated");
             }
         }
@@ -230,7 +230,7 @@ namespace Cassandra.Tests
 
             foreach (var h in cluster.AllHosts())
             {
-                Assert.AreEqual(expected[h.Address.Address.ToString()], h.GetDistanceUnsafe());
+                Assert.That(expected[h.Address.Address.ToString()], Is.EqualTo(h.GetDistanceUnsafe()));
             }
         }
 
@@ -257,15 +257,15 @@ namespace Cassandra.Tests
             {
                 using (cluster.Connect())
                 {
-                    Assert.AreEqual(1, cluster.InternalRef.GetConnectedSessions().Count());
+                    Assert.That(1, Is.EqualTo(cluster.InternalRef.GetConnectedSessions().Count()));
                 }
-                Assert.AreEqual(0, cluster.InternalRef.GetConnectedSessions().Count());
+                Assert.That(0, Is.EqualTo(cluster.InternalRef.GetConnectedSessions().Count()));
             }
             finally
             {
                 cluster.Dispose();
             }
-            Assert.AreEqual(0, cluster.InternalRef.GetConnectedSessions().Count());
+            Assert.That(0, Is.EqualTo(cluster.InternalRef.GetConnectedSessions().Count()));
         }
 
         internal class FakeHostDistanceLbp : ILoadBalancingPolicy
