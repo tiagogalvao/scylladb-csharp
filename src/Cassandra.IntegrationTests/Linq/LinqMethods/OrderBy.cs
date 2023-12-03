@@ -67,12 +67,12 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
             var movieQuery = _movieTable.Where(m => m.Title == sameTitle && m.MovieMaker == sameMovieMaker);
 
             List<Movie> actualOrderedMovieList = movieQuery.Execute().ToList();
-            Assert.AreEqual(expectedOrderedMovieList.Count, actualOrderedMovieList.Count);
+            Assert.That(expectedOrderedMovieList.Count, Is.EqualTo(actualOrderedMovieList.Count));
             for (int i = 0; i < expectedOrderedMovieList.Count; i++)
             {
-                Assert.AreEqual(expectedOrderedMovieList[i].Director, actualOrderedMovieList[i].Director);
-                Assert.AreEqual(expectedOrderedMovieList[i].MainActor, actualOrderedMovieList[i].MainActor);
-                Assert.AreEqual(expectedOrderedMovieList[i].MovieMaker, actualOrderedMovieList[i].MovieMaker);
+                Assert.That(expectedOrderedMovieList[i].Director, Is.EqualTo(actualOrderedMovieList[i].Director));
+                Assert.That(expectedOrderedMovieList[i].MainActor, Is.EqualTo(actualOrderedMovieList[i].MainActor));
+                Assert.That(expectedOrderedMovieList[i].MovieMaker, Is.EqualTo(actualOrderedMovieList[i].MovieMaker));
             }
         }
 
@@ -92,7 +92,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
             }
             catch (InvalidQueryException e)
             {
-                Assert.AreEqual("ORDER BY is only supported when the partition key is restricted by an EQ or an IN.", e.Message);
+                Assert.That("ORDER BY is only supported when the partition key is restricted by an EQ or an IN.", Is.EqualTo(e.Message));
             }
         }
 
@@ -107,7 +107,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
             var ex = Assert.ThrowsAsync<InvalidQueryException>(
                 async () => await _movieTable.OrderBy(m => m.MainActor).ExecuteAsync().ConfigureAwait(false));
             const string expectedException = "ORDER BY is only supported when the partition key is restricted by an EQ or an IN.";
-            Assert.AreEqual(expectedException, ex.Message);
+            Assert.That(expectedException, Is.EqualTo(ex.Message));
         }
     }
 }

@@ -38,6 +38,7 @@ using Cassandra.SessionManagement;
 using Cassandra.Tasks;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.DataStax.Insights
 {
@@ -83,9 +84,9 @@ namespace Cassandra.Tests.DataStax.Insights
                         30);
 
                     Trace.Flush();
-                    Assert.AreEqual(5, _listener.Queue.Count, string.Join(" ; ", _listener.Queue.ToArray()));
+                    Assert.That(5, Is.EqualTo(_listener.Queue.Count), string.Join(" ; ", _listener.Queue.ToArray()));
                     var messages = _listener.Queue.ToArray();
-                    Assert.AreEqual(messages.Count(m => m.Contains("Could not send insights startup event. Exception:")), 5);
+                    Assert.That(messages.Count(m => m.Contains("Could not send insights startup event. Exception:")), Is.EqualTo(5));
                 }
             }
             finally
@@ -127,10 +128,10 @@ namespace Cassandra.Tests.DataStax.Insights
                         30);
 
                     Trace.Flush();
-                    Assert.AreEqual(8, _listener.Queue.Count, string.Join(" ; ", _listener.Queue.ToArray()));
+                    Assert.That(8, Is.EqualTo(_listener.Queue.Count), string.Join(" ; ", _listener.Queue.ToArray()));
                     var messages = _listener.Queue.ToArray();
-                    Assert.AreEqual(messages.Count(m => m.Contains("Could not send insights startup event. Exception:")), 1);
-                    Assert.AreEqual(messages.Count(m => m.Contains("Could not send insights status event. Exception:")), 7);
+                    Assert.That(messages.Count(m => m.Contains("Could not send insights startup event. Exception:")), Is.EqualTo(1));
+                    Assert.That(messages.Count(m => m.Contains("Could not send insights status event. Exception:")), Is.EqualTo(7));
                 }
             }
             finally
@@ -155,7 +156,7 @@ namespace Cassandra.Tests.DataStax.Insights
                 cluster, session, Mock.Of<IInsightsMessageFactory<InsightsStartupData>>(), Mock.Of<IInsightsMessageFactory<InsightsStatusData>>());
             var task = insightsClient.ShutdownAsync();
 
-            Assert.AreSame(TaskHelper.Completed, task);
+            Assert.That(TaskHelper.Completed, Is.SameAs(task));
         }
 
         [Test]
@@ -176,7 +177,7 @@ namespace Cassandra.Tests.DataStax.Insights
                 cluster, session, Mock.Of<IInsightsMessageFactory<InsightsStartupData>>(), Mock.Of<IInsightsMessageFactory<InsightsStatusData>>());
             var task = insightsClient.ShutdownAsync();
 
-            Assert.AreSame(TaskHelper.Completed, task);
+            Assert.That(TaskHelper.Completed, Is.SameAs(task));
         }
 
         [Test]
@@ -268,9 +269,9 @@ namespace Cassandra.Tests.DataStax.Insights
                 target.Init();
 
                 TestHelper.RetryAssert(
-                    () => { Assert.GreaterOrEqual(queryProtocolOptions.Count, 1); }, 10, 50);
+                    () => { ClassicAssert.GreaterOrEqual(queryProtocolOptions.Count, 1); }, 10, 50);
                 queryProtocolOptions.TryPeek(out var result);
-                Assert.AreEqual(expectedJson, result.Values[0], "Actual: " + Environment.NewLine + result.Values[0]);
+                Assert.That(expectedJson, Is.EqualTo(result.Values[0]), "Actual: " + Environment.NewLine + result.Values[0]);
             }
         }
 
@@ -391,9 +392,9 @@ namespace Cassandra.Tests.DataStax.Insights
                 target.Init();
 
                 TestHelper.RetryAssert(
-                    () => { Assert.GreaterOrEqual(queryProtocolOptions.Count, 1); }, 10, 50);
+                    () => { ClassicAssert.GreaterOrEqual(queryProtocolOptions.Count, 1); }, 10, 50);
                 queryProtocolOptions.TryPeek(out var result);
-                Assert.AreEqual(expectedJson, result.Values[0], "Actual: " + Environment.NewLine + result.Values[0]);
+                Assert.That(expectedJson, Is.EqualTo(result.Values[0]), "Actual: " + Environment.NewLine + result.Values[0]);
             }
         }
 
@@ -427,10 +428,10 @@ namespace Cassandra.Tests.DataStax.Insights
 
                 target.Init();
 
-                TestHelper.RetryAssert(() => { Assert.GreaterOrEqual(queryProtocolOptions.Count, 5); }, 5, 400);
+                TestHelper.RetryAssert(() => { ClassicAssert.GreaterOrEqual(queryProtocolOptions.Count, 5); }, 5, 400);
                 queryProtocolOptions.TryDequeue(out var result); // ignore startup message
                 queryProtocolOptions.TryPeek(out result);
-                Assert.AreEqual(expectedJson, result.Values[0], "Actual: " + Environment.NewLine + result.Values[0]);
+                Assert.That(expectedJson, Is.EqualTo(result.Values[0]), "Actual: " + Environment.NewLine + result.Values[0]);
             }
         }
 

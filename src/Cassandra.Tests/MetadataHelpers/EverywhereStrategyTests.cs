@@ -34,11 +34,11 @@ namespace Cassandra.Tests.MetadataHelpers
                 testData.Ring, testData.PrimaryReplicas, testData.NumberOfHostsWithTokens, testData.Datacenters);
             
             // 3 dcs, 3 hosts per rack, 2 racks per dc, 10 tokens per host
-            Assert.AreEqual(10 * 3 * 2 * 3, result.Count);
+            Assert.That(10 * 3 * 2 * 3, Is.EqualTo(result.Count));
 
             foreach (var token in result)
             {
-                Assert.AreEqual(3 * 3 * 2, token.Value.Count);
+                Assert.That(3 * 3 * 2, Is.EqualTo(token.Value.Count));
             }
         }
     }

@@ -39,22 +39,22 @@ namespace Cassandra.Tests.Mapping.Linq
         public void Table_Constructor_Defaults_To_MappingAttributesAttributes()
         {
             var table = new Table<AllTypesEntity>(_session);
-            Assert.AreEqual(
+            Assert.That(
                 @"SELECT BooleanValue, DateTimeValue, DecimalValue, DoubleValue, Int64Value, IntValue, StringValue, UuidValue FROM AllTypesEntity",
-                table.ToString());
+                Is.EqualTo(table.ToString()));
         }
 
         [Test]
         public void Table_Constructor_Uses_Provided_Mappings()
         {
             var table = new Table<AllTypesEntity>(_session);
-            Assert.AreEqual(
+            Assert.That(
                 @"SELECT BooleanValue, DateTimeValue, DecimalValue, DoubleValue, Int64Value, IntValue, StringValue, UuidValue FROM AllTypesEntity",
-                table.ToString());
+                Is.EqualTo(table.ToString()));
             var config = new MappingConfiguration().Define(new Map<AllTypesEntity>().TableName("tbl3"));
             table = new Table<AllTypesEntity>(_session, config);
-            Assert.AreEqual(@"SELECT BooleanValue, DateTimeValue, DecimalValue, DoubleValue, Int64Value, IntValue, StringValue, UuidValue FROM tbl3",
-                table.ToString());
+            Assert.That(@"SELECT BooleanValue, DateTimeValue, DecimalValue, DoubleValue, Int64Value, IntValue, StringValue, UuidValue FROM tbl3",
+                Is.EqualTo(table.ToString()));
         }
 
         [Test]
@@ -62,9 +62,9 @@ namespace Cassandra.Tests.Mapping.Linq
         {
             var config = new MappingConfiguration().Define(new Map<AllTypesEntity>().TableName("tbl4").Column(t => t.Int64Value, cm => cm.WithName("id1")));
             var table = new Table<AllTypesEntity>(_session, config, "tbl_overridden1");
-            Assert.AreEqual(
+            Assert.That(
                 @"SELECT BooleanValue, DateTimeValue, DecimalValue, DoubleValue, id1, IntValue, StringValue, UuidValue FROM tbl_overridden1 WHERE id1 = ?",
-                table.Where(t => t.Int64Value == 1).ToString());
+                Is.EqualTo(table.Where(t => t.Int64Value == 1).ToString()));
         }
 
         [Test]
@@ -72,7 +72,7 @@ namespace Cassandra.Tests.Mapping.Linq
         {
             var config = new MappingConfiguration().Define(new Map<AllTypesEntity>().TableName("tbl4").Column(t => t.Int64Value, cm => cm.WithName("id1")));
             var table = new Table<AllTypesEntity>(_session, config, null, "ks_overridden1");
-            Assert.AreEqual(@"SELECT BooleanValue, DateTimeValue, DecimalValue, DoubleValue, id1, IntValue, StringValue, UuidValue FROM ks_overridden1.tbl4 WHERE id1 = ?", table.Where(t => t.Int64Value == 1).ToString());
+            Assert.That(@"SELECT BooleanValue, DateTimeValue, DecimalValue, DoubleValue, id1, IntValue, StringValue, UuidValue FROM ks_overridden1.tbl4 WHERE id1 = ?", Is.EqualTo(table.Where(t => t.Int64Value == 1).ToString()));
         }
 
         [Test]
@@ -80,9 +80,9 @@ namespace Cassandra.Tests.Mapping.Linq
         {
             var config = new MappingConfiguration().Define(new Map<AllTypesEntity>().TableName("tbl4").CaseSensitive().Column(t => t.Int64Value, cm => cm.WithName("id1")));
             var table = new Table<AllTypesEntity>(_session, config, "tbl_custom", "ks_custom");
-            Assert.AreEqual(
+            Assert.That(
                 @"SELECT ""BooleanValue"", ""DateTimeValue"", ""DecimalValue"", ""DoubleValue"", ""id1"", ""IntValue"", ""StringValue"", ""UuidValue"" FROM ""ks_custom"".""tbl_custom"" WHERE ""id1"" = ?",
-                table.Where(t => t.Int64Value == 1).ToString());
+                Is.EqualTo(table.Where(t => t.Int64Value == 1).ToString()));
         }
 
         private static Mock<ISession> GetSessionMock(ISerializerManager serializer = null)

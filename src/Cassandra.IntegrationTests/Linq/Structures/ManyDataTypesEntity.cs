@@ -85,22 +85,22 @@ namespace Cassandra.IntegrationTests.Linq.Structures
 
         public void AssertEquals(ManyDataTypesEntity actualRow)
         {
-            Assert.AreEqual(StringType, actualRow.StringType);
-            Assert.AreEqual(GuidType, actualRow.GuidType);
-            Assert.AreEqual(DateTimeType.ToString(), actualRow.DateTimeType.ToString()); // 'ToString' rounds to the nearest second
-            Assert.AreEqual(DateTimeOffsetType.ToString(), actualRow.DateTimeOffsetType.ToString());
-            Assert.AreEqual(BooleanType, actualRow.BooleanType);
-            Assert.AreEqual(DecimalType, actualRow.DecimalType);
-            Assert.AreEqual(DoubleType, actualRow.DoubleType);
-            Assert.AreEqual(FloatType, actualRow.FloatType);
-            Assert.AreEqual(IntType, actualRow.IntType);
-            Assert.AreEqual(Int64Type, actualRow.Int64Type);
-            //Assert.AreEqual(TimeUuidType, actualRow.TimeUuidType);
-            //Assert.AreEqual(NullableTimeUuidType, actualRow.NullableTimeUuidType);
-            Assert.AreEqual(DictionaryStringLongType, actualRow.DictionaryStringLongType);
-            Assert.AreEqual(DictionaryStringStringType, actualRow.DictionaryStringStringType);
-            Assert.AreEqual(ListOfGuidsType, actualRow.ListOfGuidsType);
-            Assert.AreEqual(ListOfStringsType, actualRow.ListOfStringsType);
+            Assert.That(StringType, Is.EqualTo(actualRow.StringType));
+            Assert.That(GuidType, Is.EqualTo(actualRow.GuidType));
+            Assert.That(DateTimeType.ToString(), Is.EqualTo(actualRow.DateTimeType.ToString())); // 'ToString' rounds to the nearest second
+            Assert.That(DateTimeOffsetType.ToString(), Is.EqualTo(actualRow.DateTimeOffsetType.ToString()));
+            Assert.That(BooleanType, Is.EqualTo(actualRow.BooleanType));
+            Assert.That(DecimalType, Is.EqualTo(actualRow.DecimalType));
+            Assert.That(DoubleType, Is.EqualTo(actualRow.DoubleType));
+            Assert.That(FloatType, Is.EqualTo(actualRow.FloatType));
+            Assert.That(IntType, Is.EqualTo(actualRow.IntType));
+            Assert.That(Int64Type, Is.EqualTo(actualRow.Int64Type));
+            //Assert.That(TimeUuidType, actualRow.TimeUuidType);
+            //Assert.That(NullableTimeUuidType, actualRow.NullableTimeUuidType);
+            Assert.That(DictionaryStringLongType, Is.EqualTo(actualRow.DictionaryStringLongType));
+            Assert.That(DictionaryStringStringType, Is.EqualTo(actualRow.DictionaryStringStringType));
+            Assert.That(ListOfGuidsType, Is.EqualTo(actualRow.ListOfGuidsType));
+            Assert.That(ListOfStringsType, Is.EqualTo(actualRow.ListOfStringsType));
         }
 
         public static List<ManyDataTypesEntity> GetDefaultAllDataTypesList()
@@ -143,14 +143,14 @@ namespace Cassandra.IntegrationTests.Linq.Structures
 
         public static void AssertListContains(List<ManyDataTypesEntity> expectedEntities, ManyDataTypesEntity actualEntity)
         {
-            Assert.IsTrue(ListContains(expectedEntities, actualEntity));
+            Assert.That(ListContains(expectedEntities, actualEntity), Is.True);
         }
 
         public static void AssertListEqualsList(List<ManyDataTypesEntity> expectedEntities, List<ManyDataTypesEntity> actualEntities)
         {
-            Assert.AreEqual(expectedEntities.Count, actualEntities.Count);
+            Assert.That(expectedEntities.Count, Is.EqualTo(actualEntities.Count));
             foreach (var expectedEntity in expectedEntities)
-                Assert.IsTrue(ListContains(actualEntities, expectedEntity));
+                Assert.That(ListContains(actualEntities, expectedEntity), Is.True);
         }
         
         private static readonly IDictionary<string, Func<ManyDataTypesEntity, object>> ColumnMappings =

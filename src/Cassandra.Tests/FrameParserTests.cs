@@ -23,6 +23,7 @@ using System.Text;
 using Cassandra.Responses;
 using Cassandra.Serialization;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests
 {
@@ -41,7 +42,7 @@ namespace Cassandra.Tests
             var header = FrameHeader.ParseResponseHeader(Version, GetHeaderBuffer(body.Length), 0);
             var response = FrameParser.Parse(new Frame(header, new MemoryStream(body), Serializer.GetCurrentSerializer(), null));
             var ex = IsErrorResponse<SyntaxError>(response);
-            Assert.AreEqual("Test syntax error", ex.Message);
+            Assert.That("Test syntax error", Is.EqualTo(ex.Message));
         }
         
         [Test]
@@ -53,7 +54,7 @@ namespace Cassandra.Tests
             var header = FrameHeader.ParseResponseHeader(Version, GetHeaderBuffer(body.Length, HeaderFlags.Warning), 0);
             var response = FrameParser.Parse(new Frame(header, new MemoryStream(body), Serializer.GetCurrentSerializer(), null));
             var ex = IsErrorResponse<SyntaxError>(response);
-            Assert.AreEqual("Test syntax error", ex.Message);
+            Assert.That("Test syntax error", Is.EqualTo(ex.Message));
         }
 
         [Test]
@@ -68,12 +69,12 @@ namespace Cassandra.Tests
             var body = GetErrorBody(ReadFailureErrorCode, "Test error message", additional);
             var response = GetResponse(body, ProtocolVersion.V4);
             var ex = IsErrorResponse<ReadFailureException>(response);
-            Assert.AreEqual(ConsistencyLevel.LocalQuorum, ex.ConsistencyLevel);
-            Assert.AreEqual(1, ex.ReceivedAcknowledgements);
-            Assert.AreEqual(3, ex.RequiredAcknowledgements);
-            Assert.AreEqual(2, ex.Failures);
-            Assert.True(ex.WasDataRetrieved);
-            Assert.That(ex.Reasons, Is.Empty);
+            Assert.That(ConsistencyLevel.LocalQuorum, Is.EqualTo(ex.ConsistencyLevel));
+            Assert.That(1, Is.EqualTo(ex.ReceivedAcknowledgements));
+            Assert.That(3, Is.EqualTo(ex.RequiredAcknowledgements));
+            Assert.That(2, Is.EqualTo(ex.Failures));
+            Assert.That(ex.WasDataRetrieved, Is.True);
+            Assert.That(ex.Reasons, Is.EqualTo(Is.Empty));
         }
 
         [Test]
@@ -90,11 +91,11 @@ namespace Cassandra.Tests
             var body = GetErrorBody(ReadFailureErrorCode, "Test error message", additional);
             var response = GetResponse(body);
             var ex = IsErrorResponse<ReadFailureException>(response);
-            Assert.AreEqual(ConsistencyLevel.LocalQuorum, ex.ConsistencyLevel);
-            Assert.AreEqual(2, ex.ReceivedAcknowledgements);
-            Assert.AreEqual(3, ex.RequiredAcknowledgements);
-            Assert.AreEqual(1, ex.Failures);
-            Assert.False(ex.WasDataRetrieved);
+            Assert.That(ConsistencyLevel.LocalQuorum, Is.EqualTo(ex.ConsistencyLevel));
+            Assert.That(2, Is.EqualTo(ex.ReceivedAcknowledgements));
+            Assert.That(3, Is.EqualTo(ex.RequiredAcknowledgements));
+            Assert.That(1, Is.EqualTo(ex.Failures));
+            Assert.That(ex.WasDataRetrieved, Is.False);
             Assert.That(ex.Reasons, Is.EquivalentTo(new Dictionary<IPAddress, int>
             {
                 { IPAddress.Parse("10.10.0.1"), 5 }
@@ -115,11 +116,11 @@ namespace Cassandra.Tests
             var body = GetErrorBody(WriteFailureErrorCode, "Test error message", additional);
             var response = GetResponse(body, ProtocolVersion.V4);
             var ex = IsErrorResponse<WriteFailureException>(response);
-            Assert.AreEqual(ConsistencyLevel.All, ex.ConsistencyLevel);
-            Assert.AreEqual(1, ex.ReceivedAcknowledgements);
-            Assert.AreEqual(3, ex.RequiredAcknowledgements);
-            Assert.AreEqual(2, ex.Failures);
-            Assert.AreEqual("SIMPLE", ex.WriteType);
+            Assert.That(ConsistencyLevel.All, Is.EqualTo(ex.ConsistencyLevel));
+            Assert.That(1, Is.EqualTo(ex.ReceivedAcknowledgements));
+            Assert.That(3, Is.EqualTo(ex.RequiredAcknowledgements));
+            Assert.That(2, Is.EqualTo(ex.Failures));
+            Assert.That("SIMPLE", Is.EqualTo(ex.WriteType));
             Assert.That(ex.Reasons, Is.Empty);
         }
 
@@ -139,11 +140,11 @@ namespace Cassandra.Tests
             var body = GetErrorBody(WriteFailureErrorCode, "Test error message", additional);
             var response = GetResponse(body);
             var ex = IsErrorResponse<WriteFailureException>(response);
-            Assert.AreEqual(ConsistencyLevel.Quorum, ex.ConsistencyLevel);
-            Assert.AreEqual(2, ex.ReceivedAcknowledgements);
-            Assert.AreEqual(3, ex.RequiredAcknowledgements);
-            Assert.AreEqual(1, ex.Failures);
-            Assert.AreEqual("COUNTER", ex.WriteType);
+            Assert.That(ConsistencyLevel.Quorum, Is.EqualTo(ex.ConsistencyLevel));
+            Assert.That(2, Is.EqualTo(ex.ReceivedAcknowledgements));
+            Assert.That(3, Is.EqualTo(ex.RequiredAcknowledgements));
+            Assert.That(1, Is.EqualTo(ex.Failures));
+            Assert.That("COUNTER", Is.EqualTo(ex.WriteType));
             Assert.That(ex.Reasons, Is.EquivalentTo(new Dictionary<IPAddress, int>
             {
                 { IPAddress.Parse("12.10.0.1"), 4 }
@@ -181,9 +182,9 @@ namespace Cassandra.Tests
 
         private static TException IsErrorResponse<TException>(Response response) where TException : DriverException
         {
-            Assert.IsInstanceOf<ErrorResponse>(response);
+            ClassicAssert.IsInstanceOf<ErrorResponse>(response);
             var ex = ((ErrorResponse) response).Output.CreateException();
-            Assert.IsInstanceOf<TException>(ex);
+            ClassicAssert.IsInstanceOf<TException>(ex);
             return (TException) ex;
         }
     }

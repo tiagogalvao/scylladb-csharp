@@ -29,6 +29,7 @@ using NUnit.Framework;
 
 using System;
 using Cassandra.Tests.Connections.TestHelpers;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.DataStax.Graph
 {
@@ -55,10 +56,10 @@ namespace Cassandra.Tests.DataStax.Graph
             _cluster = ExecuteGraphTests.GetCluster(stmt => coreStatement = stmt);
             var session = _cluster.Connect();
             session.ExecuteGraph(new SimpleGraphStatement("g.V()"));
-            Assert.NotNull(coreStatement);
-            Assert.Null(coreStatement.Timestamp);
-            Assert.Null(coreStatement.ConsistencyLevel);
-            Assert.AreEqual("g.V()", coreStatement.QueryString);
+            Assert.That(coreStatement, Is.Not.Null);
+            Assert.That(coreStatement.Timestamp, Is.Null);
+            Assert.That(coreStatement.ConsistencyLevel, Is.Null);
+            Assert.That("g.V()", Is.EqualTo(coreStatement.QueryString));
         }
 
         [Test]
@@ -69,9 +70,9 @@ namespace Cassandra.Tests.DataStax.Graph
             var session = _cluster.Connect();
             var timestamp = DateTimeOffset.Now;
             session.ExecuteGraph(new SimpleGraphStatement("g.V()").SetTimestamp(timestamp));
-            Assert.NotNull(coreStatement);
-            Assert.Null(coreStatement.ConsistencyLevel);
-            Assert.AreEqual(coreStatement.Timestamp, timestamp);
+            Assert.That(coreStatement, Is.Not.Null);
+            Assert.That(coreStatement.ConsistencyLevel, Is.Null);
+            Assert.That(coreStatement.Timestamp, Is.EqualTo(timestamp));
         }
 
         [Test]
@@ -82,9 +83,9 @@ namespace Cassandra.Tests.DataStax.Graph
             var session = _cluster.Connect();
             const ConsistencyLevel consistency = ConsistencyLevel.Three;
             session.ExecuteGraph(new SimpleGraphStatement("g.V()").SetConsistencyLevel(consistency));
-            Assert.NotNull(coreStatement);
-            Assert.AreEqual(coreStatement.ConsistencyLevel, consistency);
-            Assert.Null(coreStatement.Timestamp);
+            Assert.That(coreStatement, Is.Not.Null);
+            Assert.That(coreStatement.ConsistencyLevel, Is.EqualTo(consistency));
+            Assert.That(coreStatement.Timestamp, Is.Null);
         }
 
         [Test]
@@ -95,13 +96,13 @@ namespace Cassandra.Tests.DataStax.Graph
             _cluster = ExecuteGraphTests.GetCluster(stmt => coreStatement = stmt, new GraphOptions().SetReadTimeoutMillis(readTimeout));
             var session = _cluster.Connect();
             session.ExecuteGraph(new SimpleGraphStatement("g.V()"));
-            Assert.NotNull(coreStatement);
-            Assert.AreEqual(readTimeout, coreStatement.ReadTimeoutMillis);
+            Assert.That(coreStatement, Is.Not.Null);
+            Assert.That(readTimeout, Is.EqualTo(coreStatement.ReadTimeoutMillis));
             //Another one with the statement level timeout set to zero
             session.ExecuteGraph(new SimpleGraphStatement("g.V()").SetReadTimeoutMillis(0));
-            Assert.NotNull(coreStatement);
-            Assert.AreEqual(readTimeout, coreStatement.ReadTimeoutMillis);
-            Assert.True(coreStatement.OutgoingPayload.ContainsKey("request-timeout"));
+            Assert.That(coreStatement, Is.Not.Null);
+            Assert.That(readTimeout, Is.EqualTo(coreStatement.ReadTimeoutMillis));
+            Assert.That(coreStatement.OutgoingPayload.ContainsKey("request-timeout"), Is.True);
             Assert.That(coreStatement.OutgoingPayload["request-timeout"], Is.EqualTo(ExecuteGraphTests.ToBuffer(readTimeout)));
         }
 
@@ -114,9 +115,9 @@ namespace Cassandra.Tests.DataStax.Graph
             var session = _cluster.Connect();
             const int readTimeout = 6000;
             session.ExecuteGraph(new SimpleGraphStatement("g.V()").SetReadTimeoutMillis(readTimeout));
-            Assert.NotNull(coreStatement);
-            Assert.AreEqual(readTimeout, coreStatement.ReadTimeoutMillis);
-            Assert.True(coreStatement.OutgoingPayload.ContainsKey("request-timeout"));
+            Assert.That(coreStatement, Is.Not.Null);
+            Assert.That(readTimeout, Is.EqualTo(coreStatement.ReadTimeoutMillis));
+            Assert.That(coreStatement.OutgoingPayload.ContainsKey("request-timeout"), Is.True);
             Assert.That(coreStatement.OutgoingPayload["request-timeout"], Is.EqualTo(ExecuteGraphTests.ToBuffer(readTimeout)));
         }
 
@@ -131,10 +132,10 @@ namespace Cassandra.Tests.DataStax.Graph
                 { "myName", "is what"}
             };
             session.ExecuteGraph(new SimpleGraphStatement(parameters, "g.V().has('name', myName)"));
-            Assert.NotNull(coreStatement);
-            Assert.AreEqual("g.V().has('name', myName)", coreStatement.QueryString);
+            Assert.That(coreStatement, Is.Not.Null);
+            Assert.That("g.V().has('name', myName)", Is.EqualTo(coreStatement.QueryString));
             //A single parameter with the key/values json stringified
-            Assert.AreEqual(new object[] { "{\"myName\":\"is what\"}" }, coreStatement.QueryValues);
+            Assert.That(new object[] { "{\"myName\":\"is what\"}" }, Is.EqualTo(coreStatement.QueryValues));
         }
 
         [Test]
@@ -155,9 +156,9 @@ namespace Cassandra.Tests.DataStax.Graph
             _cluster = ExecuteGraphTests.GetCluster(stmt => { }, null, rsMock.Object);
             var session = _cluster.Connect();
             var rsGraph = session.ExecuteGraph(new SimpleGraphStatement("g.V()"));
-            Assert.NotNull(rsGraph);
+            Assert.That(rsGraph, Is.Not.Null);
             var resultArray = rsGraph.ToArray();
-            Assert.AreEqual(2, resultArray.Length);
+            Assert.That(2, Is.EqualTo(resultArray.Length));
             CollectionAssert.AreEqual(new[] { 100, 101 }, resultArray.Select(g => g.ToInt32()));
         }
 
@@ -168,12 +169,12 @@ namespace Cassandra.Tests.DataStax.Graph
             _cluster = ExecuteGraphTests.GetCluster(stmt => coreStatement = stmt);
             var session = _cluster.Connect();
             session.ExecuteGraph(new SimpleGraphStatement("g.V()"));
-            Assert.NotNull(coreStatement);
-            Assert.NotNull(coreStatement.OutgoingPayload);
+            Assert.That(coreStatement, Is.Not.Null);
+            Assert.That(coreStatement.OutgoingPayload, Is.Not.Null);
             //The default graph payload
-            Assert.AreEqual(3, coreStatement.OutgoingPayload.Count);
+            Assert.That(3, Is.EqualTo(coreStatement.OutgoingPayload.Count));
             CollectionAssert.AreEqual(new[] { "graph-language", "graph-source", "graph-results" }, coreStatement.OutgoingPayload.Keys);
-            Assert.AreEqual(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-results"]), "graphson-1.0");
+            Assert.That(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-results"]), Is.EqualTo("graphson-1.0"));
         }
 
         [Test]
@@ -191,15 +192,15 @@ namespace Cassandra.Tests.DataStax.Graph
                     .SetGraphProtocolVersion(GraphProtocol.GraphSON2));
             var session = _cluster.Connect();
             session.ExecuteGraph(new SimpleGraphStatement("g.V()"));
-            Assert.NotNull(coreStatement);
-            Assert.NotNull(coreStatement.OutgoingPayload);
+            Assert.That(coreStatement, Is.Not.Null);
+            Assert.That(coreStatement.OutgoingPayload, Is.Not.Null);
             Assert.That(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-source"]), Is.EqualTo("My source!"));
-            Assert.AreEqual(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-name"]), "name1");
-            Assert.AreEqual(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-read-consistency"]), "LOCAL_QUORUM");
-            Assert.AreEqual(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-write-consistency"]), "EACH_QUORUM");
+            Assert.That(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-name"]), Is.EqualTo("name1"));
+            Assert.That(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-read-consistency"]), Is.EqualTo("LOCAL_QUORUM"));
+            Assert.That(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-write-consistency"]), Is.EqualTo("EACH_QUORUM"));
             //default
-            Assert.AreEqual(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-language"]), "gremlin-groovy");
-            Assert.AreEqual(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-results"]), "graphson-2.0");
+            Assert.That(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-language"]), Is.EqualTo("gremlin-groovy"));
+            Assert.That(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-results"]), Is.EqualTo("graphson-2.0"));
             Assert.That(coreStatement.OutgoingPayload["request-timeout"], Is.EqualTo(ExecuteGraphTests.ToBuffer(22222)));
         }
 
@@ -223,15 +224,15 @@ namespace Cassandra.Tests.DataStax.Graph
                 .SetGraphReadConsistencyLevel(ConsistencyLevel.Two)
                 .SetGraphSource("Statement source")
                 .SetGraphProtocolVersion(GraphProtocol.GraphSON3));
-            Assert.NotNull(coreStatement);
-            Assert.NotNull(coreStatement.OutgoingPayload);
+            Assert.That(coreStatement, Is.Not.Null);
+            Assert.That(coreStatement.OutgoingPayload, Is.Not.Null);
             Assert.That(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-source"]), Is.EqualTo("Statement source"));
             //is a system query
-            Assert.False(coreStatement.OutgoingPayload.ContainsKey("graph-name"));
-            Assert.AreEqual(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-read-consistency"]), "TWO");
-            Assert.AreEqual(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-write-consistency"]), "EACH_QUORUM");
-            Assert.AreEqual(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-language"]), "my-lang");
-            Assert.AreEqual(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-results"]), "graphson-3.0");
+            Assert.That(coreStatement.OutgoingPayload.ContainsKey("graph-name"), Is.False);
+            Assert.That(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-read-consistency"]), Is.EqualTo("TWO"));
+            Assert.That(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-write-consistency"]), Is.EqualTo("EACH_QUORUM"));
+            Assert.That(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-language"]), Is.EqualTo("my-lang"));
+            Assert.That(Encoding.UTF8.GetString(coreStatement.OutgoingPayload["graph-results"]), Is.EqualTo("graphson-3.0"));
             Assert.That(coreStatement.OutgoingPayload["request-timeout"], Is.EqualTo(ExecuteGraphTests.ToBuffer(5555)));
         }
 
@@ -245,9 +246,9 @@ namespace Cassandra.Tests.DataStax.Graph
                 "{\"member_id\":123,\"community_id\":586910,\"~label\":\"vertex\",\"group_id\":2}";
             var id = new GraphNode("{\"result\":" + expectedJson + "}");
             session.ExecuteGraph(new SimpleGraphStatement("g.V(vertexId)", new { vertexId = id }));
-            Assert.NotNull(coreStatement);
-            Assert.AreEqual(1, coreStatement.QueryValues.Length);
-            Assert.AreEqual("{\"vertexId\":" + expectedJson + "}", coreStatement.QueryValues[0]);
+            Assert.That(coreStatement, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(coreStatement.QueryValues.Length));
+            Assert.That("{\"vertexId\":" + expectedJson + "}", Is.EqualTo(coreStatement.QueryValues[0]));
         }
 
         [Test]
@@ -258,9 +259,9 @@ namespace Cassandra.Tests.DataStax.Graph
             var session = _cluster.Connect();
             var value = BigInteger.Parse("1234567890123456789123456789");
             session.ExecuteGraph(new SimpleGraphStatement("g.V(vertexId)", new { value }));
-            Assert.NotNull(coreStatement);
-            Assert.AreEqual(1, coreStatement.QueryValues.Length);
-            Assert.AreEqual("{\"value\":" + value + "}", coreStatement.QueryValues[0]);
+            Assert.That(coreStatement, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(coreStatement.QueryValues.Length));
+            Assert.That("{\"value\":" + value + "}", Is.EqualTo(coreStatement.QueryValues[0]));
         }
 
         [Test]
@@ -271,9 +272,9 @@ namespace Cassandra.Tests.DataStax.Graph
             var session = _cluster.Connect();
             var value = IPAddress.Parse("192.168.1.100");
             session.ExecuteGraph(new SimpleGraphStatement("g.V(vertexId)", new { value }));
-            Assert.NotNull(coreStatement);
-            Assert.AreEqual(1, coreStatement.QueryValues.Length);
-            Assert.AreEqual("{\"value\":\"" + value + "\"}", coreStatement.QueryValues[0]);
+            Assert.That(coreStatement, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(coreStatement.QueryValues.Length));
+            Assert.That("{\"value\":\"" + value + "\"}", Is.EqualTo(coreStatement.QueryValues[0]));
         }
 
         [Test]
@@ -301,13 +302,13 @@ namespace Cassandra.Tests.DataStax.Graph
             });
             var session = _cluster.Connect();
             session.ExecuteGraph(new SimpleGraphStatement("g.V()").SetGraphSourceAnalytics());
-            Assert.AreEqual(2, coreStatements.Count);
-            Assert.AreEqual("CALL DseClientTool.getAnalyticsGraphServer()", coreStatements[0].QueryString);
-            Assert.AreEqual("g.V()", coreStatements[1].QueryString);
+            Assert.That(2, Is.EqualTo(coreStatements.Count));
+            Assert.That("CALL DseClientTool.getAnalyticsGraphServer()", Is.EqualTo(coreStatements[0].QueryString));
+            Assert.That("g.V()", Is.EqualTo(coreStatements[1].QueryString));
             var targettedStatement = coreStatements[1] as TargettedSimpleStatement;
-            Assert.NotNull(targettedStatement);
-            Assert.NotNull(targettedStatement.PreferredHost);
-            Assert.AreEqual("1.2.3.4:9042", targettedStatement.PreferredHost.Address.ToString());
+            Assert.That(targettedStatement, Is.Not.Null);
+            Assert.That(targettedStatement.PreferredHost, Is.Not.Null);
+            Assert.That("1.2.3.4:9042", Is.EqualTo(targettedStatement.PreferredHost.Address.ToString()));
         }
 
         [Test]
@@ -317,11 +318,11 @@ namespace Cassandra.Tests.DataStax.Graph
             _cluster = ExecuteGraphTests.GetCluster(stmt => coreStatements.Add(stmt));
             var session = _cluster.Connect();
             session.ExecuteGraph(new SimpleGraphStatement("g.V()"));
-            Assert.AreEqual(1, coreStatements.Count);
-            Assert.AreEqual("g.V()", coreStatements[0].QueryString);
+            Assert.That(1, Is.EqualTo(coreStatements.Count));
+            Assert.That("g.V()", Is.EqualTo(coreStatements[0].QueryString));
             var targettedStatement = coreStatements[0] as TargettedSimpleStatement;
-            Assert.NotNull(targettedStatement);
-            Assert.Null(targettedStatement.PreferredHost);
+            Assert.That(targettedStatement, Is.Not.Null);
+            Assert.That(targettedStatement.PreferredHost, Is.Null);
         }
 
         [Test]
@@ -332,9 +333,9 @@ namespace Cassandra.Tests.DataStax.Graph
             var session = _cluster.Connect();
             session.ExecuteGraph(new SimpleGraphStatement("g.V()")
                 .SetReadTimeoutMillis(Timeout.Infinite));
-            Assert.NotNull(coreStatement);
-            Assert.NotNull(coreStatement.OutgoingPayload);
-            Assert.False(coreStatement.OutgoingPayload.ContainsKey("request-timeout"));
+            Assert.That(coreStatement, Is.Not.Null);
+            Assert.That(coreStatement.OutgoingPayload, Is.Not.Null);
+            Assert.That(coreStatement.OutgoingPayload.ContainsKey("request-timeout"), Is.False);
             Assert.That(coreStatement.ReadTimeoutMillis, Is.EqualTo(int.MaxValue));
         }
 

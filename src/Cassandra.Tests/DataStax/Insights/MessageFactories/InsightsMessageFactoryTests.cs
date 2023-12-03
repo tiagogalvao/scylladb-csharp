@@ -41,12 +41,12 @@ namespace Cassandra.Tests.DataStax.Insights.MessageFactories
 
             var act = target.CreateMessage(cluster, Mock.Of<IInternalSession>());
 
-            Assert.AreEqual(InsightType.Event, act.Metadata.InsightType);
-            Assert.AreEqual("v1", act.Metadata.InsightMappingId);
-            Assert.AreEqual("driver.startup", act.Metadata.Name);
-            Assert.GreaterOrEqual(act.Metadata.Timestamp, timestamp);
-            Assert.AreEqual(1, act.Metadata.Tags.Count);
-            Assert.AreEqual("csharp", act.Metadata.Tags["language"]);
+            Assert.That(InsightType.Event, Is.EqualTo(act.Metadata.InsightType));
+            Assert.That("v1", Is.EqualTo(act.Metadata.InsightMappingId));
+            Assert.That("driver.startup", Is.EqualTo(act.Metadata.Name));
+            Assert.That(act.Metadata.Timestamp, Is.GreaterThanOrEqualTo(timestamp));
+            Assert.That(1, Is.EqualTo(act.Metadata.Tags.Count));
+            Assert.That("csharp", Is.EqualTo(act.Metadata.Tags["language"]));
         }
 
         [Test]
@@ -58,12 +58,12 @@ namespace Cassandra.Tests.DataStax.Insights.MessageFactories
 
             var act = target.CreateMessage(cluster, Mock.Of<IInternalSession>());
 
-            Assert.AreEqual(InsightType.Event, act.Metadata.InsightType);
-            Assert.AreEqual("v1", act.Metadata.InsightMappingId);
-            Assert.AreEqual("driver.status", act.Metadata.Name);
-            Assert.GreaterOrEqual(act.Metadata.Timestamp, timestamp);
-            Assert.AreEqual(1, act.Metadata.Tags.Count);
-            Assert.AreEqual("csharp", act.Metadata.Tags["language"]);
+            Assert.That(InsightType.Event, Is.EqualTo(act.Metadata.InsightType));
+            Assert.That("v1", Is.EqualTo(act.Metadata.InsightMappingId));
+            Assert.That("driver.status", Is.EqualTo(act.Metadata.Name));
+            Assert.That(act.Metadata.Timestamp, Is.GreaterThanOrEqualTo(timestamp));
+            Assert.That(1, Is.EqualTo(act.Metadata.Tags.Count));
+            Assert.That("csharp", Is.EqualTo(act.Metadata.Tags["language"]));
         }
 
         [Test]
@@ -93,14 +93,14 @@ namespace Cassandra.Tests.DataStax.Insights.MessageFactories
 
             var act = target.CreateMessage(cluster, session);
 
-            Assert.AreEqual("127.0.0.1:9011", act.Data.ControlConnection);
-            Assert.AreEqual("BECFE098-E462-47E7-B6A7-A21CD316D4C0", act.Data.ClientId.ToUpper());
-            Assert.AreEqual("E21EAB96-D91E-4790-80BD-1D5FB5472258", act.Data.SessionId.ToUpper());
-            Assert.AreEqual(2, act.Data.ConnectedNodes.Count);
-            Assert.AreEqual(3, act.Data.ConnectedNodes["127.0.0.1:9042"].Connections);
-            Assert.AreEqual(1, act.Data.ConnectedNodes["127.0.0.1:9042"].InFlightQueries);
-            Assert.AreEqual(4, act.Data.ConnectedNodes["127.0.0.2:9042"].Connections);
-            Assert.AreEqual(2, act.Data.ConnectedNodes["127.0.0.2:9042"].InFlightQueries);
+            Assert.That("127.0.0.1:9011", Is.EqualTo(act.Data.ControlConnection));
+            Assert.That("BECFE098-E462-47E7-B6A7-A21CD316D4C0", Is.EqualTo(act.Data.ClientId.ToUpper()));
+            Assert.That("E21EAB96-D91E-4790-80BD-1D5FB5472258", Is.EqualTo(act.Data.SessionId.ToUpper()));
+            Assert.That(2, Is.EqualTo(act.Data.ConnectedNodes.Count));
+            Assert.That(3, Is.EqualTo(act.Data.ConnectedNodes["127.0.0.1:9042"].Connections));
+            Assert.That(1, Is.EqualTo(act.Data.ConnectedNodes["127.0.0.1:9042"].InFlightQueries));
+            Assert.That(4, Is.EqualTo(act.Data.ConnectedNodes["127.0.0.2:9042"].Connections));
+            Assert.That(2, Is.EqualTo(act.Data.ConnectedNodes["127.0.0.2:9042"].InFlightQueries));
         }
 
         [Test]
@@ -119,97 +119,102 @@ namespace Cassandra.Tests.DataStax.Insights.MessageFactories
 
             InsightsMessageFactoryTests.AssertExecutionProfile(act);
 
-            Assert.IsFalse(string.IsNullOrWhiteSpace(act.Data.HostName));
-            Assert.AreEqual(4, act.Data.ProtocolVersion);
-            Assert.AreEqual(CompressionType.Snappy, act.Data.Compression);
-            Assert.AreEqual("127.0.0.1:9011", act.Data.InitialControlConnection);
-            Assert.AreEqual("10.10.10.2:9015", act.Data.LocalAddress);
-            Assert.AreEqual(10000, act.Data.HeartbeatInterval);
-            Assert.AreEqual("E21EAB96-D91E-4790-80BD-1D5FB5472258", act.Data.SessionId.ToUpper());
+            Assert.That(string.IsNullOrWhiteSpace(act.Data.HostName), Is.False);
+            Assert.That(4, Is.EqualTo(act.Data.ProtocolVersion));
+            Assert.That(CompressionType.Snappy, Is.EqualTo(act.Data.Compression));
+            Assert.That("127.0.0.1:9011", Is.EqualTo(act.Data.InitialControlConnection));
+            Assert.That("10.10.10.2:9015", Is.EqualTo(act.Data.LocalAddress));
+            Assert.That(10000, Is.EqualTo(act.Data.HeartbeatInterval));
+            Assert.That("E21EAB96-D91E-4790-80BD-1D5FB5472258", Is.EqualTo(act.Data.SessionId.ToUpper()));
 
-            Assert.AreEqual(false, act.Data.Ssl.Enabled);
+            Assert.That(false, Is.EqualTo(act.Data.Ssl.Enabled));
 
-            Assert.AreEqual(1, act.Data.PoolSizeByHostDistance.Local);
-            Assert.AreEqual(5, act.Data.PoolSizeByHostDistance.Remote);
+            Assert.That(1, Is.EqualTo(act.Data.PoolSizeByHostDistance.Local));
+            Assert.That(5, Is.EqualTo(act.Data.PoolSizeByHostDistance.Remote));
 
-            Assert.AreEqual(2, act.Data.PeriodicStatusInterval);
+            Assert.That(2, Is.EqualTo(act.Data.PeriodicStatusInterval));
 
-            Assert.AreEqual(typeof(NoneAuthProvider).Namespace, act.Data.AuthProvider.Namespace);
-            Assert.AreEqual(nameof(NoneAuthProvider), act.Data.AuthProvider.Type);
+            Assert.That(typeof(NoneAuthProvider).Namespace, Is.EqualTo(act.Data.AuthProvider.Namespace));
+            Assert.That(nameof(NoneAuthProvider), Is.EqualTo(act.Data.AuthProvider.Type));
 
-            Assert.AreEqual(typeof(ConstantReconnectionPolicy).Namespace, act.Data.ReconnectionPolicy.Namespace);
-            Assert.AreEqual(nameof(ConstantReconnectionPolicy), act.Data.ReconnectionPolicy.Type);
-            Assert.AreEqual(1, act.Data.ReconnectionPolicy.Options.Count);
-            Assert.AreEqual(150, act.Data.ReconnectionPolicy.Options["constantDelayMs"]);
+            Assert.That(typeof(ConstantReconnectionPolicy).Namespace, Is.EqualTo(act.Data.ReconnectionPolicy.Namespace));
+            Assert.That(nameof(ConstantReconnectionPolicy), Is.EqualTo(act.Data.ReconnectionPolicy.Type));
+            Assert.That(1, Is.EqualTo(act.Data.ReconnectionPolicy.Options.Count));
+            Assert.That(150, Is.EqualTo(act.Data.ReconnectionPolicy.Options["constantDelayMs"]));
 
             InsightsMessageFactoryTests.AssertPlatformInfo(act);
         }
 
         private static void AssertStartupOptions(Insight<InsightsStartupData> act)
         {
-            Assert.AreEqual("appname", act.Data.ApplicationName);
-            Assert.AreEqual(false, act.Data.ApplicationNameWasGenerated);
-            Assert.AreEqual("appv1", act.Data.ApplicationVersion);
-            Assert.AreEqual("DataStax C# Driver for Apache Cassandra", act.Data.DriverName);
-            Assert.AreEqual("BECFE098-E462-47E7-B6A7-A21CD316D4C0", act.Data.ClientId.ToUpper());
-            Assert.IsFalse(string.IsNullOrWhiteSpace(act.Data.DriverVersion));
+            Assert.That("appname", Is.EqualTo(act.Data.ApplicationName));
+            Assert.That(false, Is.EqualTo(act.Data.ApplicationNameWasGenerated));
+            Assert.That("appv1", Is.EqualTo(act.Data.ApplicationVersion));
+            Assert.That("DataStax C# Driver for Apache Cassandra", Is.EqualTo(act.Data.DriverName));
+            Assert.That("BECFE098-E462-47E7-B6A7-A21CD316D4C0", Is.EqualTo(act.Data.ClientId.ToUpper()));
+            Assert.That(string.IsNullOrWhiteSpace(act.Data.DriverVersion), Is.False);
         }
 
         private static void AssertContactPoints(Insight<InsightsStartupData> act)
         {
-            Assert.AreEqual(1, act.Data.ContactPoints.Count);
-            Assert.AreEqual(1, act.Data.ContactPoints["localhost"].Count);
-            Assert.AreEqual("127.0.0.1:9011", act.Data.ContactPoints["localhost"][0]);
-            Assert.AreEqual(1, act.Data.DataCenters.Count);
-            Assert.AreEqual("dc123", act.Data.DataCenters.Single());
+            Assert.That(1, Is.EqualTo(act.Data.ContactPoints.Count));
+            Assert.That(1, Is.EqualTo(act.Data.ContactPoints["localhost"].Count));
+            Assert.That("127.0.0.1:9011", Is.EqualTo(act.Data.ContactPoints["localhost"][0]));
+            Assert.That(1, Is.EqualTo(act.Data.DataCenters.Count));
+            Assert.That("dc123", Is.EqualTo(act.Data.DataCenters.Single()));
         }
 
         private static void AssertPlatformInfo(Insight<InsightsStartupData> act)
         {
-            Assert.Greater(act.Data.PlatformInfo.CentralProcessingUnits.Length, 0);
-            Assert.IsFalse(
+            Assert.That(act.Data.PlatformInfo.CentralProcessingUnits.Length, Is.GreaterThan(0));
+            Assert.That(
                 string.IsNullOrWhiteSpace(act.Data.PlatformInfo.CentralProcessingUnits.Model),
+                Is.False,
                 act.Data.PlatformInfo.CentralProcessingUnits.Model);
-            Assert.IsFalse(
+            Assert.That(
                 string.IsNullOrWhiteSpace(act.Data.PlatformInfo.OperatingSystem.Version),
+                Is.False,
                 act.Data.PlatformInfo.OperatingSystem.Version);
-            Assert.IsFalse(
+            Assert.That(
                 string.IsNullOrWhiteSpace(act.Data.PlatformInfo.OperatingSystem.Name),
+                Is.False,
                 act.Data.PlatformInfo.OperatingSystem.Name);
-            Assert.IsFalse(
+            Assert.That(
                 string.IsNullOrWhiteSpace(act.Data.PlatformInfo.OperatingSystem.Arch),
+                Is.False,
                 act.Data.PlatformInfo.OperatingSystem.Arch);
-            Assert.IsFalse(
+            Assert.That(
                 string.IsNullOrWhiteSpace(act.Data.PlatformInfo.Runtime.RuntimeFramework),
+                Is.False,
                 act.Data.PlatformInfo.Runtime.RuntimeFramework);
 
-            Assert.Greater(
+            Assert.That(
                 act.Data.PlatformInfo.Runtime.Dependencies
                    .Count(c =>
                        !string.IsNullOrWhiteSpace(c.Value.Version)
                        && !string.IsNullOrWhiteSpace(c.Value.FullName)
                        && !string.IsNullOrWhiteSpace(c.Value.Name)),
-                0);
+                Is.GreaterThan(0));
         }
 
         private static void AssertExecutionProfile(Insight<InsightsStartupData> act)
         {
-            Assert.AreEqual(1, act.Data.ExecutionProfiles.Count);
+            Assert.That(1, Is.EqualTo(act.Data.ExecutionProfiles.Count));
             var defaultProfile = act.Data.ExecutionProfiles["default"];
-            Assert.AreEqual(ConsistencyLevel.All, defaultProfile.Consistency);
-            Assert.AreEqual("g", defaultProfile.GraphOptions["source"]);
-            Assert.AreEqual("gremlin-groovy", defaultProfile.GraphOptions["language"]);
-            Assert.AreEqual(typeof(RoundRobinPolicy).Namespace, defaultProfile.LoadBalancing.Namespace);
-            Assert.AreEqual(nameof(RoundRobinPolicy), defaultProfile.LoadBalancing.Type);
-            Assert.IsNull(defaultProfile.LoadBalancing.Options);
-            Assert.AreEqual(1505, defaultProfile.ReadTimeout);
-            Assert.IsNull(defaultProfile.Retry.Options);
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, defaultProfile.SerialConsistency);
-            Assert.AreEqual(typeof(ConstantSpeculativeExecutionPolicy).Namespace, defaultProfile.SpeculativeExecution.Namespace);
-            Assert.AreEqual(nameof(ConstantSpeculativeExecutionPolicy), defaultProfile.SpeculativeExecution.Type);
-            Assert.AreEqual(2, defaultProfile.SpeculativeExecution.Options.Count);
-            Assert.AreEqual(10, defaultProfile.SpeculativeExecution.Options["maxSpeculativeExecutions"]);
-            Assert.AreEqual(1213, defaultProfile.SpeculativeExecution.Options["delay"]);
+            Assert.That(ConsistencyLevel.All, Is.EqualTo(defaultProfile.Consistency));
+            Assert.That("g", Is.EqualTo(defaultProfile.GraphOptions["source"]));
+            Assert.That("gremlin-groovy", Is.EqualTo(defaultProfile.GraphOptions["language"]));
+            Assert.That(typeof(RoundRobinPolicy).Namespace, Is.EqualTo(defaultProfile.LoadBalancing.Namespace));
+            Assert.That(nameof(RoundRobinPolicy), Is.EqualTo(defaultProfile.LoadBalancing.Type));
+            Assert.That(defaultProfile.LoadBalancing.Options, Is.Null);
+            Assert.That(1505, Is.EqualTo(defaultProfile.ReadTimeout));
+            Assert.That(defaultProfile.Retry.Options, Is.Null);
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(defaultProfile.SerialConsistency));
+            Assert.That(typeof(ConstantSpeculativeExecutionPolicy).Namespace, Is.EqualTo(defaultProfile.SpeculativeExecution.Namespace));
+            Assert.That(nameof(ConstantSpeculativeExecutionPolicy), Is.EqualTo(defaultProfile.SpeculativeExecution.Type));
+            Assert.That(2, Is.EqualTo(defaultProfile.SpeculativeExecution.Options.Count));
+            Assert.That(10, Is.EqualTo(defaultProfile.SpeculativeExecution.Options["maxSpeculativeExecutions"]));
+            Assert.That(1213, Is.EqualTo(defaultProfile.SpeculativeExecution.Options["delay"]));
         }
 
         private IInternalCluster GetCluster()

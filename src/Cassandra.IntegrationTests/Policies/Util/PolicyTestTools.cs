@@ -24,6 +24,7 @@ using Cassandra.IntegrationTests.TestBase;
 using Cassandra.IntegrationTests.TestClusterManagement;
 using Cassandra.Tests;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Policies.Util
 {
@@ -63,7 +64,7 @@ namespace Cassandra.IntegrationTests.Policies.Util
             if (forceSchemaAgreement)
             {
                 TestHelper.RetryAssert(
-                    () => Assert.IsTrue(session.Cluster.Metadata.CheckSchemaAgreementAsync().Result),
+                    () => Assert.That(session.Cluster.Metadata.CheckSchemaAgreementAsync().Result, Is.True),
                     1000, 60);
             }
             else
@@ -75,7 +76,7 @@ namespace Cassandra.IntegrationTests.Policies.Util
             if (forceSchemaAgreement)
             {
                 TestHelper.RetryAssert(
-                    () => Assert.IsTrue(session.Cluster.Metadata.CheckSchemaAgreementAsync().Result),
+                    () => Assert.That(session.Cluster.Metadata.CheckSchemaAgreementAsync().Result, Is.True),
                     1000, 60);
             }
             else
@@ -117,7 +118,7 @@ namespace Cassandra.IntegrationTests.Policies.Util
             int actualHostQueryCount = 0; 
             if (Coordinators.ContainsKey(host))
                 actualHostQueryCount = Coordinators[host];
-            Assert.AreEqual(expectedHostQueryCount, actualHostQueryCount, "For " + host);
+            Assert.That(expectedHostQueryCount, Is.EqualTo(actualHostQueryCount), "For " + host);
         }
 
         /// <summary>
@@ -131,7 +132,7 @@ namespace Cassandra.IntegrationTests.Policies.Util
             {
                 queriedInSet += Coordinators.ContainsKey(host) ? (int) Coordinators[host] : 0;
             }
-            Assert.AreEqual(queriedInSet, n, string.Format("For [{0}]", String.Join(", ", hosts)));
+            ClassicAssert.AreEqual(queriedInSet, n, string.Format("For [{0}]", String.Join(", ", hosts)));
         }
 
         public void AssertQueriedAtLeast(string host, int n)
@@ -141,7 +142,7 @@ namespace Cassandra.IntegrationTests.Policies.Util
             {
                 queried = Coordinators[host];   
             }
-            Assert.GreaterOrEqual(queried, n);
+            Assert.That(queried, Is.GreaterThanOrEqualTo(n));
         }
 
         /// <summary>
@@ -149,7 +150,7 @@ namespace Cassandra.IntegrationTests.Policies.Util
         /// </summary>
         public void AssertAchievedConsistencyLevel(ConsistencyLevel expectedConsistency)
         {
-            Assert.True(AchievedConsistencies.All(consistency => consistency == expectedConsistency), "Not all consistencies achieved are " + expectedConsistency);
+            Assert.That(AchievedConsistencies.All(consistency => consistency == expectedConsistency), Is.True, "Not all consistencies achieved are " + expectedConsistency);
         }
 
         /// <summary>
@@ -270,7 +271,7 @@ namespace Cassandra.IntegrationTests.Policies.Util
                         "unconfigured columnfamily",
                         "Cassandra timeout during read query at consistency"
                     };
-                    Assert.IsTrue(e.Message.Contains(expectedErrMessages[0]) || e.Message.Contains(expectedErrMessages[1]) || e.Message.Contains(expectedErrMessages[2]),
+                    ClassicAssert.IsTrue(e.Message.Contains(expectedErrMessages[0]) || e.Message.Contains(expectedErrMessages[1]) || e.Message.Contains(expectedErrMessages[2]),
                         "Error message '" + e.Message + "' did not contain one of these acceptable error messages: " + string.Join(",", expectedErrMessages));
                     Trace.TraceInformation("Caught acceptable one of these acceptable error messages: " + string.Join(",", expectedErrMessages));
                 }

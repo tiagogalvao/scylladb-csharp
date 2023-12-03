@@ -62,8 +62,8 @@ namespace Cassandra.Tests.Mapping
                 .Verifiable();
             var mapper = GetMappingClient(sessionMock);
             mapper.ExecuteAsync(new Cql("UPDATE").WithOptions(o => o.SetConsistencyLevel(ConsistencyLevel.EachQuorum).SetSerialConsistencyLevel(ConsistencyLevel.Serial))).Wait();
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, consistency);
-            Assert.AreEqual(ConsistencyLevel.Serial, serialConsistency);
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(consistency));
+            Assert.That(ConsistencyLevel.Serial, Is.EqualTo(serialConsistency));
         }
 
         [Test]
@@ -95,7 +95,7 @@ namespace Cassandra.Tests.Mapping
             batch.Insert(newUser);
             //Execute
             mapper.Execute(batch);
-            Assert.True(rowsetReturned);
+            Assert.That(rowsetReturned, Is.True);
             sessionMock.Verify();
         }
     }

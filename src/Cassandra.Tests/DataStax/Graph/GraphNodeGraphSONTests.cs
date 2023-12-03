@@ -28,7 +28,7 @@ using Cassandra.Serialization.Graph.GraphSON2;
 using Cassandra.SessionManagement;
 using Moq;
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using Path = Cassandra.DataStax.Graph.Path;
 
 namespace Cassandra.Tests.DataStax.Graph
@@ -46,11 +46,11 @@ namespace Cassandra.Tests.DataStax.Graph
         public void To_Should_Parse_Scalar_Values<T>(string json, T value)
         {
             var node = GraphNodeGraphSONTests.GetGraphNode(json, GraphProtocol.GraphSON2);
-            Assert.AreEqual(node.To<T>(), value);
-            Assert.True(node.IsScalar);
+            Assert.That(node.To<T>(),Is.EqualTo(value));
+            Assert.That(node.IsScalar, Is.True);
             node = GraphNodeGraphSONTests.GetGraphNode(json, GraphProtocol.GraphSON3);
-            Assert.AreEqual(node.To<T>(), value);
-            Assert.True(node.IsScalar);
+            Assert.That(node.To<T>(), Is.EqualTo(value));
+            Assert.That(node.IsScalar, Is.True);
         }
 
         [TestCase(GraphProtocol.GraphSON2)]
@@ -59,16 +59,16 @@ namespace Cassandra.Tests.DataStax.Graph
         public void Implicit_Conversion_Operators_Test(GraphProtocol protocol)
         {
             var intNode = GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"gx:Int16\", \"@value\": 123}", protocol);
-            Assert.AreEqual(123, (int)intNode);
-            Assert.AreEqual(123L, (long)intNode);
-            Assert.AreEqual((short)123, (short)intNode);
+            Assert.That(123, Is.EqualTo((int)intNode));
+            Assert.That(123L, Is.EqualTo((long)intNode));
+            Assert.That((short)123, Is.EqualTo((short)intNode));
             string stringValue = GraphNodeGraphSONTests.GetGraphNode("\"something\"", protocol);
-            Assert.AreEqual("something", stringValue);
+            Assert.That("something", Is.EqualTo(stringValue));
             bool boolValue = GraphNodeGraphSONTests.GetGraphNode("true", protocol);
-            Assert.True(boolValue);
+            Assert.That(boolValue, Is.True);
             var floatNode = GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"g:Float\", \"@value\": 123.1}", protocol);
-            Assert.AreEqual(123.1f, (float)floatNode);
-            Assert.AreEqual((double)123.1f, (double)floatNode);
+            Assert.That(123.1f, Is.EqualTo((float)floatNode));
+            Assert.That((double)123.1f, Is.EqualTo((double)floatNode));
         }
 
         [TestCase(GraphProtocol.GraphSON2)]
@@ -95,16 +95,16 @@ namespace Cassandra.Tests.DataStax.Graph
         public void To_Should_Not_Throw_For_Nullables_With_Null(GraphProtocol protocol)
         {
             var node = GraphNodeGraphSONTests.GetGraphNode("null", protocol);
-            Assert.IsNull(node.To<short?>());
-            Assert.IsNull(node.To<int?>());
-            Assert.IsNull(node.To<long?>());
-            Assert.IsNull(node.To<decimal?>());
-            Assert.IsNull(node.To<float?>());
-            Assert.IsNull(node.To<double?>());
-            Assert.IsNull(node.To<Guid?>());
-            Assert.IsNull(node.To<TimeUuid?>());
-            Assert.IsNull(node.To<BigInteger?>());
-            Assert.IsNull(node.To<Duration?>());
+            Assert.That(node.To<short?>(), Is.Null);
+            Assert.That(node.To<int?>(), Is.Null);
+            Assert.That(node.To<long?>(), Is.Null);
+            Assert.That(node.To<decimal?>(), Is.Null);
+            Assert.That(node.To<float?>(), Is.Null);
+            Assert.That(node.To<double?>(), Is.Null);
+            Assert.That(node.To<Guid?>(), Is.Null);
+            Assert.That(node.To<TimeUuid?>(), Is.Null);
+            Assert.That(node.To<BigInteger?>(), Is.Null);
+            Assert.That(node.To<Duration?>(), Is.Null);
         }
 
         [TestCase(GraphProtocol.GraphSON2)]
@@ -115,34 +115,34 @@ namespace Cassandra.Tests.DataStax.Graph
             var nodes = new[] { GraphNodeGraphSONTests.GetGraphNode("null", protocol), GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"g:Vertex\", \"@value\": null}", protocol) };
             foreach (var node in nodes)
             {
-                Assert.Null(node.To<short?>());
-                Assert.Null(node.To<int?>());
-                Assert.Null(node.To<long?>());
-                Assert.Null(node.To<decimal?>());
-                Assert.Null(node.To<float?>());
-                Assert.Null(node.To<double?>());
-                Assert.Null(node.To<Guid?>());
-                Assert.Null(node.To<TimeUuid?>());
-                Assert.Null(node.To<BigInteger?>());
-                Assert.Null(node.To<Duration?>());
-                Assert.Null(node.To<DateTimeOffset?>());
+                Assert.That(node.To<short?>(), Is.Null);
+                Assert.That(node.To<int?>(), Is.Null);
+                Assert.That(node.To<long?>(), Is.Null);
+                Assert.That(node.To<decimal?>(), Is.Null);
+                Assert.That(node.To<float?>(), Is.Null);
+                Assert.That(node.To<double?>(), Is.Null);
+                Assert.That(node.To<Guid?>(), Is.Null);
+                Assert.That(node.To<TimeUuid?>(), Is.Null);
+                Assert.That(node.To<BigInteger?>(), Is.Null);
+                Assert.That(node.To<Duration?>(), Is.Null);
+                Assert.That(node.To<DateTimeOffset?>(), Is.Null);
             }
-            Assert.AreEqual(1, GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"gx:Int16\", \"@value\": 1}", protocol).To<short?>());
-            Assert.AreEqual(1, GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"g:Int32\", \"@value\": 1}", protocol).To<int?>());
-            Assert.AreEqual(1L, GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"g:Int64\", \"@value\": 1}", protocol).To<long?>());
-            Assert.AreEqual(1M, GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"gx:BigDecimal\", \"@value\": 1}", protocol).To<decimal?>());
-            Assert.AreEqual(1F, GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"g:Float\", \"@value\": 1}", protocol).To<float?>());
-            Assert.AreEqual(1D, GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"g:Double\", \"@value\": 1}", protocol).To<double?>());
-            Assert.AreEqual(null, GraphNodeGraphSONTests.GetGraphNode(
-                "{\"@type\": \"gx:Int16\", \"@value\": null}", protocol).To<Guid?>());
-            Assert.AreEqual((TimeUuid)Guid.Parse("2cc83ef0-5da4-11e7-8c51-2578d2fa5d3a"), GraphNodeGraphSONTests.GetGraphNode(
-                "{\"@type\": \"g:UUID\", \"@value\": \"2cc83ef0-5da4-11e7-8c51-2578d2fa5d3a\"}", protocol).To<TimeUuid?>());
-            Assert.AreEqual(BigInteger.Parse("1"),
-                            GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"gx:Int16\", \"@value\": 1}", protocol).To<BigInteger?>());
-            Assert.AreEqual(Duration.Parse("12h"),
-                            GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"gx:Duration\", \"@value\": \"12h\"}", protocol).To<Duration?>());
-            Assert.AreEqual(DateTimeOffset.Parse("1970-01-01 00:00:01Z"),
-                GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"g:Timestamp\", \"@value\": 1000}", protocol).To<DateTimeOffset?>());
+            Assert.That(1, Is.EqualTo(GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"gx:Int16\", \"@value\": 1}", protocol).To<short?>()));
+            Assert.That(1, Is.EqualTo(GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"g:Int32\", \"@value\": 1}", protocol).To<int?>()));
+            Assert.That(1L, Is.EqualTo(GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"g:Int64\", \"@value\": 1}", protocol).To<long?>()));
+            Assert.That(1M, Is.EqualTo(GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"gx:BigDecimal\", \"@value\": 1}", protocol).To<decimal?>()));
+            Assert.That(1F, Is.EqualTo(GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"g:Float\", \"@value\": 1}", protocol).To<float?>()));
+            Assert.That(1D, Is.EqualTo(GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"g:Double\", \"@value\": 1}", protocol).To<double?>()));
+            Assert.That(null, Is.EqualTo(GraphNodeGraphSONTests.GetGraphNode(
+                "{\"@type\": \"gx:Int16\", \"@value\": null}", protocol).To<Guid?>()));
+            Assert.That((TimeUuid)Guid.Parse("2cc83ef0-5da4-11e7-8c51-2578d2fa5d3a"), Is.EqualTo(GraphNodeGraphSONTests.GetGraphNode(
+                "{\"@type\": \"g:UUID\", \"@value\": \"2cc83ef0-5da4-11e7-8c51-2578d2fa5d3a\"}", protocol).To<TimeUuid?>()));
+            Assert.That(BigInteger.Parse("1"),
+                Is.EqualTo(GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"gx:Int16\", \"@value\": 1}", protocol).To<BigInteger?>()));
+            Assert.That(Duration.Parse("12h"),
+                Is.EqualTo(GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"gx:Duration\", \"@value\": \"12h\"}", protocol).To<Duration?>()));
+            Assert.That(DateTimeOffset.Parse("1970-01-01 00:00:01Z"),
+                Is.EqualTo(GraphNodeGraphSONTests.GetGraphNode("{\"@type\": \"g:Timestamp\", \"@value\": 1000}", protocol).To<DateTimeOffset?>()));
         }
 
         [TestCase("\"something\"", "something")]
@@ -155,9 +155,9 @@ namespace Cassandra.Tests.DataStax.Graph
         public void ToString_Should_Return_The_String_Representation_Of_Scalars(string json, object value)
         {
             var node = GraphNodeGraphSONTests.GetGraphNode(json, GraphProtocol.GraphSON3);
-            Assert.AreEqual(node.ToString(), value.ToString());
+            Assert.That(node.ToString(), Is.EqualTo(value.ToString()));
             node = GraphNodeGraphSONTests.GetGraphNode(json, GraphProtocol.GraphSON2);
-            Assert.AreEqual(node.ToString(), value.ToString());
+            Assert.That(node.ToString(), Is.EqualTo(value.ToString()));
         }
 
         [TestCase(GraphProtocol.GraphSON2)]
@@ -172,11 +172,11 @@ namespace Cassandra.Tests.DataStax.Graph
                                 "  }" +
                                 "}";
             var node = GraphNodeGraphSONTests.GetGraphNode(json, protocol);
-            Assert.AreEqual(789, node.Get<int>("prop1"));
-            Assert.AreEqual("prop2 value", node.Get<string>("prop2"));
+            Assert.That(789, Is.EqualTo(node.Get<int>("prop1")));
+            Assert.That("prop2 value", Is.EqualTo(node.Get<string>("prop2")));
             var prop = node.Get<IGraphNode>("prop1");
-            Assert.AreEqual(789, prop.To<int>());
-            Assert.AreEqual("prop2 value", node.Get<IGraphNode>("prop2").ToString());
+            Assert.That(789, Is.EqualTo(prop.To<int>()));
+            Assert.That("prop2 value", Is.EqualTo(node.Get<IGraphNode>("prop2").ToString()));
         }
 
         [TestCase(GraphProtocol.GraphSON2)]
@@ -187,8 +187,8 @@ namespace Cassandra.Tests.DataStax.Graph
             const string json = "{\"prop1\": {\"@type\": \"g:Double\", \"@value\": 789}," +
                                 "  \"prop2\": true}";
             var node = GraphNodeGraphSONTests.GetGraphNode(json, protocol);
-            Assert.AreEqual(789D, node.Get<double>("prop1"));
-            Assert.AreEqual(true, node.Get<bool>("prop2"));
+            Assert.That(789D, Is.EqualTo(node.Get<double>("prop1")));
+            Assert.That(true, Is.EqualTo(node.Get<bool>("prop2")));
         }
 
         [TestCase(GraphProtocol.GraphSON2)]
@@ -203,8 +203,8 @@ namespace Cassandra.Tests.DataStax.Graph
                                 "  }" +
                                 "}";
             var node = GraphNodeGraphSONTests.GetGraphNode(json, protocol);
-            Assert.True(node.HasProperty("prop1"));
-            Assert.False(node.HasProperty("propZ"));
+            Assert.That(node.HasProperty("prop1"), Is.True);
+            Assert.That(node.HasProperty("propZ"), Is.False);
         }
 
         [TestCase(GraphProtocol.GraphSON2)]
@@ -214,8 +214,8 @@ namespace Cassandra.Tests.DataStax.Graph
         {
             const string json = "{\"prop1\": {\"@type\": \"g:Double\", \"@value\": 789}}";
             var node = GraphNodeGraphSONTests.GetGraphNode(json, protocol);
-            Assert.True(node.HasProperty("prop1"));
-            Assert.False(node.HasProperty("propZ"));
+            Assert.That(node.HasProperty("prop1"), Is.True);
+            Assert.That(node.HasProperty("propZ"), Is.False);
         }
 
         [TestCase(GraphProtocol.GraphSON2)]
@@ -229,8 +229,8 @@ namespace Cassandra.Tests.DataStax.Graph
                 "\"label\":\"topic\"" +
                 "}}", protocol);
             int id = node.id;
-            Assert.AreEqual(150, id);
-            Assert.AreEqual("topic", node.label.ToString());
+            Assert.That(150, Is.EqualTo(id));
+            Assert.That("topic", node.label.ToString());
         }
 
         [TestCase("{\"@type\": \"gx:InetAddress\", \"@value\": \"127.0.0.1\"}", "127.0.0.1")]
@@ -310,12 +310,12 @@ namespace Cassandra.Tests.DataStax.Graph
             var node = GraphNodeGraphSONTests.GetGraphNode(json, protocol);
             if (stringValue == null)
             {
-                Assert.AreEqual(null, node.To<DateTimeOffset?>());
+                Assert.That(null, Is.EqualTo(node.To<DateTimeOffset?>()));
             }
             else
             {
-                Assert.AreEqual(DateTimeOffset.Parse(stringValue, CultureInfo.InvariantCulture), node.To<DateTimeOffset>());
-                Assert.AreEqual(DateTimeOffset.Parse(stringValue, CultureInfo.InvariantCulture), node.To<DateTimeOffset?>());
+                Assert.That(DateTimeOffset.Parse(stringValue, CultureInfo.InvariantCulture), Is.EqualTo(node.To<DateTimeOffset>()));
+                Assert.That(DateTimeOffset.Parse(stringValue, CultureInfo.InvariantCulture), Is.EqualTo(node.To<DateTimeOffset?>()));
             }
         }
 
@@ -330,12 +330,12 @@ namespace Cassandra.Tests.DataStax.Graph
             var node = GraphNodeGraphSONTests.GetGraphNode(json, protocol);
             if (stringValue == null)
             {
-                Assert.AreEqual(null, node.To<DateTimeOffset?>());
+                Assert.That(null, Is.EqualTo(node.To<DateTimeOffset?>()));
             }
             else
             {
-                Assert.AreEqual(DateTimeOffset.Parse(stringValue, CultureInfo.InvariantCulture), node.To<DateTimeOffset>());
-                Assert.AreEqual(DateTimeOffset.Parse(stringValue, CultureInfo.InvariantCulture), node.To<DateTimeOffset?>());
+                Assert.That(DateTimeOffset.Parse(stringValue, CultureInfo.InvariantCulture), Is.EqualTo(node.To<DateTimeOffset>()));
+                Assert.That(DateTimeOffset.Parse(stringValue, CultureInfo.InvariantCulture), Is.EqualTo(node.To<DateTimeOffset?>()));
             }
         }
 
@@ -346,7 +346,7 @@ namespace Cassandra.Tests.DataStax.Graph
         public void To_Should_Parse_LocalDate_Values(string json, string stringValue, GraphProtocol protocol)
         {
             var node = GraphNodeGraphSONTests.GetGraphNode(json, protocol);
-            Assert.AreEqual(LocalDate.Parse(stringValue), node.To<LocalDate>());
+            Assert.That(LocalDate.Parse(stringValue), Is.EqualTo(node.To<LocalDate>()));
         }
 
         [TestCase("{\"@type\": \"gx:LocalTime\", \"@value\": \"12:50\"}", "12:50", GraphProtocol.GraphSON3)]
@@ -356,7 +356,7 @@ namespace Cassandra.Tests.DataStax.Graph
         public void To_Should_Parse_LocalTime_Values(string json, string stringValue, GraphProtocol protocol)
         {
             var node = GraphNodeGraphSONTests.GetGraphNode(json, protocol);
-            Assert.AreEqual(LocalTime.Parse(stringValue), node.To<LocalTime>());
+            Assert.That(LocalTime.Parse(stringValue), Is.EqualTo(node.To<LocalTime>()));
         }
 
         [Test]
@@ -372,14 +372,14 @@ namespace Cassandra.Tests.DataStax.Graph
                 "}}",
                 GraphProtocol.GraphSON2);
             var vertex = node.To<Vertex>();
-            Assert.AreEqual("user", vertex.Label);
-            Assert.AreEqual("jorge", vertex.Properties["name"].ToArray().First().Get<string>("value"));
-            Assert.AreEqual(35, vertex.Properties["age"].ToArray().First().Get<int>("value"));
+            Assert.That("user", Is.EqualTo(vertex.Label));
+            Assert.That("jorge", Is.EqualTo(vertex.Properties["name"].ToArray().First().Get<string>("value")));
+            Assert.That(35, Is.EqualTo(vertex.Properties["age"].ToArray().First().Get<int>("value")));
             var iVertex = node.To<IVertex>();
-            Assert.AreEqual("user", iVertex.Label);
-            Assert.AreEqual("jorge", iVertex.GetProperty("name").Value.ToString());
-            Assert.AreEqual(35, iVertex.GetProperty("age").Value.To<int>());
-            Assert.Null(iVertex.GetProperty("nonExistent"));
+            Assert.That("user", Is.EqualTo(iVertex.Label));
+            Assert.That("jorge", Is.EqualTo(iVertex.GetProperty("name").Value.ToString()));
+            Assert.That(35, Is.EqualTo(iVertex.GetProperty("age").Value.To<int>()));
+            Assert.That(iVertex.GetProperty("nonExistent"), Is.Null);
         }
 
         [Test]
@@ -400,14 +400,14 @@ namespace Cassandra.Tests.DataStax.Graph
 }",
                 GraphProtocol.GraphSON2);
             var edge = node.To<Edge>();
-            Assert.AreEqual("develops", edge.Label);
-            Assert.AreEqual("software", edge.InVLabel);
-            Assert.AreEqual("person", edge.OutVLabel);
-            Assert.AreEqual(10, edge.InV.To<int>());
-            Assert.AreEqual(1, edge.OutV.To<int>());
-            Assert.AreEqual(2009, edge.Properties["since"].To<int>());
-            Assert.AreEqual(2009, edge.GetProperty("since").Value.To<int>());
-            Assert.Null(edge.GetProperty("nonExistent"));
+            Assert.That("develops", Is.EqualTo(edge.Label));
+            Assert.That("software", Is.EqualTo(edge.InVLabel));
+            Assert.That("person", Is.EqualTo(edge.OutVLabel));
+            Assert.That(10, Is.EqualTo(edge.InV.To<int>()));
+            Assert.That(1, Is.EqualTo(edge.OutV.To<int>()));
+            Assert.That(2009, Is.EqualTo(edge.Properties["since"].To<int>()));
+            Assert.That(2009, Is.EqualTo(edge.GetProperty("since").Value.To<int>()));
+            Assert.That(edge.GetProperty("nonExistent"), Is.Null);
         }
 
         [Test]
@@ -447,35 +447,35 @@ namespace Cassandra.Tests.DataStax.Graph
 }",
                 GraphProtocol.GraphSON2);
             var path = node.To<Path>();
-            Assert.AreEqual(3, path.Labels.Count);
-            Assert.IsTrue(path.Labels.All(c => c.Count == 0));
+            Assert.That(3, Is.EqualTo(path.Labels.Count));
+            Assert.That(path.Labels.All(c => c.Count == 0), Is.True);
 
             var firstVertex = path.Objects.ElementAt(0).To<Vertex>();
-            Assert.AreEqual(1, firstVertex.Id.To<int>());
-            Assert.AreEqual("person", firstVertex.Label);
-            Assert.AreEqual(0, firstVertex.Properties.Count);
+            Assert.That(1, Is.EqualTo(firstVertex.Id.To<int>()));
+            Assert.That("person", Is.EqualTo(firstVertex.Label));
+            Assert.That(0, Is.EqualTo(firstVertex.Properties.Count));
 
             var secondVertex = path.Objects.ElementAt(1).To<Vertex>();
-            Assert.AreEqual(10, secondVertex.Id.To<int>());
-            Assert.AreEqual("software", secondVertex.Label);
-            Assert.AreEqual(1, secondVertex.Properties.Count);
-            Assert.AreEqual(1, secondVertex.Properties.Single().Value.To<IEnumerable<VertexProperty>>().Count());
+            Assert.That(10, Is.EqualTo(secondVertex.Id.To<int>()));
+            Assert.That("software", Is.EqualTo(secondVertex.Label));
+            Assert.That(1, Is.EqualTo(secondVertex.Properties.Count));
+            Assert.That(1, Is.EqualTo(secondVertex.Properties.Single().Value.To<IEnumerable<VertexProperty>>().Count()));
             var secondVertexProperty = secondVertex.GetProperty("name");
-            Assert.AreEqual(4L, secondVertexProperty.Id.To<long>());
-            Assert.AreEqual("gremlin", secondVertexProperty.Value.To<string>());
-            Assert.AreEqual("name", secondVertexProperty.Label);
-            Assert.AreEqual(10, secondVertexProperty.Vertex.To<int>());
+            Assert.That(4L, Is.EqualTo(secondVertexProperty.Id.To<long>()));
+            Assert.That("gremlin", Is.EqualTo(secondVertexProperty.Value.To<string>()));
+            Assert.That("name", Is.EqualTo(secondVertexProperty.Label));
+            Assert.That(10, Is.EqualTo(secondVertexProperty.Vertex.To<int>()));
 
             var thirdVertex = path.Objects.ElementAt(2).To<Vertex>();
-            Assert.AreEqual(11, thirdVertex.Id.To<int>());
-            Assert.AreEqual("software", thirdVertex.Label);
-            Assert.AreEqual(1, thirdVertex.Properties.Count);
-            Assert.AreEqual(1, thirdVertex.Properties.Single().Value.To<IEnumerable<VertexProperty>>().Count());
+            Assert.That(11, Is.EqualTo(thirdVertex.Id.To<int>()));
+            Assert.That("software", Is.EqualTo(thirdVertex.Label));
+            Assert.That(1, Is.EqualTo(thirdVertex.Properties.Count));
+            Assert.That(1, Is.EqualTo(thirdVertex.Properties.Single().Value.To<IEnumerable<VertexProperty>>().Count()));
             var thirdVertexProperty = thirdVertex.GetProperty("name");
-            Assert.AreEqual(5L, thirdVertexProperty.Id.To<long>());
-            Assert.AreEqual("tinkergraph", thirdVertexProperty.Value.To<string>());
-            Assert.AreEqual("name", thirdVertexProperty.Label);
-            Assert.AreEqual(11, thirdVertexProperty.Vertex.To<int>());
+            Assert.That(5L, Is.EqualTo(thirdVertexProperty.Id.To<long>()));
+            Assert.That("tinkergraph", Is.EqualTo(thirdVertexProperty.Value.To<string>()));
+            Assert.That("name", Is.EqualTo(thirdVertexProperty.Label));
+            Assert.That(11, Is.EqualTo(thirdVertexProperty.Vertex.To<int>()));
         }
 
         [TestCase(GraphProtocol.GraphSON2)]
@@ -484,12 +484,12 @@ namespace Cassandra.Tests.DataStax.Graph
         public void To_Should_Parse_Null_Vertex_Edge_Or_Path(GraphProtocol protocol)
         {
             var node = GraphNodeGraphSONTests.GetGraphNode("null", protocol);
-            Assert.Null(node.To<Vertex>());
-            Assert.Null(node.To<Edge>());
-            Assert.Null(node.To<Path>());
-            Assert.Null(node.To<IVertex>());
-            Assert.Null(node.To<IEdge>());
-            Assert.Null(node.To<IPath>());
+            Assert.That(node.To<Vertex>(), Is.Null);
+            Assert.That(node.To<Edge>(), Is.Null);
+            Assert.That(node.To<Path>(), Is.Null);
+            Assert.That(node.To<IVertex>(), Is.Null);
+            Assert.That(node.To<IEdge>(), Is.Null);
+            Assert.That(node.To<IPath>(), Is.Null);
         }
 
         [Test]
@@ -514,9 +514,9 @@ namespace Cassandra.Tests.DataStax.Graph
         private static void TestToTypeParsing<T>(string json, string stringValue, Func<string, T> parser)
         {
             var node = GraphNodeGraphSONTests.GetGraphNode(json, GraphProtocol.GraphSON2);
-            Assert.AreEqual(node.To<T>(), parser(stringValue));
+            Assert.That(node.To<T>(), Is.EqualTo(parser(stringValue)));
             node = GraphNodeGraphSONTests.GetGraphNode(json, GraphProtocol.GraphSON3);
-            Assert.AreEqual(node.To<T>(), parser(stringValue));
+            Assert.That(node.To<T>(), Is.EqualTo(parser(stringValue)));
         }
 
         private static GraphNode GetGraphNode(string json, GraphProtocol protocol)

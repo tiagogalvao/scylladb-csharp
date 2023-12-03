@@ -67,14 +67,14 @@ namespace Cassandra.IntegrationTests.DataStax.Insights
                 simulacronCluster.Prime(InsightsIntegrationTests.InsightsRpcPrime());
                 using (var cluster = BuildCluster(simulacronCluster, 500))
                 {
-                    Assert.AreEqual(0, simulacronCluster.GetQueries("CALL InsightsRpc.reportInsight(?)").Count);
+                    Assert.That(0, Is.EqualTo(simulacronCluster.GetQueries("CALL InsightsRpc.reportInsight(?)").Count));
                     var session = (IInternalSession)cluster.Connect();
                     RequestLog query = null;
                     TestHelper.RetryAssert(
                         () =>
                         {
                             query = simulacronCluster.GetQueries("CALL InsightsRpc.reportInsight(?)").FirstOrDefault();
-                            Assert.IsNotNull(query);
+                            Assert.That(query, Is.Not.Null);
                         },
                         5,
                         1000);
@@ -92,23 +92,23 @@ namespace Cassandra.IntegrationTests.DataStax.Insights
                         Assert.Fail("failed to deserialize json: " + ex.Message + Environment.NewLine + json);
                     }
 
-                    Assert.IsNotNull(message);
-                    Assert.AreEqual(InsightType.Event, message.Metadata.InsightType);
-                    Assert.IsFalse(string.IsNullOrWhiteSpace(message.Metadata.InsightMappingId));
-                    Assert.AreEqual("driver.startup", message.Metadata.Name);
-                    Assert.AreEqual(InsightsIntegrationTests.applicationName, message.Data.ApplicationName);
-                    Assert.AreEqual(false, message.Data.ApplicationNameWasGenerated);
-                    Assert.AreEqual(InsightsIntegrationTests.applicationVersion, message.Data.ApplicationVersion);
-                    Assert.AreEqual(InsightsIntegrationTests.clusterId.ToString(), message.Data.ClientId);
-                    Assert.AreEqual(session.InternalSessionId.ToString(), message.Data.SessionId);
-                    Assert.Greater(message.Data.PlatformInfo.CentralProcessingUnits.Length, 0);
-                    Assert.IsFalse(string.IsNullOrWhiteSpace(message.Data.PlatformInfo.CentralProcessingUnits.Model));
-                    Assert.IsFalse(string.IsNullOrWhiteSpace(message.Data.PlatformInfo.OperatingSystem.Version));
-                    Assert.IsFalse(string.IsNullOrWhiteSpace(message.Data.PlatformInfo.OperatingSystem.Arch));
-                    Assert.IsFalse(string.IsNullOrWhiteSpace(message.Data.PlatformInfo.OperatingSystem.Name));
-                    Assert.IsFalse(message.Data.PlatformInfo.Runtime.Dependencies.Any(s => string.IsNullOrWhiteSpace(s.Value.FullName)));
-                    Assert.IsFalse(string.IsNullOrWhiteSpace(message.Data.PlatformInfo.Runtime.RuntimeFramework));
-                    Assert.IsFalse(string.IsNullOrWhiteSpace(message.Data.PlatformInfo.Runtime.TargetFramework));
+                    Assert.That(message, Is.Not.Null);
+                    Assert.That(InsightType.Event, Is.EqualTo(message.Metadata.InsightType));
+                    Assert.That(string.IsNullOrWhiteSpace(message.Metadata.InsightMappingId), Is.False);
+                    Assert.That("driver.startup", Is.EqualTo(message.Metadata.Name));
+                    Assert.That(InsightsIntegrationTests.applicationName, Is.EqualTo(message.Data.ApplicationName));
+                    Assert.That(false, Is.EqualTo(message.Data.ApplicationNameWasGenerated));
+                    Assert.That(InsightsIntegrationTests.applicationVersion, Is.EqualTo(message.Data.ApplicationVersion));
+                    Assert.That(InsightsIntegrationTests.clusterId.ToString(), Is.EqualTo(message.Data.ClientId));
+                    Assert.That(session.InternalSessionId.ToString(), Is.EqualTo(message.Data.SessionId));
+                    Assert.That(message.Data.PlatformInfo.CentralProcessingUnits.Length, Is.GreaterThan(0));
+                    Assert.That(string.IsNullOrWhiteSpace(message.Data.PlatformInfo.CentralProcessingUnits.Model), Is.False);
+                    Assert.That(string.IsNullOrWhiteSpace(message.Data.PlatformInfo.OperatingSystem.Version), Is.False);
+                    Assert.That(string.IsNullOrWhiteSpace(message.Data.PlatformInfo.OperatingSystem.Arch), Is.False);
+                    Assert.That(string.IsNullOrWhiteSpace(message.Data.PlatformInfo.OperatingSystem.Name), Is.False);
+                    Assert.That(message.Data.PlatformInfo.Runtime.Dependencies.Any(s => string.IsNullOrWhiteSpace(s.Value.FullName)), Is.False);
+                    Assert.That(string.IsNullOrWhiteSpace(message.Data.PlatformInfo.Runtime.RuntimeFramework), Is.False);
+                    Assert.That(string.IsNullOrWhiteSpace(message.Data.PlatformInfo.Runtime.TargetFramework), Is.False);
                 }
             }
         }
@@ -122,7 +122,7 @@ namespace Cassandra.IntegrationTests.DataStax.Insights
                 simulacronCluster.Prime(InsightsIntegrationTests.InsightsRpcPrime());
                 using (var cluster = BuildCluster(simulacronCluster, 50))
                 {
-                    Assert.AreEqual(0, simulacronCluster.GetQueries("CALL InsightsRpc.reportInsight(?)").Count);
+                    Assert.That(0, Is.EqualTo(simulacronCluster.GetQueries("CALL InsightsRpc.reportInsight(?)").Count));
                     var session = (IInternalSession) cluster.Connect();
                     IList<RequestLog> queries = null;
                     TestHelper.RetryAssert(
@@ -130,7 +130,7 @@ namespace Cassandra.IntegrationTests.DataStax.Insights
                         {
                             queries = simulacronCluster.GetQueries("CALL InsightsRpc.reportInsight(?)");
                             var queryCount = queries.Count;
-                            Assert.GreaterOrEqual(queryCount, 5);
+                            Assert.That(queryCount, Is.GreaterThanOrEqualTo(5));
                         },
                         250,
                         40);
@@ -150,12 +150,12 @@ namespace Cassandra.IntegrationTests.DataStax.Insights
                         // simulacron issue multiple queries of the same type but different data causes data corruption
                         Assert.Inconclusive("failed to deserialize json (probably due to simulacron bug) : " + ex.Message + Environment.NewLine + json);
                     }
-                    Assert.IsNotNull(message);
-                    Assert.AreEqual(InsightType.Event, message.Metadata.InsightType);
-                    Assert.IsFalse(string.IsNullOrWhiteSpace(message.Metadata.InsightMappingId));
-                    Assert.AreEqual("driver.status", message.Metadata.Name);
-                    Assert.AreEqual(InsightsIntegrationTests.clusterId.ToString(), message.Data.ClientId);
-                    Assert.AreEqual(session.InternalSessionId.ToString(), message.Data.SessionId);
+                    Assert.That(message, Is.Not.Null);
+                    Assert.That(InsightType.Event, Is.EqualTo(message.Metadata.InsightType));
+                    Assert.That(string.IsNullOrWhiteSpace(message.Metadata.InsightMappingId));
+                    Assert.That("driver.status", Is.EqualTo(message.Metadata.Name));
+                    Assert.That(InsightsIntegrationTests.clusterId.ToString(), Is.EqualTo(message.Data.ClientId));
+                    Assert.That(session.InternalSessionId.ToString(), Is.EqualTo(message.Data.SessionId));
                 }
             }
         }

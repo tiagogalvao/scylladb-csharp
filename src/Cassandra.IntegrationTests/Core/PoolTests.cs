@@ -25,6 +25,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Cassandra.IntegrationTests.TestBase;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -70,13 +71,13 @@ namespace Cassandra.IntegrationTests.Core
                     queriedHosts.Add(rs.Info.QueriedHost.ToString());
                     Thread.Sleep(50);
                 }
-                Assert.AreEqual(4, (from singleHost in queriedHosts select singleHost).Distinct().Count(), "All hosts should have been queried!");
+                Assert.That(4, Is.EqualTo((from singleHost in queriedHosts select singleHost).Distinct().Count()), "All hosts should have been queried!");
 
                 // Create List of actions
                 Action selectAction = () =>
                 {
                     var rs = session.Execute("SELECT * FROM system.local");
-                    Assert.Greater(rs.Count(), 0);
+                    Assert.That(rs.Count(), Is.GreaterThan(0));
                 };
                 var actions = new List<Action>();
                 for (var i = 0; i < 100; i++)
@@ -101,7 +102,7 @@ namespace Cassandra.IntegrationTests.Core
                 for (var i = 0; i < 250; i++)
                 {
                     var rowSet2 = session.Execute("SELECT * FROM system.local");
-                    Assert.Greater(rowSet2.Count(), 0);
+                    Assert.That(rowSet2.Count(), Is.GreaterThan(0));
                     StringAssert.StartsWith(nonShareableTestCluster.ClusterIpPrefix + "4", rowSet2.Info.QueriedHost.ToString());
                 }
             }
@@ -133,13 +134,13 @@ namespace Cassandra.IntegrationTests.Core
                     queriedHosts.Add(rs.Info.QueriedHost.ToString());
                     Thread.Sleep(50);
                 }
-                Assert.AreEqual(4, (from singleHost in queriedHosts select singleHost).Distinct().Count(), "All hosts should have been queried!");
+                Assert.That(4, Is.EqualTo((from singleHost in queriedHosts select singleHost).Distinct().Count()), "All hosts should have been queried!");
 
                 // Create list of actions
                 Action selectAction = () =>
                 {
                     var rs = session.Execute("SELECT * FROM system.local");
-                    Assert.Greater(rs.Count(), 0);
+                    Assert.That(rs.Count(), Is.GreaterThan(0));
                 };
                 var actions = new List<Action>();
                 for (var i = 0; i < 100; i++)
@@ -193,10 +194,10 @@ namespace Cassandra.IntegrationTests.Core
                         Thread.Sleep(50);
                     }
                     //Check that one of the restarted nodes were queried
-                    Assert.Contains(nonShareableTestCluster.ClusterIpPrefix + "1:" + DefaultCassandraPort, queriedHosts);
-                    Assert.Contains(nonShareableTestCluster.ClusterIpPrefix + "2:" + DefaultCassandraPort, queriedHosts);
-                    Assert.Contains(nonShareableTestCluster.ClusterIpPrefix + "3:" + DefaultCassandraPort, queriedHosts);
-                    Assert.Contains(nonShareableTestCluster.ClusterIpPrefix + "4:" + DefaultCassandraPort, queriedHosts);
+                    ClassicAssert.Contains(nonShareableTestCluster.ClusterIpPrefix + "1:" + DefaultCassandraPort, queriedHosts);
+                    ClassicAssert.Contains(nonShareableTestCluster.ClusterIpPrefix + "2:" + DefaultCassandraPort, queriedHosts);
+                    ClassicAssert.Contains(nonShareableTestCluster.ClusterIpPrefix + "3:" + DefaultCassandraPort, queriedHosts);
+                    ClassicAssert.Contains(nonShareableTestCluster.ClusterIpPrefix + "4:" + DefaultCassandraPort, queriedHosts);
                     //Check that the control connection is still using last host
                     StringAssert.StartsWith(nonShareableTestCluster.ClusterIpPrefix + "4", nonShareableTestCluster.Cluster.Metadata.ControlConnection.EndPoint.GetHostIpEndPointWithFallback().ToString());
                 }
@@ -227,7 +228,7 @@ namespace Cassandra.IntegrationTests.Core
             nonShareableTestCluster.Stop(2);
             var session = cluster.Connect();
             TestHelper.Invoke(() => session.Execute("SELECT * FROM system.local"), 10);
-            Assert.AreEqual(1, connectionAttempts);
+            Assert.That(1, Is.EqualTo(connectionAttempts));
             var watch = new Stopwatch();
             watch.Start();
             Action action = () =>
@@ -249,9 +250,9 @@ namespace Cassandra.IntegrationTests.Core
                 Parallel.Invoke(parallelOptions, Enumerable.Repeat(action, 20).ToArray());
                 Thread.Sleep(500);
             }
-            Assert.True(waitHandle.WaitOne(waitTime), "Wait time passed but it was not signaled");
+            Assert.That(waitHandle.WaitOne(waitTime), Is.True, "Wait time passed but it was not signaled");
             t.Dispose();
-            Assert.AreEqual(4, connectionAttempts);
+            Assert.That(4, Is.EqualTo(connectionAttempts));
         }
 
         /// <summary>
@@ -274,18 +275,18 @@ namespace Cassandra.IntegrationTests.Core
                 .Build();
             cluster.Connect();
             //2 peers translated
-            Assert.AreEqual(2, invokedEndPoints.Count);
-            Assert.True(cluster.AllHosts().All(h => h.IsUp));
+            Assert.That(2, Is.EqualTo(invokedEndPoints.Count));
+            Assert.That(cluster.AllHosts().All(h => h.IsUp), Is.True);
             testCluster.Stop(3);
             //Wait for the C* event to notify the control connection
             Thread.Sleep(30000);
             //Should be down
-            Assert.False(cluster.AllHosts().First(h => TestHelper.GetLastAddressByte(h) == 3).IsUp);
+            Assert.That(cluster.AllHosts().First(h => TestHelper.GetLastAddressByte(h) == 3).IsUp, Is.False);
             
             //Should have been translated
-            Assert.AreEqual(3, invokedEndPoints.Count);
+            Assert.That(3, Is.EqualTo(invokedEndPoints.Count));
             //The recently translated should be the host #3
-            Assert.AreEqual(3, TestHelper.GetLastAddressByte(invokedEndPoints.Last()));
+            Assert.That(3, Is.EqualTo(TestHelper.GetLastAddressByte(invokedEndPoints.Last())));
             cluster.Dispose();
         }
 

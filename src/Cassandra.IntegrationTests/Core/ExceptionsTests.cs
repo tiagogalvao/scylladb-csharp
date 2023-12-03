@@ -24,6 +24,7 @@ using Cassandra.IntegrationTests.TestBase;
 using Cassandra.IntegrationTests.TestClusterManagement;
 using Cassandra.IntegrationTests.TestClusterManagement.Simulacron;
 using Cassandra.Tests;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -67,17 +68,17 @@ namespace Cassandra.IntegrationTests.Core
             _simulacronCluster.PrimeFluent(b => b.WhenQuery(cql).ThenAlreadyExists(_keyspace, ""));
 
             var ex = Assert.Throws<AlreadyExistsException>(() => _session.Execute(cql));
-            Assert.AreEqual(ex.Keyspace, _keyspace);
-            Assert.AreEqual(ex.Table, null);
-            Assert.AreEqual(ex.WasTableCreation, false);
+            Assert.That(ex.Keyspace, Is.EqualTo(_keyspace));
+            Assert.That(ex.Table, Is.EqualTo(null));
+            Assert.That(ex.WasTableCreation, Is.EqualTo(false));
             
             var cqlTable = string.Format(TestUtils.CreateTableSimpleFormat, _table);
             
             _simulacronCluster.PrimeFluent(b => b.WhenQuery(cqlTable).ThenAlreadyExists(_keyspace, _table));
             var e = Assert.Throws<AlreadyExistsException>(() => _session.Execute(cqlTable));
-            Assert.AreEqual(e.Keyspace, _keyspace);
-            Assert.AreEqual(e.Table, _table);
-            Assert.AreEqual(e.WasTableCreation, true);
+            Assert.That(e.Keyspace, Is.EqualTo(_keyspace));
+            Assert.That(e.Table, Is.EqualTo(_table));
+            Assert.That(e.WasTableCreation, Is.EqualTo(true));
         }
 
         /// <summary>
@@ -96,8 +97,8 @@ namespace Cassandra.IntegrationTests.Core
             }
             catch (NoHostAvailableException e)
             {
-                Assert.AreEqual(e.Message, $"All host tried for query are in error (tried: {ipAddress})");
-                Assert.AreEqual(e.Errors.Keys.ToArray(), errorsHashMap.Keys.ToArray());
+                Assert.That(e.Message, Is.EqualTo($"All host tried for query are in error (tried: {ipAddress})"));
+                Assert.That(e.Errors.Keys.ToArray(), Is.EqualTo(errorsHashMap.Keys.ToArray()));
             }
         }
 
@@ -114,10 +115,10 @@ namespace Cassandra.IntegrationTests.Core
             _simulacronCluster.PrimeFluent(b => b.WhenQuery(cql).ThenReadTimeout(5, 1, 2, true));
             var ex = Assert.Throws<ReadTimeoutException>(() =>
                 _session.Execute(new SimpleStatement(cql).SetConsistencyLevel(ConsistencyLevel.All)));
-            Assert.AreEqual(ex.ConsistencyLevel, ConsistencyLevel.All);
-            Assert.AreEqual(ex.ReceivedAcknowledgements, 1);
-            Assert.AreEqual(ex.RequiredAcknowledgements, 2);
-            Assert.AreEqual(ex.WasDataRetrieved, true);
+            Assert.That(ex.ConsistencyLevel, Is.EqualTo(ConsistencyLevel.All));
+            Assert.That(ex.ReceivedAcknowledgements, Is.EqualTo(1));
+            Assert.That(ex.RequiredAcknowledgements, Is.EqualTo(2));
+            Assert.That(ex.WasDataRetrieved, Is.EqualTo(true));
         }
 
         /// <summary>
@@ -134,7 +135,7 @@ namespace Cassandra.IntegrationTests.Core
             }
             catch (SyntaxError e)
             {
-                Assert.AreEqual(e.Message, errorMessage);
+                Assert.That(e.Message, Is.EqualTo(errorMessage));
             }
         }
 
@@ -152,7 +153,7 @@ namespace Cassandra.IntegrationTests.Core
             }
             catch (TraceRetrievalException e)
             {
-                Assert.AreEqual(e.Message, errorMessage);
+                Assert.That(e.Message, Is.EqualTo(errorMessage));
             }
         }
 
@@ -170,7 +171,7 @@ namespace Cassandra.IntegrationTests.Core
             }
             catch (TruncateException e)
             {
-                Assert.AreEqual(e.Message, errorMessage);
+                Assert.That(e.Message, Is.EqualTo(errorMessage));
             }
         }
 
@@ -188,7 +189,7 @@ namespace Cassandra.IntegrationTests.Core
             }
             catch (UnauthorizedException e)
             {
-                Assert.AreEqual(e.Message, errorMessage);
+                Assert.That(e.Message, Is.EqualTo(errorMessage));
             }
         }
 
@@ -205,9 +206,9 @@ namespace Cassandra.IntegrationTests.Core
             _simulacronCluster.PrimeFluent(b => b.WhenQuery(cql).ThenUnavailable("unavailable", 5, 2, 1));
             var ex = Assert.Throws<UnavailableException>(() =>
                 _session.Execute(new SimpleStatement(cql).SetConsistencyLevel(ConsistencyLevel.All)));
-            Assert.AreEqual(ex.Consistency, ConsistencyLevel.All);
-            Assert.AreEqual(ex.RequiredReplicas, 2);
-            Assert.AreEqual(ex.AliveReplicas, 1);
+            Assert.That(ex.Consistency, Is.EqualTo(ConsistencyLevel.All));
+            Assert.That(ex.RequiredReplicas, Is.EqualTo(2));
+            Assert.That(ex.AliveReplicas, Is.EqualTo(1));
         }
 
         /// <summary>
@@ -222,10 +223,10 @@ namespace Cassandra.IntegrationTests.Core
             _simulacronCluster.PrimeFluent(b => b.WhenQuery(cql).ThenWriteTimeout("write_timeout", 5, 1, 2, "SIMPLE"));
             var ex = Assert.Throws<WriteTimeoutException>(() =>
                 _session.Execute(new SimpleStatement(cql).SetConsistencyLevel(ConsistencyLevel.All)));
-            Assert.AreEqual(ex.ConsistencyLevel, ConsistencyLevel.All);
-            Assert.AreEqual(1, ex.ReceivedAcknowledgements);
-            Assert.AreEqual(2, ex.RequiredAcknowledgements);
-            Assert.AreEqual(ex.WriteType, "SIMPLE");
+            Assert.That(ex.ConsistencyLevel, Is.EqualTo(ConsistencyLevel.All));
+            Assert.That(1, Is.EqualTo(ex.ReceivedAcknowledgements));
+            Assert.That(2, Is.EqualTo(ex.RequiredAcknowledgements));
+            Assert.That(ex.WriteType, Is.EqualTo("SIMPLE"));
         }
 
         [Test]
@@ -248,10 +249,10 @@ namespace Cassandra.IntegrationTests.Core
                     rows => rows.WithRow(Guid.NewGuid(), "value")));
 
             var rowset = _session.Execute(new SimpleStatement(cql)).GetRows();
-            Assert.NotNull(rowset);
+            Assert.That(rowset, Is.Not.Null);
             //Linq Count iterates
-            Assert.AreEqual(1, rowset.Count());
-            Assert.AreEqual(0, rowset.Count());
+            Assert.That(1, Is.EqualTo(rowset.Count()));
+            Assert.That(0, Is.EqualTo(rowset.Count()));
         }
 
         [Test]
@@ -269,15 +270,15 @@ namespace Cassandra.IntegrationTests.Core
             {
                 //Paging should be ignored in 1.x
                 //But setting the page size should work
-                Assert.AreEqual(2, rs.InnerQueueCount);
+                Assert.That(2, Is.EqualTo(rs.InnerQueueCount));
                 return;
             }
-            Assert.AreEqual(1, rs.InnerQueueCount);
+            Assert.That(1, Is.EqualTo(rs.InnerQueueCount));
 
             _session.Dispose();
             //It should not fail, just do nothing
             rs.FetchMoreResults();
-            Assert.AreEqual(1, rs.InnerQueueCount);
+            Assert.That(1, Is.EqualTo(rs.InnerQueueCount));
         }
 
         [Test]
@@ -296,10 +297,10 @@ namespace Cassandra.IntegrationTests.Core
 
             var ex = Assert.Throws<WriteFailureException>(() =>
                 _session.Execute(new SimpleStatement(cql).SetConsistencyLevel(ConsistencyLevel.All)));
-            Assert.AreEqual(ex.ConsistencyLevel, ConsistencyLevel.All);
-            Assert.AreEqual(1, ex.ReceivedAcknowledgements);
-            Assert.AreEqual(2, ex.RequiredAcknowledgements);
-            Assert.AreEqual(ex.WriteType, "SIMPLE");
+            Assert.That(ex.ConsistencyLevel, Is.EqualTo(ConsistencyLevel.All));
+            Assert.That(1, Is.EqualTo(ex.ReceivedAcknowledgements));
+            Assert.That(2, Is.EqualTo(ex.RequiredAcknowledgements));
+            Assert.That(ex.WriteType, Is.EqualTo("SIMPLE"));
         }
 
         [Test]
@@ -329,10 +330,10 @@ namespace Cassandra.IntegrationTests.Core
 
             var ex = Assert.Throws<ReadFailureException>(() =>
                 _session.Execute(new SimpleStatement(cql).SetConsistencyLevel(consistencyLevel)));
-            Assert.AreEqual(consistencyLevel, ex.ConsistencyLevel);
-            Assert.AreEqual(received, ex.ReceivedAcknowledgements);
-            Assert.AreEqual(required, ex.RequiredAcknowledgements);
-            Assert.AreEqual(baseMessage + expectedMessageEnd, ex.Message);
+            Assert.That(consistencyLevel, Is.EqualTo(ex.ConsistencyLevel));
+            Assert.That(received, Is.EqualTo(ex.ReceivedAcknowledgements));
+            Assert.That(required, Is.EqualTo(ex.RequiredAcknowledgements));
+            Assert.That(baseMessage + expectedMessageEnd, Is.EqualTo(ex.Message));
         }
 
         [Test]

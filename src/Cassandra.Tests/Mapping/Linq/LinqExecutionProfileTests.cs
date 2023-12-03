@@ -48,7 +48,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 .TableName("tbl1");
 
             var batch = session.CreateBatch();
-            Assert.IsTrue(batchV1 ? batch.GetType() == typeof(BatchV1) : batch.GetType() == typeof(BatchV2));
+            Assert.That(batchV1 ? batch.GetType() == typeof(BatchV1) : batch.GetType() == typeof(BatchV2), Is.True);
 
             const int updateCount = 3;
             var table = GetTable<AllTypesEntity>(session, map);
@@ -68,7 +68,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 batch.Execute("testProfile");
             }
 
-            Assert.NotNull(statement);
+            Assert.That(statement, Is.Not.Null);
             Mock.Get(session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>(), "testProfile"), Times.Once);
             Mock.Get(session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>()), Times.Never);
             Mock.Get(session).Verify(s => s.Execute(It.IsAny<IStatement>(), "testProfile"), Times.Never);
@@ -80,11 +80,11 @@ namespace Cassandra.Tests.Mapping.Linq
                 foreach (var updateGuid in updateGuids)
                 {
                     var updateStatement = batchStatement.Queries.First(_ => _.QueryValues.Length == 2 && _.QueryValues[1] as Guid? == updateGuid) as SimpleStatement;
-                    Assert.IsNotNull(updateStatement);
-                    Assert.IsNotNull(updateStatement.QueryValues);
-                    Assert.AreEqual(2, updateStatement.QueryValues.Length);
-                    Assert.AreEqual("newStringFor" + updateGuid, updateStatement.QueryValues[0]);
-                    Assert.AreEqual("UPDATE tbl1 SET val = ? WHERE id = ?", updateStatement.QueryString);
+                    Assert.That(updateStatement, Is.Not.Null);
+                    Assert.That(updateStatement.QueryValues, Is.Not.Null);
+                    Assert.That(2, Is.EqualTo(updateStatement.QueryValues.Length));
+                    Assert.That("newStringFor" + updateGuid, Is.EqualTo(updateStatement.QueryValues[0]));
+                    Assert.That("UPDATE tbl1 SET val = ? WHERE id = ?", Is.EqualTo(updateStatement.QueryString));
                 }
             }
         }
@@ -115,7 +115,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 cqlDelete.Execute("testProfile");
             }
 
-            Assert.AreEqual("DELETE FROM ks1.tbl1 WHERE id = ?", query);
+            Assert.That("DELETE FROM ks1.tbl1 WHERE id = ?", Is.EqualTo(query));
             Mock.Get(session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>(), "testProfile"), Times.Once);
             Mock.Get(session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>()), Times.Never);
             Mock.Get(session).Verify(s => s.Execute(It.IsAny<IStatement>(), "testProfile"), Times.Never);
@@ -148,7 +148,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 cqlUpdateIf.Execute("testProfile");
             }
 
-            Assert.AreEqual("UPDATE ks1.tbl1 SET val = ? WHERE id = ? IF val > ?", query);
+            Assert.That("UPDATE ks1.tbl1 SET val = ? WHERE id = ? IF val > ?", Is.EqualTo(query));
             Mock.Get(session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>(), "testProfile"), Times.Once);
             Mock.Get(session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>()), Times.Never);
             Mock.Get(session).Verify(s => s.Execute(It.IsAny<IStatement>(), "testProfile"), Times.Never);
@@ -181,7 +181,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 cqlSelect.Execute("testProfile");
             }
 
-            Assert.AreEqual("SELECT val FROM ks1.tbl1 WHERE id = ?", query);
+            Assert.That("SELECT val FROM ks1.tbl1 WHERE id = ?", Is.EqualTo(query));
             Mock.Get(session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>(), "testProfile"), Times.Once);
             Mock.Get(session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>()), Times.Never);
             Mock.Get(session).Verify(s => s.Execute(It.IsAny<IStatement>(), "testProfile"), Times.Never);
@@ -214,7 +214,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 cqlSelect.ExecutePaged("testProfile");
             }
 
-            Assert.AreEqual("SELECT val FROM ks1.tbl1 WHERE id = ?", query);
+            Assert.That("SELECT val FROM ks1.tbl1 WHERE id = ?", Is.EqualTo(query));
             Mock.Get(session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>(), "testProfile"), Times.Once);
             Mock.Get(session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>()), Times.Never);
             Mock.Get(session).Verify(s => s.Execute(It.IsAny<IStatement>(), "testProfile"), Times.Never);
@@ -247,7 +247,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 cqlFirst.Execute("testProfile");
             }
 
-            Assert.AreEqual("SELECT val FROM ks1.tbl1 WHERE id = ? LIMIT ?", query);
+            Assert.That("SELECT val FROM ks1.tbl1 WHERE id = ? LIMIT ?", Is.EqualTo(query));
             Mock.Get(session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>(), "testProfile"), Times.Once);
             Mock.Get(session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>()), Times.Never);
             Mock.Get(session).Verify(s => s.Execute(It.IsAny<IStatement>(), "testProfile"), Times.Never);
@@ -280,7 +280,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 cqlCount.Execute("testProfile");
             }
 
-            Assert.AreEqual("SELECT count(*) FROM ks1.tbl1 WHERE id = ?", query);
+            Assert.That("SELECT count(*) FROM ks1.tbl1 WHERE id = ?", Is.EqualTo(query));
             Mock.Get(session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>(), "testProfile"), Times.Once);
             Mock.Get(session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>()), Times.Never);
             Mock.Get(session).Verify(s => s.Execute(It.IsAny<IStatement>(), "testProfile"), Times.Never);

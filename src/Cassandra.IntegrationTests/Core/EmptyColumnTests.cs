@@ -73,16 +73,16 @@ namespace Cassandra.IntegrationTests.Core
 
                     var testTables = new Table<TestTable>(session);
                     var test = (from t in testTables.Execute() select t).First();
-                    Assert.AreEqual("testval", test.TestColumn);
-                    Assert.AreEqual("testval2", test.TestColumn2);
+                    Assert.That("testval", Is.EqualTo(test.TestColumn));
+                    Assert.That("testval2", Is.EqualTo(test.TestColumn2));
 
                     var mapper = new Mapper(session, mapConfig);
                     test = mapper.Fetch<TestTable>().First();
-                    Assert.AreEqual("testval", test.TestColumn);
-                    Assert.AreEqual("testval2", test.TestColumn2);
+                    Assert.That("testval", Is.EqualTo(test.TestColumn));
+                    Assert.That("testval2", Is.EqualTo(test.TestColumn2));
 
                     var tableMetadata = session.Cluster.Metadata.GetTable("testks", "testtable");
-                    Assert.IsNotNull(tableMetadata);
+                    Assert.That(tableMetadata, Is.Not.Null);
 
                     var rs = session.Execute("SELECT \"\", \" \" FROM testks.testtable");
                     AssertRowSetContainsCorrectValues(rs);
@@ -137,16 +137,16 @@ namespace Cassandra.IntegrationTests.Core
 
                     var testTables = new Table<TestTable>(session);
                     var test = (from t in testTables.Execute() select t).First();
-                    Assert.AreEqual("testval", test.TestColumn);
-                    Assert.AreEqual("testval2", test.TestColumn2);
+                    Assert.That("testval", Is.EqualTo(test.TestColumn));
+                    Assert.That("testval2", Is.EqualTo(test.TestColumn2));
 
                     var mapper = new Mapper(session, mapConfig);
                     test = mapper.Fetch<TestTable>().First();
-                    Assert.AreEqual("testval", test.TestColumn);
-                    Assert.AreEqual("testval2", test.TestColumn2);
+                    Assert.That("testval", Is.EqualTo(test.TestColumn));
+                    Assert.That("testval2", Is.EqualTo(test.TestColumn2));
 
                     var tableMetadata = session.Cluster.Metadata.GetTable("testks", "testtable");
-                    Assert.IsNotNull(tableMetadata);
+                    Assert.That(tableMetadata, Is.Not.Null);
 
                     var rs = session.Execute("SELECT \"\", \" \" FROM testks.testtable");
                     AssertRowSetContainsCorrectValues(rs);
@@ -162,9 +162,9 @@ namespace Cassandra.IntegrationTests.Core
         private void AssertRowSetContainsCorrectValues(RowSet rs)
         {
             var row = rs.Single();
-            Assert.IsTrue(rs.Columns.Length == 2 && rs.Columns.Any(c => c.Name == string.Empty) && rs.Columns.Any(c => c.Name == " "));
-            Assert.AreEqual("testval", row.GetValue<string>(string.Empty));
-            Assert.AreEqual("testval2", row.GetValue<string>(" "));
+            Assert.That(rs.Columns.Length == 2 && rs.Columns.Any(c => c.Name == string.Empty) && rs.Columns.Any(c => c.Name == " "), Is.True);
+            Assert.That("testval", Is.EqualTo(row.GetValue<string>(string.Empty)));
+            Assert.That("testval2", Is.EqualTo(row.GetValue<string>(" ")));
         }
 
         private Cluster BuildCluster(SimulacronCluster simulacronCluster)

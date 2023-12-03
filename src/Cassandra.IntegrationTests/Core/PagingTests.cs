@@ -60,11 +60,11 @@ namespace Cassandra.IntegrationTests.Core
                 var rsWithoutPagingInherited = Session.Execute(boundStatemetWithoutPaging);
 
                 //Check that the internal list of items count is pageSize
-                Assert.AreEqual(pageSize, rsWithSessionPagingInherited.InnerQueueCount);
-                Assert.AreEqual(totalRowLength, rsWithoutPagingInherited.InnerQueueCount);
+                Assert.That(pageSize, Is.EqualTo(rsWithSessionPagingInherited.InnerQueueCount));
+                Assert.That(totalRowLength, Is.EqualTo(rsWithoutPagingInherited.InnerQueueCount));
 
                 var allTheRowsPaged = rsWithSessionPagingInherited.ToList();
-                Assert.AreEqual(totalRowLength, allTheRowsPaged.Count);
+                Assert.That(totalRowLength, Is.EqualTo(allTheRowsPaged.Count));
             }
         }
 
@@ -87,11 +87,11 @@ namespace Cassandra.IntegrationTests.Core
             var rsWithoutPaging = Session.Execute(boundStatemetWithoutPaging);
 
             //Check that the internal list of items count is pageSize
-            Assert.AreEqual(pageSize, rsWithPaging.InnerQueueCount);
-            Assert.AreEqual(totalRowLength, rsWithoutPaging.InnerQueueCount);
+            Assert.That(pageSize, Is.EqualTo(rsWithPaging.InnerQueueCount));
+            Assert.That(totalRowLength, Is.EqualTo(rsWithoutPaging.InnerQueueCount));
 
             var allTheRowsPaged = rsWithPaging.ToList();
-            Assert.AreEqual(totalRowLength, allTheRowsPaged.Count);
+            Assert.That(totalRowLength, Is.EqualTo(allTheRowsPaged.Count));
         }
 
         [Test]
@@ -118,11 +118,11 @@ namespace Cassandra.IntegrationTests.Core
             var rsWithoutPaging = Session.Execute(boundStatemetWithoutPaging);
 
             //Check that the internal list of items count is pageSize
-            Assert.AreEqual(1, rsWithPaging.InnerQueueCount);
-            Assert.AreEqual(1, rsWithoutPaging.InnerQueueCount);
+            Assert.That(1, Is.EqualTo(rsWithPaging.InnerQueueCount));
+            Assert.That(1, Is.EqualTo(rsWithoutPaging.InnerQueueCount));
 
             var allTheRowsPaged = rsWithPaging.ToList();
-            Assert.AreEqual(1, allTheRowsPaged.Count);
+            Assert.That(1, Is.EqualTo(allTheRowsPaged.Count));
         }
 
         [Test]
@@ -144,38 +144,38 @@ namespace Cassandra.IntegrationTests.Core
 
             var allRows = Session.Execute(ps.Bind()).ToList();
             var previousResultMetadata = ps.ResultMetadata;
-            Assert.AreEqual(totalRowLength, allRows.Count);
-            Assert.IsTrue(allRows.All(r => !r.ContainsColumn("new_column")));
-            Assert.AreEqual(2, previousResultMetadata.RowSetMetadata.Columns.Length);
+            Assert.That(totalRowLength, Is.EqualTo(allRows.Count));
+            Assert.That(allRows.All(r => !r.ContainsColumn("new_column")), Is.True);
+            Assert.That(2, Is.EqualTo(previousResultMetadata.RowSetMetadata.Columns.Length));
 
             var boundStatementManualPaging = ps.Bind().SetPageSize(pageSize).SetAutoPage(false);
             var rs = Session.Execute(boundStatementManualPaging);
             var firstPage = rs.ToList();
 
             Session.Execute($"ALTER TABLE {tableName} ADD (new_column text)");
-            Assert.AreSame(previousResultMetadata, ps.ResultMetadata);
-            Assert.AreEqual(previousResultMetadata.ResultMetadataId, ps.ResultMetadata.ResultMetadataId);
-            Assert.AreEqual(2, ps.ResultMetadata.RowSetMetadata.Columns.Length);
+            Assert.That(previousResultMetadata, Is.SameAs(ps.ResultMetadata));
+            Assert.That(previousResultMetadata.ResultMetadataId, Is.EqualTo(ps.ResultMetadata.ResultMetadataId));
+            Assert.That(2, Is.EqualTo(ps.ResultMetadata.RowSetMetadata.Columns.Length));
 
             rs = Session.Execute(boundStatementManualPaging.SetPagingState(rs.PagingState));
             var secondPage = rs.ToList();
-            Assert.AreNotSame(previousResultMetadata, ps.ResultMetadata);
-            Assert.AreNotEqual(previousResultMetadata.ResultMetadataId, ps.ResultMetadata.ResultMetadataId);
-            Assert.AreEqual(3, ps.ResultMetadata.RowSetMetadata.Columns.Length);
+            Assert.That(previousResultMetadata, Is.Not.SameAs(ps.ResultMetadata));
+            Assert.That(previousResultMetadata.ResultMetadataId, Is.Not.EqualTo(ps.ResultMetadata.ResultMetadataId));
+            Assert.That(3, Is.EqualTo(ps.ResultMetadata.RowSetMetadata.Columns.Length));
             
             rs = Session.Execute(boundStatementManualPaging.SetPagingState(rs.PagingState));
             var thirdPage = rs.ToList();
             
             var allRowsAfterAlter = Session.Execute(ps.Bind()).ToList();
-            Assert.AreEqual(totalRowLength, allRowsAfterAlter.Count);
+            Assert.That(totalRowLength, Is.EqualTo(allRowsAfterAlter.Count));
 
-            Assert.AreEqual(pageSize, firstPage.Count);
-            Assert.AreEqual(pageSize, secondPage.Count);
-            Assert.AreEqual(totalRowLength-(pageSize*2), thirdPage.Count);
+            Assert.That(pageSize, Is.EqualTo(firstPage.Count));
+            Assert.That(pageSize, Is.EqualTo(secondPage.Count));
+            Assert.That(totalRowLength-(pageSize*2),Is.EqualTo( thirdPage.Count));
 
-            Assert.IsTrue(firstPage.All(r => !r.ContainsColumn("new_column")));
-            Assert.IsTrue(secondPage.All(r => r.ContainsColumn("new_column") && r.GetValue<string>("new_column") == null));
-            Assert.IsTrue(allRowsAfterAlter.All(r => r.ContainsColumn("new_column") && r.GetValue<string>("new_column") == null));
+            Assert.That(firstPage.All(r => !r.ContainsColumn("new_column")), Is.True);
+            Assert.That(secondPage.All(r => r.ContainsColumn("new_column") && r.GetValue<string>("new_column") == null), Is.True);
+            Assert.That(allRowsAfterAlter.All(r => r.ContainsColumn("new_column") && r.GetValue<string>("new_column") == null), Is.True);
         }
 
         [Test]
@@ -201,11 +201,11 @@ namespace Cassandra.IntegrationTests.Core
             var rsWithoutPaging = Session.Execute(boundStatemetWithoutPaging);
 
             //Check that the internal list of items count is pageSize
-            Assert.AreEqual(0, rsWithPaging.InnerQueueCount);
-            Assert.AreEqual(0, rsWithoutPaging.InnerQueueCount);
+            Assert.That(0, Is.EqualTo(rsWithPaging.InnerQueueCount));
+            Assert.That(0, Is.EqualTo(rsWithoutPaging.InnerQueueCount));
 
             var allTheRowsPaged = rsWithPaging.ToList();
-            Assert.AreEqual(0, allTheRowsPaged.Count);
+            Assert.That(0, Is.EqualTo(allTheRowsPaged.Count));
         }
 
         [Test]
@@ -224,11 +224,11 @@ namespace Cassandra.IntegrationTests.Core
             var rsWithoutPaging = Session.Execute(statementWithoutPaging);
 
             //Check that the internal list of items count is pageSize
-            Assert.True(rsWithPaging.InnerQueueCount == pageSize);
-            Assert.True(rsWithoutPaging.InnerQueueCount == totalRowLength);
+            Assert.That(rsWithPaging.InnerQueueCount == pageSize, Is.True);
+            Assert.That(rsWithoutPaging.InnerQueueCount == totalRowLength, Is.True);
 
             var allTheRowsPaged = rsWithPaging.ToList();
-            Assert.True(allTheRowsPaged.Count == totalRowLength);
+            Assert.That(allTheRowsPaged.Count == totalRowLength, Is.True);
         }
 
         [Test]
@@ -240,16 +240,16 @@ namespace Cassandra.IntegrationTests.Core
             var table = CreateSimpleTableAndInsert(totalRowLength);
             var rsWithoutPaging = Session.Execute($"SELECT * FROM {table}", int.MaxValue);
             //It should have all the rows already in the inner list
-            Assert.AreEqual(totalRowLength, rsWithoutPaging.InnerQueueCount);
+            Assert.That(totalRowLength, Is.EqualTo(rsWithoutPaging.InnerQueueCount));
 
             var rs = Session.Execute($"SELECT * FROM {table}", pageSize);
             //Check that the internal list of items count is pageSize
-            Assert.AreEqual(pageSize, rs.InnerQueueCount);
+            Assert.That(pageSize, Is.EqualTo(rs.InnerQueueCount));
 
             //Use Linq to iterate through all the rows
             var allTheRowsPaged = rs.ToList();
 
-            Assert.AreEqual(totalRowLength, allTheRowsPaged.Count);
+            Assert.That(totalRowLength, Is.EqualTo(allTheRowsPaged.Count));
         }
 
         [Test]
@@ -261,7 +261,7 @@ namespace Cassandra.IntegrationTests.Core
             const string table = "tbl_parallel_paging_read";
             var query = new SimpleStatement($"SELECT * FROM {table} LIMIT 10000").SetPageSize(pageSize);
             var rs = Session.Execute(query);
-            Assert.AreEqual(pageSize, rs.GetAvailableWithoutFetching());
+            Assert.That(pageSize, Is.EqualTo(rs.GetAvailableWithoutFetching()));
 
             var counter = 0;
 
@@ -274,7 +274,7 @@ namespace Cassandra.IntegrationTests.Core
             Parallel.Invoke(Iterate, Iterate, Iterate, Iterate);
 
             //Check that the sum of all rows in different threads is the same as total rows
-            Assert.AreEqual(totalRowLength, Volatile.Read(ref counter));
+            Assert.That(totalRowLength, Is.EqualTo(Volatile.Read(ref counter)));
         }
 
         [Test]
@@ -297,7 +297,7 @@ namespace Cassandra.IntegrationTests.Core
             }
 
             //Check that the sum of all rows in same thread is the same as total rows
-            Assert.AreEqual(totalRowLength * times, counter);
+            Assert.That(totalRowLength * times, Is.EqualTo(counter));
         }
 
         [Test]
@@ -308,14 +308,14 @@ namespace Cassandra.IntegrationTests.Core
             var totalRowLength = 15;
             var table = CreateSimpleTableAndInsert(totalRowLength);
             var rs = Session.Execute(new SimpleStatement("SELECT * FROM " + table).SetAutoPage(false).SetPageSize(pageSize));
-            Assert.NotNull(rs.PagingState);
+            Assert.That(rs.PagingState, Is.Not.Null);
             //It should have just the first page of rows
-            Assert.AreEqual(pageSize, rs.InnerQueueCount);
+            Assert.That(pageSize, Is.EqualTo(rs.InnerQueueCount));
             //Linq iteration should not make it to page
-            Assert.AreEqual(pageSize, rs.Count());
+            Assert.That(pageSize, Is.EqualTo(rs.Count()));
             rs = Session.Execute(new SimpleStatement("SELECT * FROM " + table).SetAutoPage(false).SetPageSize(pageSize).SetPagingState(rs.PagingState));
             //It should only contain the following page rows
-            Assert.AreEqual(totalRowLength - pageSize, rs.Count());
+            Assert.That(totalRowLength - pageSize, Is.EqualTo(rs.Count()));
         }
 
         ////////////////////////////////////

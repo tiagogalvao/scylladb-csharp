@@ -100,9 +100,9 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
                     ? await session.ExecuteAsync(new SimpleStatement("SELECT * from test.test"), "read").ConfigureAwait(false)
                     : session.Execute("SELECT * from test.test", "read");
                 var rows = rs.ToList();
-                Assert.AreEqual(2, rows.Count);
-                Assert.AreEqual("test6", rows[0].GetValue<string>("text"));
-                Assert.AreEqual("test5", rows[1].GetValue<string>("text"));
+                Assert.That(2, Is.EqualTo(rows.Count));
+                Assert.That("test6", Is.EqualTo(rows[0].GetValue<string>("text")));
+                Assert.That("test5", Is.EqualTo(rows[1].GetValue<string>("text")));
             }
         }
 
@@ -137,9 +137,9 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
                     ? await session.ExecuteAsync(new SimpleStatement("SELECT * from test.test")).ConfigureAwait(false)
                     : session.Execute("SELECT * from test.test");
                 var rows = rs.ToList();
-                Assert.AreEqual(2, rows.Count);
-                Assert.AreEqual("test10", rows[0].GetValue<string>("text"));
-                Assert.AreEqual("test60", rows[1].GetValue<string>("text"));
+                Assert.That(2, Is.EqualTo(rows.Count));
+                Assert.That("test10", Is.EqualTo(rows[0].GetValue<string>("text")));
+                Assert.That("test60", Is.EqualTo(rows[1].GetValue<string>("text")));
                 var exception = async
                     ? Assert.ThrowsAsync<UnavailableException>(() => session.ExecuteAsync(new SimpleStatement("SELECT * from test.test"), "read"))
                     : Assert.Throws<UnavailableException>(() => session.Execute("SELECT * from test.test", "read"));
@@ -183,9 +183,9 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
                     ? await session.ExecuteAsync(new SimpleStatement("SELECT * from test.test"), "read").ConfigureAwait(false)
                     : session.Execute("SELECT * from test.test", "read");
                 var rows = rs.ToList();
-                Assert.AreEqual(2, rows.Count);
-                Assert.AreEqual("test12", rows[0].GetValue<string>("text"));
-                Assert.AreEqual("test62", rows[1].GetValue<string>("text"));
+                Assert.That(2, Is.EqualTo(rows.Count));
+                Assert.That("test12", Is.EqualTo(rows[0].GetValue<string>("text")));
+                Assert.That("test62", Is.EqualTo(rows[1].GetValue<string>("text")));
                 var exception = async
                     ? Assert.ThrowsAsync<UnavailableException>(() => session.ExecuteAsync(new SimpleStatement("SELECT * from test.test")))
                     : Assert.Throws<UnavailableException>(() => session.Execute("SELECT * from test.test"));

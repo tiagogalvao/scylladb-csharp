@@ -20,6 +20,7 @@ using System.Linq;
 using Cassandra.Tests.Mapping.Pocos;
 using Cassandra.Tests.Mapping.TestData;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.Mapping
 {
@@ -46,7 +47,7 @@ namespace Cassandra.Tests.Mapping
             //Empty rowset
             var mappingClient = GetMappingClient(new RowSet());
             var ex = Assert.Throws<AggregateException>(() => { mappingClient.FirstAsync<PlainUser>("SELECT * FROM users").Wait(); });
-            Assert.IsInstanceOf<InvalidOperationException>(ex.InnerException);
+            ClassicAssert.IsInstanceOf<InvalidOperationException>(ex.InnerException);
         }
 
         [Test]
@@ -62,7 +63,7 @@ namespace Cassandra.Tests.Mapping
             // Get first or default where user id doesn't exist and make sure we get null
             mappingClient = GetMappingClient(new RowSet());
             var notExistingUser = mappingClient.FirstOrDefaultAsync<PlainUser>("SELECT * FROM users WHERE userid = ?", Guid.Empty).Result;
-            Assert.Null(notExistingUser);
+            Assert.That(notExistingUser, Is.Null);
         }
 
         [Test]
@@ -78,7 +79,7 @@ namespace Cassandra.Tests.Mapping
             // Get first or default where user id doesn't exist and make sure we get null
             mappingClient = GetMappingClient(new RowSet());
             var notExistingUser = mappingClient.FirstOrDefault<PlainUser>("SELECT * FROM users WHERE userid = ?", Guid.Empty);
-            Assert.Null(notExistingUser);
+            Assert.That(notExistingUser, Is.Null);
         }
 
         [Test]
@@ -89,7 +90,7 @@ namespace Cassandra.Tests.Mapping
             var mappingClient = GetMappingClient(rowset);
             // Get random first created date and make sure it was one from our test data
             var createdDate = mappingClient.FirstAsync<DateTimeOffset>("SELECT createddate FROM users").Result;
-            Assert.AreEqual(valueExpected, createdDate);
+            Assert.That(valueExpected, Is.EqualTo(createdDate));
         }
 
         [Test]
@@ -99,7 +100,7 @@ namespace Cassandra.Tests.Mapping
             //Empty rowset
             var mappingClient = GetMappingClient(new RowSet());
             var ex = Assert.Throws<AggregateException>(() => { mappingClient.FirstAsync<Guid>("SELECT userid FROM users").Wait(); });
-            Assert.IsInstanceOf<InvalidOperationException>(ex.InnerException);
+            ClassicAssert.IsInstanceOf<InvalidOperationException>(ex.InnerException);
         }
 
         [Test]
@@ -110,7 +111,7 @@ namespace Cassandra.Tests.Mapping
             var mappingClient = GetMappingClient(rowset);
             // Get random first created date and make sure it was one from our test data
             var createdDate = mappingClient.First<DateTimeOffset>("SELECT createddate FROM users");
-            Assert.AreEqual(valueExpected, createdDate);
+            Assert.That(valueExpected, Is.EqualTo(createdDate));
         }
 
         [Test]
@@ -121,12 +122,12 @@ namespace Cassandra.Tests.Mapping
             var mappingClient = GetMappingClient(rowset);
             // Get random first created date and make sure it was one from our test data
             var name = mappingClient.FirstOrDefaultAsync<string>("SELECT name FROM users").Result;
-            Assert.AreEqual(valueExpected, name);
+            Assert.That(valueExpected, Is.EqualTo(name));
 
             mappingClient = GetMappingClient(new RowSet());
-            Assert.Null(
+            Assert.That(
                 mappingClient.FirstOrDefaultAsync<List<DateTimeOffset>>("SELECT loginhistory FROM users WHERE userid = ?", Guid.Empty).Result
-                );
+                , Is.Null);
         }
 
         [Test]
@@ -137,12 +138,12 @@ namespace Cassandra.Tests.Mapping
             var mappingClient = GetMappingClient(rowset);
             // Get random first created date and make sure it was one from our test data
             var name = mappingClient.FirstOrDefault<string>("SELECT name FROM users");
-            Assert.AreEqual(valueExpected, name);
+            Assert.That(valueExpected, Is.EqualTo(name));
 
             mappingClient = GetMappingClient(new RowSet());
-            Assert.Null(
+            Assert.That(
                 mappingClient.FirstOrDefault<List<DateTimeOffset>>("SELECT loginhistory FROM users WHERE userid = ?", Guid.Empty)
-                );
+                , Is.Null);
         }
     }
 }

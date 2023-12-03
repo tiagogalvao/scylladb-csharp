@@ -28,6 +28,7 @@ using Cassandra.Mapping;
 using Cassandra.Tests.Mapping.Pocos;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 #pragma warning disable 612
 
@@ -218,7 +219,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                     layersChecked++;
                     e = e.InnerException;
                 }
-                Assert.IsInstanceOf<InvalidQueryException>(e);
+                ClassicAssert.IsInstanceOf<InvalidQueryException>(e);
             }
         }
 
@@ -238,8 +239,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                 Insert(movie)
                 .IfNotExists()
                 .Execute();
-            Assert.True(appliedInfo.Applied);
-            Assert.Null(appliedInfo.Existing);
+            Assert.That(appliedInfo.Applied, Is.True);
+            Assert.That(appliedInfo.Existing, Is.Null);
 
             var newMovie = Movie.GetDefaultMovieList()[1];
             newMovie.Title = movie.Title;
@@ -257,9 +258,9 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                 .IfNotExists()
                 .Execute();
 
-            Assert.False(appliedInfo.Applied);
-            Assert.NotNull(appliedInfo.Existing);
-            Assert.AreEqual(movie.Year, appliedInfo.Existing.Year);
+            Assert.That(appliedInfo.Applied, Is.False);
+            Assert.That(appliedInfo.Existing, Is.Not.Null);
+            Assert.That(movie.Year, Is.EqualTo(appliedInfo.Existing.Year));
         }
     }
 }

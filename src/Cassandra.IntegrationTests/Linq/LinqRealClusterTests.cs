@@ -67,7 +67,7 @@ namespace Cassandra.IntegrationTests.Linq
                     ReleaseDate = DateTimeOffset.Now
                 }).ExecuteAsync());
             }
-            Assert.True(Task.WaitAll(tasks.ToArray(), 10000));
+            Assert.That(Task.WaitAll(tasks.ToArray(), 10000), Is.True);
 
             var movieMappingConfig = new MappingConfiguration();
             _movieTable = new Table<Movie>(_session, movieMappingConfig);
@@ -92,8 +92,8 @@ namespace Cassandra.IntegrationTests.Linq
             const int pageSize = 10;
             var table = GetTable();
             var page = table.SetPageSize(pageSize).ExecutePaged();
-            Assert.AreEqual(pageSize, page.Count);
-            Assert.AreEqual(pageSize, page.Count());
+            Assert.That(pageSize, Is.EqualTo(page.Count));
+            Assert.That(pageSize, Is.EqualTo(page.Count()));
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Cassandra.IntegrationTests.Linq
             var table = GetTable();
             var fullList = new HashSet<Guid>();
             var page = await table.SetPageSize(pageSize).ExecutePagedAsync().ConfigureAwait(false);
-            Assert.AreEqual(pageSize, page.Count);
+            Assert.That(pageSize, Is.EqualTo(page.Count));
             foreach (var s in page)
             {
                 fullList.Add(s.Id);
@@ -115,13 +115,13 @@ namespace Cassandra.IntegrationTests.Linq
             while (page.PagingState != null && safeCounter++ < LinqRealClusterTests.TotalRows)
             {
                 page = table.SetPagingState(page.PagingState).ExecutePaged();
-                Assert.LessOrEqual(page.Count, pageSize);
+                Assert.That(page.Count, Is.LessThanOrEqualTo(pageSize));
                 foreach (var s in page)
                 {
                     fullList.Add(s.Id);
                 }
             }
-            Assert.AreEqual(LinqRealClusterTests.TotalRows, fullList.Count);
+            Assert.That(LinqRealClusterTests.TotalRows, Is.EqualTo(fullList.Count));
         }
 
         [Test]
@@ -130,8 +130,8 @@ namespace Cassandra.IntegrationTests.Linq
             const int pageSize = 10;
             var table = GetTable();
             var page = table.Where(s => CqlFunction.Token(s.Id) > long.MinValue).SetPageSize(pageSize).ExecutePaged();
-            Assert.AreEqual(pageSize, page.Count);
-            Assert.AreEqual(pageSize, page.Count());
+            Assert.That(pageSize, Is.EqualTo(page.Count));
+            Assert.That(pageSize, Is.EqualTo(page.Count()));
         }
 
         [Test]
@@ -141,7 +141,7 @@ namespace Cassandra.IntegrationTests.Linq
             var table = GetTable();
             var fullList = new HashSet<Guid>();
             var page = table.Where(s => CqlFunction.Token(s.Id) > long.MinValue).SetPageSize(pageSize).ExecutePaged();
-            Assert.AreEqual(pageSize, page.Count);
+            Assert.That(pageSize, Is.EqualTo(page.Count));
             foreach (var s in page)
             {
                 fullList.Add(s.Id);
@@ -150,13 +150,13 @@ namespace Cassandra.IntegrationTests.Linq
             while (page.PagingState != null && safeCounter++ < LinqRealClusterTests.TotalRows)
             {
                 page = table.Where(s => CqlFunction.Token(s.Id) > long.MinValue).SetPageSize(pageSize).SetPagingState(page.PagingState).ExecutePaged();
-                Assert.LessOrEqual(page.Count, pageSize);
+                Assert.That(page.Count, Is.LessThanOrEqualTo(pageSize));
                 foreach (var s in page)
                 {
                     fullList.Add(s.Id);
                 }
             }
-            Assert.AreEqual(LinqRealClusterTests.TotalRows, fullList.Count);
+            Assert.That(LinqRealClusterTests.TotalRows, Is.EqualTo(fullList.Count));
         }
 
         [Test]
@@ -168,12 +168,12 @@ namespace Cassandra.IntegrationTests.Linq
             var linqWhere = _movieTable.Where(m => m.Title == expectedMovie.Title && m.MovieMaker == expectedMovie.MovieMaker);
             linqWhere.EnableTracing();
             var movies = linqWhere.Execute().ToList();
-            Assert.AreEqual(1, movies.Count);
+            Assert.That(1, Is.EqualTo(movies.Count));
             var actualMovie = movies.First();
             Movie.AssertEquals(expectedMovie, actualMovie);
             var trace = linqWhere.QueryTrace;
-            Assert.NotNull(trace);
-            Assert.AreEqual(TestCluster.InitialContactPoint, trace.Coordinator.ToString());
+            Assert.That(trace, Is.Not.Null);
+            Assert.That(TestCluster.InitialContactPoint, Is.EqualTo(trace.Coordinator.ToString()));
         }
 
         [Test, TestCassandraVersion(2, 1)]
@@ -190,9 +190,9 @@ namespace Cassandra.IntegrationTests.Linq
             var table = new Table<UdtAndTuplePoco>(Session, config);
             table.Create();
             var tableMeta = Cluster.Metadata.GetTable(KeyspaceName, "tbl_frozen_udt");
-            Assert.AreEqual(2, tableMeta.TableColumns.Length);
+            Assert.That(2, Is.EqualTo(tableMeta.TableColumns.Length));
             var column = tableMeta.ColumnsByName["u"];
-            Assert.AreEqual(ColumnTypeCode.Udt, column.TypeCode);
+            Assert.That(ColumnTypeCode.Udt, Is.EqualTo(column.TypeCode));
         }
 
         [Test, TestCassandraVersion(2, 1)]
@@ -210,11 +210,11 @@ namespace Cassandra.IntegrationTests.Linq
             var table = new Table<UdtAndTuplePoco>(Session, config);
             table.Create();
             var tableMeta = Cluster.Metadata.GetTable(KeyspaceName, "tbl_frozen_key");
-            Assert.AreEqual(3, tableMeta.TableColumns.Length);
+            Assert.That(3, Is.EqualTo(tableMeta.TableColumns.Length));
             var column = tableMeta.ColumnsByName["s"];
-            Assert.AreEqual(ColumnTypeCode.Set, column.TypeCode);
+            Assert.That(ColumnTypeCode.Set, Is.EqualTo(column.TypeCode));
             column = tableMeta.ColumnsByName["m"];
-            Assert.AreEqual(ColumnTypeCode.Map, column.TypeCode);
+            Assert.That(ColumnTypeCode.Map, Is.EqualTo(column.TypeCode));
         }
 
         [Test, TestCassandraVersion(2, 1)]
@@ -232,11 +232,11 @@ namespace Cassandra.IntegrationTests.Linq
             var table = new Table<UdtAndTuplePoco>(Session, config);
             table.Create();
             var tableMeta = Cluster.Metadata.GetTable(KeyspaceName, "tbl_frozen_value");
-            Assert.AreEqual(3, tableMeta.TableColumns.Length);
+            Assert.That(3, Is.EqualTo(tableMeta.TableColumns.Length));
             var column = tableMeta.ColumnsByName["l"];
-            Assert.AreEqual(ColumnTypeCode.List, column.TypeCode);
+            Assert.That(ColumnTypeCode.List, Is.EqualTo(column.TypeCode));
             column = tableMeta.ColumnsByName["m"];
-            Assert.AreEqual(ColumnTypeCode.Map, column.TypeCode);
+            Assert.That(ColumnTypeCode.Map, Is.EqualTo(column.TypeCode));
         }
         [Test, TestCassandraVersion(2, 1, 0)]
         public void LinqUdt_Select()
@@ -250,13 +250,13 @@ namespace Cassandra.IntegrationTests.Linq
             var table = GetAlbumTable();
             var album = table.Select(a => new Album { Id = a.Id, Name = a.Name, Songs = a.Songs })
                              .Where(a => a.Id == _sampleId).Execute().First();
-            Assert.AreEqual(_sampleId, album.Id);
-            Assert.AreEqual("Legend", album.Name);
-            Assert.NotNull(album.Songs);
-            Assert.AreEqual(1, album.Songs.Count);
+            Assert.That(_sampleId, Is.EqualTo(album.Id));
+            Assert.That("Legend", Is.EqualTo(album.Name));
+            Assert.That(album.Songs, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(album.Songs.Count));
             var song = album.Songs[0];
-            Assert.AreEqual("Africa Unite", song.Title);
-            Assert.AreEqual("Bob Marley", song.Artist);
+            Assert.That("Africa Unite", Is.EqualTo(song.Title));
+            Assert.That("Bob Marley", Is.EqualTo(song.Artist));
         }
 
         [Test, TestCassandraVersion(2,1,0)]
@@ -289,12 +289,12 @@ namespace Cassandra.IntegrationTests.Linq
             table.Insert(album).Execute();
             //Check that the values exists using core driver
             var row = Session.Execute(new SimpleStatement($"SELECT * FROM {_tableNameAlbum} WHERE id = ?", id)).First();
-            Assert.AreEqual("Mothership", row.GetValue<object>("name"));
+            Assert.That("Mothership", Is.EqualTo(row.GetValue<object>("name")));
             var songs = row.GetValue<List<Song2>>("songs");
-            Assert.NotNull(songs);
-            Assert.AreEqual(2, songs.Count);
-            Assert.NotNull(songs.FirstOrDefault(s => s.Title == "Good Times Bad Times"));
-            Assert.NotNull(songs.FirstOrDefault(s => s.Title == "Communication Breakdown"));
+            Assert.That(songs, Is.Not.Null);
+            Assert.That(2, Is.EqualTo(songs.Count));
+            Assert.That(songs.FirstOrDefault(s => s.Title == "Good Times Bad Times"), Is.Not.Null);
+            Assert.That(songs.FirstOrDefault(s => s.Title == "Communication Breakdown"), Is.Not.Null);
         }
 
         [Test, TestCassandraVersion(2,1,0)]
@@ -320,13 +320,13 @@ namespace Cassandra.IntegrationTests.Linq
             };
             table.Insert(songRecord).Execute();
             var records = table.Where(sr => sr.Id == id && songs.Contains(sr.Song)).Execute();
-            Assert.NotNull(records);
+            Assert.That(records, Is.Not.Null);
             var recordsArr = records.ToArray();
-            Assert.AreEqual(1, recordsArr.Length);
-            Assert.NotNull(recordsArr[0].Song);
-            Assert.AreEqual(song.Id, recordsArr[0].Song.Id);
-            Assert.AreEqual(song.Artist, recordsArr[0].Song.Artist);
-            Assert.AreEqual(song.Title, recordsArr[0].Song.Title);
+            Assert.That(1, Is.EqualTo(recordsArr.Length));
+            Assert.That(recordsArr[0].Song, Is.Not.Null);
+            Assert.That(song.Id, Is.EqualTo(recordsArr[0].Song.Id));
+            Assert.That(song.Artist, Is.EqualTo(recordsArr[0].Song.Artist));
+            Assert.That(song.Title, Is.EqualTo(recordsArr[0].Song.Title));
         }
 
         [Test]
@@ -355,15 +355,15 @@ namespace Cassandra.IntegrationTests.Linq
             var records = table
                 .Select(wte => new { Id = wte.Id, wt1 = CqlFunction.WriteTime(wte.PropertyString), wt2 = CqlFunction.WriteTime(wte.PropertyInt) })
                 .Where(wte => wte.Id == id).Execute();
-            Assert.NotNull(records);
+            Assert.That(records, Is.Not.Null);
             var recordsArr = records.ToArray();
-            Assert.AreEqual(1, recordsArr.Length);
-            Assert.NotNull(recordsArr[0]);
-            Assert.GreaterOrEqual(recordsArr[0].wt1, now);
-            Assert.Greater(recordsArr[0].wt2, now);
-            Assert.Greater(recordsArr[0].wt2, recordsArr[0].wt1);
-            Assert.Less(recordsArr[0].wt1, nowPlus5Minutes);
-            Assert.Less(recordsArr[0].wt2, nowPlus5Minutes);
+            Assert.That(1, Is.EqualTo(recordsArr.Length));
+            Assert.That(recordsArr[0], Is.Not.Null);
+            Assert.That(recordsArr[0].wt1, Is.GreaterThanOrEqualTo(now));
+            Assert.That(recordsArr[0].wt2, Is.GreaterThan(now));
+            Assert.That(recordsArr[0].wt2, Is.GreaterThan(recordsArr[0].wt1));
+            Assert.That(recordsArr[0].wt1, Is.LessThan(nowPlus5Minutes));
+            Assert.That(recordsArr[0].wt2, Is.LessThan(nowPlus5Minutes));
         }
 
         [Test]
@@ -383,12 +383,12 @@ namespace Cassandra.IntegrationTests.Linq
             var records = table
                 .Select(wte => new { Id = wte.Id, wt1 = CqlFunction.WriteTime(wte.PropertyString), wt2 = CqlFunction.WriteTime(wte.PropertyInt) })
                 .Where(wte => wte.Id == id).Execute();
-            Assert.NotNull(records);
+            Assert.That(records, Is.Not.Null);
             var recordsArr = records.ToArray();
-            Assert.AreEqual(1, recordsArr.Length);
-            Assert.NotNull(recordsArr[0]);
-            Assert.Null(recordsArr[0].wt1);
-            Assert.Null(recordsArr[0].wt2);
+            Assert.That(1, Is.EqualTo(recordsArr.Length));
+            Assert.That(recordsArr[0], Is.Not.Null);
+            Assert.That(recordsArr[0].wt1, Is.Null);
+            Assert.That(recordsArr[0].wt2, Is.Null);
         }
 
         private Table<Album> GetAlbumTable()

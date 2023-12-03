@@ -19,6 +19,7 @@ using Cassandra.Data.Linq;
 using Cassandra.Mapping;
 using Cassandra.Tests.Mapping.Pocos;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.Mapping.Linq
 {
@@ -53,7 +54,7 @@ namespace Cassandra.Tests.Mapping.Linq
             var cqlInsert = table.Insert(row, false);
             var cql = cqlInsert.GetCqlAndValues(out object[] values);
 
-            Assert.AreEqual("INSERT INTO InsertNullTable (Key) VALUES (?)", cql);
+            Assert.That("INSERT INTO InsertNullTable (Key) VALUES (?)", Is.EqualTo(cql));
             TestHelper.VerifyInsertCqlColumns("InsertNullTable", cql, new[] {"Key"}, 
                 new object[] {row.Key}, values);
         }

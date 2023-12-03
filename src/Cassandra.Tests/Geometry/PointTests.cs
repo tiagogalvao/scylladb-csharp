@@ -42,9 +42,9 @@ namespace Cassandra.Tests.Geometry
                 var expected = string.Format("{{\"type\":\"Point\",\"coordinates\":[{0},{1}]}}", point.X.ToString(CultureInfo.InvariantCulture), point.Y.ToString(CultureInfo.InvariantCulture));
                 // Default serialization to JSON is GeoJson
                 var json = JsonConvert.SerializeObject(point);
-                Assert.AreEqual(expected, json);
-                Assert.AreEqual(expected, point.ToGeoJson());
-                Assert.AreEqual(expected, JsonConvert.DeserializeObject<Point>(json).ToGeoJson());
+                Assert.That(expected, Is.EqualTo(json));
+                Assert.That(expected, Is.EqualTo(point.ToGeoJson()));
+                Assert.That(expected, Is.EqualTo(JsonConvert.DeserializeObject<Point>(json).ToGeoJson()));
             }
         }
 
@@ -55,7 +55,7 @@ namespace Cassandra.Tests.Geometry
             {
                 var json = JsonConvert.SerializeObject(point, GraphSON1ContractResolver.Settings);
                 var expected = string.Format("\"{0}\"", point);
-                Assert.AreEqual(expected, json);
+                Assert.That(expected, Is.EqualTo(json));
             }
         }
 
@@ -80,15 +80,15 @@ namespace Cassandra.Tests.Geometry
                 //start from offset
                 serialized = new byte[] {1, 2, 3}.Concat(serialized).ToArray();
                 var deserialized = typeSerializer.Deserialize(1, serialized, 3, serialized.Length - 3, null);
-                Assert.AreEqual(item, deserialized);
+                Assert.That(item, Is.EqualTo(deserialized));
             }
         }
 
         [Test]
         public void ToString_Returns_WKT()
         {
-            Assert.AreEqual("POINT (-1 2.2345)", new Point(-1, 2.2345).ToString());
-            Assert.AreEqual("POINT (0 123.0001)", new Point(0, 123.0001).ToString());
+            Assert.That("POINT (-1 2.2345)", Is.EqualTo(new Point(-1, 2.2345).ToString()));
+            Assert.That("POINT (0 123.0001)", Is.EqualTo(new Point(0, 123.0001).ToString()));
         }
     }
 }

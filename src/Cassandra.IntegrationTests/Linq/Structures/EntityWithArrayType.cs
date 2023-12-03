@@ -91,8 +91,8 @@ namespace Cassandra.IntegrationTests.Linq.Structures
 
         public void AssertEquals(EntityWithArrayType actualEntity)
         {
-            Assert.AreEqual(Id, actualEntity.Id);
-            Assert.AreEqual(ArrayType, actualEntity.ArrayType);
+            Assert.That(Id, Is.EqualTo(actualEntity.Id));
+            Assert.That(ArrayType, Is.EqualTo(actualEntity.ArrayType));
         }
     }
 }

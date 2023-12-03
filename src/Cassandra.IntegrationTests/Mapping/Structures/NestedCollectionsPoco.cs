@@ -22,6 +22,8 @@ using Cassandra.Data.Linq;
 using Cassandra.IntegrationTests.TestBase;
 using Cassandra.Mapping;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 #pragma warning disable 618
 
 namespace Cassandra.IntegrationTests.Mapping.Structures
@@ -61,8 +63,8 @@ namespace Cassandra.IntegrationTests.Mapping.Structures
 
         public void AssertEquals(NestedCollectionsPoco poco)
         {
-            Assert.AreEqual(StringType, poco.StringType);
-            Assert.AreEqual(GuidType, poco.GuidType);
+            Assert.That(StringType, Is.EqualTo(poco.StringType));
+            Assert.That(GuidType, Is.EqualTo(poco.GuidType));
             CollectionAssert.AreEqual(NestedDictionaryDictionary, poco.NestedDictionaryDictionary);
             CollectionAssert.AreEqual(NestedListDictionary, poco.NestedListDictionary);
             CollectionAssert.AreEqual(NestedSortedListDictionary, poco.NestedSortedListDictionary);
@@ -114,14 +116,14 @@ namespace Cassandra.IntegrationTests.Mapping.Structures
 
         public static void AssertListContains(List<NestedCollectionsPoco> expectedEntities, NestedCollectionsPoco actualEntity)
         {
-            Assert.IsTrue(ListContains(expectedEntities, actualEntity));
+            Assert.That(ListContains(expectedEntities, actualEntity), Is.True);
         }
 
         public static void AssertListEqualsList(List<NestedCollectionsPoco> expectedEntities, List<NestedCollectionsPoco> actualEntities)
         {
-            Assert.AreEqual(expectedEntities.Count, actualEntities.Count);
+            Assert.That(expectedEntities.Count, Is.EqualTo(actualEntities.Count));
             foreach (var expectedEntity in expectedEntities)
-                Assert.IsTrue(ListContains(actualEntities, expectedEntity));
+                Assert.That(ListContains(actualEntities, expectedEntity), Is.True);
         }
 
 

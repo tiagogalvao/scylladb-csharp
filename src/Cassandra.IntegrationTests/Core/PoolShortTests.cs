@@ -29,6 +29,7 @@ using Cassandra.IntegrationTests.TestClusterManagement;
 using Cassandra.IntegrationTests.TestClusterManagement.Simulacron;
 using NUnit.Framework;
 using Cassandra.Tests;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -65,7 +66,7 @@ namespace Cassandra.IntegrationTests.Core
                     var ps = session.Prepare("SELECT * FROM ks1.table1 WHERE id1 = ?, id2 = ?");
                     var t = ExecuteMultiple(testCluster, session, ps, false, 1, 100);
                     t.Wait();
-                    Assert.AreEqual(2, t.Result.Length, "The 2 hosts must have been used");
+                    Assert.That(2, Is.EqualTo(t.Result.Length), "The 2 hosts must have been used");
                     // Wait for all connections to be opened
                     Thread.Sleep(1000);
                     var hosts = cluster.AllHosts().ToArray();
@@ -74,9 +75,9 @@ namespace Cassandra.IntegrationTests.Core
                             .GetOrCreateConnectionPool(h, HostDistance.Local)
                             .OpenConnections
                         ) == hosts.Length * connectionLength);
-                    Assert.AreEqual(
+                    Assert.That(
                         hosts.Length * connectionLength,
-                        hosts.Sum(h => session.GetOrCreateConnectionPool(h, HostDistance.Local).OpenConnections));
+                        Is.EqualTo(hosts.Sum(h => session.GetOrCreateConnectionPool(h, HostDistance.Local).OpenConnections)));
                     ExecuteMultiple(testCluster, session, ps, true, 8000, 200000).Wait();
                 }
             }
@@ -165,7 +166,7 @@ namespace Cassandra.IntegrationTests.Core
                     await TestHelper.RetryAssertAsync(async () =>
                     {
                         ports = await sCluster.GetConnectedPortsAsync().ConfigureAwait(false);
-                        Assert.AreEqual(5, ports.Count);
+                        Assert.That(5, Is.EqualTo(ports.Count));
                     }, 100, 200).ConfigureAwait(false);
                     sCluster.DisableConnectionListener().Wait();
                     // Remove the first connections
@@ -177,24 +178,24 @@ namespace Cassandra.IntegrationTests.Core
                         await TestHelper.RetryAssertAsync(async () =>
                         {
                             ports = await sCluster.GetConnectedPortsAsync().ConfigureAwait(false);
-                            Assert.AreEqual(expectedOpenConnections, ports.Count, "Cassandra simulator contains unexpected number of connected clients");
+                            Assert.That(expectedOpenConnections, Is.EqualTo(ports.Count), "Cassandra simulator contains unexpected number of connected clients");
                         }, 100, 200).ConfigureAwait(false);
                         sCluster.DropConnection(ports.Last().Address.ToString(), ports.Last().Port).Wait();
                         // Host pool could have between pool.OpenConnections - i and pool.OpenConnections - i - 1
                         TestHelper.WaitUntil(() => pool.OpenConnections >= 4 - index - 1 && pool.OpenConnections <= 4 - index);
-                        Assert.LessOrEqual(pool.OpenConnections, 4 - index);
-                        Assert.GreaterOrEqual(pool.OpenConnections, 4 - index - 1);
-                        Assert.IsTrue(h1.IsUp);
+                        Assert.That(pool.OpenConnections, Is.LessThanOrEqualTo(4 - index));
+                        Assert.That(pool.OpenConnections, Is.GreaterThanOrEqualTo(4 - index - 1));
+                        Assert.That(h1.IsUp, Is.True);
                     }
                     await TestHelper.RetryAssertAsync(async () =>
                     {
                         ports = await sCluster.GetConnectedPortsAsync().ConfigureAwait(false);
-                        Assert.AreEqual(2, ports.Count);
+                        Assert.That(2, Is.EqualTo(ports.Count));
                     }, 100, 200).ConfigureAwait(false);
                     sCluster.DropConnection(ports.Last().Address.ToString(), ports.Last().Port).Wait();
                     sCluster.DropConnection(ports.First().Address.ToString(), ports.First().Port).Wait();
                     TestHelper.WaitUntil(() => pool.OpenConnections == 0 && !h1.IsUp);
-                    Assert.IsFalse(h1.IsUp);
+                    Assert.That(h1.IsUp, Is.False);
                 }
             }
         }
@@ -276,7 +277,7 @@ namespace Cassandra.IntegrationTests.Core
                 {
                     ports = await sCluster.GetConnectedPortsAsync().ConfigureAwait(false);
                     //coreConnectionLength + 1 (the control connection) 
-                    Assert.AreEqual(coreConnectionLength + 1, ports.Count);
+                    Assert.That(coreConnectionLength + 1, Is.EqualTo(ports.Count));
                 }, 100, 200).ConfigureAwait(false);
             }
         }
@@ -297,11 +298,11 @@ namespace Cassandra.IntegrationTests.Core
                 var state = session.GetState();
                 var hosts = state.GetConnectedHosts();
 
-                Assert.AreEqual(nodeLength, hosts.Count);
+                Assert.That(nodeLength, Is.EqualTo(hosts.Count));
                 foreach (var host in hosts)
                 {
-                    Assert.AreEqual(poolingOptions.GetCoreConnectionsPerHost(HostDistance.Local),
-                                    state.GetOpenConnections(host));
+                    Assert.That(poolingOptions.GetCoreConnectionsPerHost(HostDistance.Local),
+                        Is.EqualTo(state.GetOpenConnections(host)));
                 }
             }
         }
@@ -321,18 +322,18 @@ namespace Cassandra.IntegrationTests.Core
             {
                 var session = (Session)cluster.Connect();
                 var allHosts = cluster.AllHosts();
-                Assert.AreEqual(3, allHosts.Count);
+                Assert.That(3, Is.EqualTo(allHosts.Count));
                 await TestHelper.TimesLimit(() =>
                     session.ExecuteAsync(new SimpleStatement("SELECT * FROM system.local")), 100, 16).ConfigureAwait(false);
 
                 // 1 per hosts + control connection
                 await TestHelper.RetryAssertAsync(async () =>
                 {
-                    Assert.AreEqual(4, (await testCluster.GetConnectedPortsAsync().ConfigureAwait(false)).Count);
+                    Assert.That(4, Is.EqualTo((await testCluster.GetConnectedPortsAsync().ConfigureAwait(false)).Count));
                 }, 100, 200).ConfigureAwait(false);
 
                 var ccAddress = cluster.InternalRef.GetControlConnection().EndPoint.GetHostIpEndPointWithFallback();
-                Assert.NotNull(ccAddress);
+                Assert.That(ccAddress, Is.Not.Null);
                 var simulacronNode = testCluster.GetNode(ccAddress);
 
                 // Disable new connections to the first host
@@ -340,18 +341,18 @@ namespace Cassandra.IntegrationTests.Core
 
                 TestHelper.WaitUntil(() => !cluster.GetHost(ccAddress).IsUp);
 
-                Assert.False(cluster.GetHost(ccAddress).IsUp);
+                Assert.That(cluster.GetHost(ccAddress).IsUp, Is.False);
 
                 TestHelper.WaitUntil(() => !cluster.InternalRef.GetControlConnection().EndPoint.GetHostIpEndPointWithFallback().Address.Equals(ccAddress.Address));
-                Assert.NotNull(cluster.InternalRef.GetControlConnection().EndPoint.GetHostIpEndPointWithFallback());
-                Assert.AreNotEqual(ccAddress.Address, cluster.InternalRef.GetControlConnection().EndPoint.GetHostIpEndPointWithFallback().Address);
+                Assert.That(cluster.InternalRef.GetControlConnection().EndPoint.GetHostIpEndPointWithFallback(), Is.Not.Null);
+                Assert.That(ccAddress.Address, Is.Not.EqualTo(cluster.InternalRef.GetControlConnection().EndPoint.GetHostIpEndPointWithFallback().Address));
 
                 // Previous host is still DOWN
-                Assert.False(cluster.GetHost(ccAddress).IsUp);
+                Assert.That(cluster.GetHost(ccAddress).IsUp, Is.False);
 
                 // New host is UP
                 ccAddress = cluster.InternalRef.GetControlConnection().EndPoint.GetHostIpEndPointWithFallback();
-                Assert.True(cluster.GetHost(ccAddress).IsUp);
+                Assert.That(cluster.GetHost(ccAddress).IsUp, Is.True);
             }
         }
 
@@ -375,7 +376,7 @@ namespace Cassandra.IntegrationTests.Core
                 {
                     var session = (Session)cluster.Connect();
                     var allHosts = cluster.AllHosts();
-                    Assert.AreEqual(3, allHosts.Count);
+                    Assert.That(3, Is.EqualTo(allHosts.Count));
                     await TestHelper.TimesLimit(() =>
                         session.ExecuteAsync(new SimpleStatement("SELECT * FROM system.local")), 100, 16).ConfigureAwait(false);
 
@@ -385,7 +386,7 @@ namespace Cassandra.IntegrationTests.Core
                     {
                         serverConnections = await testCluster.GetConnectedPortsAsync().ConfigureAwait(false);
                         //coreConnectionLength + 1 (the control connection) 
-                        Assert.AreEqual(4, serverConnections.Count, string.Join(",", serverConnections.Select(ip => (ip?.ToString()) ?? "null")));
+                        Assert.That(4, Is.EqualTo(serverConnections.Count), string.Join(",", serverConnections.Select(ip => (ip?.ToString()) ?? "null")));
                     }, 100, 10).ConfigureAwait(false);
 
                     // Disable all connections
@@ -404,7 +405,7 @@ namespace Cassandra.IntegrationTests.Core
                     // All host should be down by now
                     TestHelper.WaitUntil(() => cluster.AllHosts().All(h => !h.IsUp));
 
-                    Assert.False(cluster.GetHost(ccAddress).IsUp);
+                    Assert.That(cluster.GetHost(ccAddress).IsUp, Is.False);
 
                     // Allow new connections to be created
                     await testCluster.EnableConnectionListener().ConfigureAwait(false);
@@ -412,14 +413,14 @@ namespace Cassandra.IntegrationTests.Core
                     TestHelper.WaitUntil(() => cluster.AllHosts().All(h => h.IsUp));
 
                     ccAddress = cluster.InternalRef.GetControlConnection().EndPoint.GetHostIpEndPointWithFallback();
-                    Assert.True(cluster.GetHost(ccAddress).IsUp);
+                    Assert.That(cluster.GetHost(ccAddress).IsUp, Is.True);
 
                     // Once all connections are created, the control connection should be usable
                     await TestHelper.RetryAssertAsync(async () =>
                     {
                         serverConnections = await testCluster.GetConnectedPortsAsync().ConfigureAwait(false);
                         //coreConnectionLength + 1 (the control connection) 
-                        Assert.AreEqual(4, serverConnections.Count, string.Join(",", serverConnections.Select(ip => (ip?.ToString()) ?? "null")));
+                        Assert.That(4, Is.EqualTo(serverConnections.Count), string.Join(",", serverConnections.Select(ip => (ip?.ToString()) ?? "null")));
                     }, 100, 100).ConfigureAwait(false);
 
                     TestHelper.RetryAssert(() =>
@@ -534,7 +535,7 @@ namespace Cassandra.IntegrationTests.Core
                 var results = await Task.WhenAll(tasks).ConfigureAwait(false);
 
                 // Only successful responses or NoHostAvailableException expected
-                Assert.Null(results.FirstOrDefault(e => e != null && !(e is NoHostAvailableException)));
+                Assert.That(results.FirstOrDefault(e => e != null && !(e is NoHostAvailableException)), Is.Null);
 
                 // At least the first n (maxRequestsPerConnection * connectionLength * hosts.length) succeeded
                 Assert.That(results.Count(e => e == null),
@@ -551,9 +552,9 @@ namespace Cassandra.IntegrationTests.Core
 
                     foreach (var kv in ex.Errors)
                     {
-                        Assert.IsInstanceOf<BusyPoolException>(kv.Value);
+                        ClassicAssert.IsInstanceOf<BusyPoolException>(kv.Value);
                         var busyException = (BusyPoolException)kv.Value;
-                        Assert.AreEqual(kv.Key, busyException.Address);
+                        Assert.That(kv.Key, Is.EqualTo(busyException.Address));
                         Assert.That(busyException.ConnectionLength, Is.EqualTo(connectionLength));
                         Assert.That(busyException.MaxRequestsPerConnection, Is.EqualTo(maxRequestsPerConnection));
                         Assert.That(busyException.Message, Is.EqualTo(
@@ -581,7 +582,7 @@ namespace Cassandra.IntegrationTests.Core
                 await TestHelper.TimesLimit(async () =>
                 {
                     var rs = await session.ExecuteAsync(new SimpleStatement(query)).ConfigureAwait(false);
-                    Assert.AreEqual(rs.Info.QueriedHost, firstHost.Address);
+                    Assert.That(rs.Info.QueriedHost, Is.EqualTo(firstHost.Address));
                     return rs;
                 }, 10, 10).ConfigureAwait(false);
 
@@ -591,7 +592,7 @@ namespace Cassandra.IntegrationTests.Core
                 {
                     var rs = await session.ExecuteAsync(statement).ConfigureAwait(false);
                     // The queried host should be the last one
-                    Assert.AreEqual(rs.Info.QueriedHost, lastHost.Address);
+                    Assert.That(rs.Info.QueriedHost, Is.EqualTo(lastHost.Address));
                     return rs;
                 }, 10, 10).ConfigureAwait(false);
             }
@@ -638,7 +639,7 @@ namespace Cassandra.IntegrationTests.Core
                 await TestHelper.RetryAssertAsync(async () =>
                 {
                     var ports = await testCluster.GetConnectedPortsAsync().ConfigureAwait(false);
-                    Assert.AreEqual(4, ports.Count);
+                    Assert.That(4, Is.EqualTo(ports.Count));
                 }, 100, 200).ConfigureAwait(false);
 
                 var simulacronNode = testCluster.GetNode(lastHost.Address);
@@ -649,7 +650,7 @@ namespace Cassandra.IntegrationTests.Core
                 await TestHelper.RetryAssertAsync(async () =>
                 {
                     connections = await simulacronNode.GetConnectionsAsync().ConfigureAwait(false);
-                    Assert.AreEqual(1, connections.Count);
+                    Assert.That(1, Is.EqualTo(connections.Count));
                 }, 100, 200).ConfigureAwait(false);
                 
                 await testCluster.DropConnection(connections[0]).ConfigureAwait(false);
@@ -657,20 +658,20 @@ namespace Cassandra.IntegrationTests.Core
                 await TestHelper.RetryAssertAsync(async () =>
                 {
                     connections = await simulacronNode.GetConnectionsAsync().ConfigureAwait(false);
-                    Assert.AreEqual(0, connections.Count);
+                    Assert.That(0, Is.EqualTo(connections.Count));
                 }, 100, 200).ConfigureAwait(false);
 
                 TestHelper.RetryAssert(() =>
                 {
                     var openConnections = session.GetState().GetOpenConnections(session.Cluster.GetHost(simulacronNode.IpEndPoint));
-                    Assert.AreEqual(0, openConnections);
+                    Assert.That(0, Is.EqualTo(openConnections));
                 }, 100, 200);
 
                 // Drop connections to the host last host
                 await TestHelper.RetryAssertAsync(async () =>
                 {
                     var ports = await testCluster.GetConnectedPortsAsync().ConfigureAwait(false);
-                    Assert.AreEqual(3, ports.Count);
+                    Assert.That(3, Is.EqualTo(ports.Count));
                 }, 100, 200).ConfigureAwait(false);
 
                 Parallel.For(0, 10, _ =>
@@ -705,7 +706,7 @@ namespace Cassandra.IntegrationTests.Core
                 var ex = Assert.Throws<NoHostAvailableException>(() => session.Execute(statement));
 
                 Assert.That(ex.Errors, Has.Count.EqualTo(1));
-                Assert.IsInstanceOf<OverloadedException>(ex.Errors.First().Value);
+                ClassicAssert.IsInstanceOf<OverloadedException>(ex.Errors.First().Value);
                 Assert.That(ex.Errors.First().Key, Is.EqualTo(host.Address));
             }
         }
@@ -735,7 +736,7 @@ namespace Cassandra.IntegrationTests.Core
                     return session.ExecuteAsync(statement);
                 }, 1, 1).ConfigureAwait(false);
 
-                Assert.Zero(Volatile.Read(ref queryPlanCounter));
+                Assert.That(Volatile.Read(ref queryPlanCounter), Is.Zero);
             }
         }
     }

@@ -53,7 +53,7 @@ namespace Cassandra.Tests.Mapping.Linq
                                      .ExplicitColumns();
                 var table = GetTable<AllTypesDecorated>(sessionMock.Object, typeDefinition);
                 table.Create();
-                Assert.AreEqual(@"CREATE TABLE ""USERS"" (""city_id"" int, ""name"" text, ""user_id"" uuid, PRIMARY KEY (""user_id""))", createQueries[0]);
+                Assert.That(@"CREATE TABLE ""USERS"" (""city_id"" int, ""name"" text, ""user_id"" uuid, PRIMARY KEY (""user_id""))", Is.EqualTo(createQueries[0]));
             }
             finally
             {
@@ -76,10 +76,10 @@ namespace Cassandra.Tests.Mapping.Linq
                 .Column(t => t.IntValue, cm => cm.WithName("int_value"));
             var table = GetTable<AllTypesDecorated>(sessionMock.Object, typeDefinition);
             table.Create();
-            Assert.AreEqual("CREATE TABLE AllTypesDecorated " +
+            Assert.That("CREATE TABLE AllTypesDecorated " +
                             "(BooleanValue boolean, DateTimeValue timestamp, DecimalValue decimal, DoubleValue double, " +
                             "Int64Value bigint, int_value int, StringValue text, TimeUuidValue timeuuid, UuidValue uuid, " +
-                            "PRIMARY KEY ((StringValue, TimeUuidValue)))", createQuery);
+                            "PRIMARY KEY ((StringValue, TimeUuidValue)))", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -98,10 +98,10 @@ namespace Cassandra.Tests.Mapping.Linq
                 .ClusteringKey("DateTimeValue");
             var table = GetTable<AllTypesDecorated>(sessionMock.Object, typeDefinition);
             table.Create();
-            Assert.AreEqual("CREATE TABLE AllTypesDecorated " +
+            Assert.That("CREATE TABLE AllTypesDecorated " +
                             "(BooleanValue boolean, DateTimeValue timestamp, DecimalValue decimal, DoubleValue double, " +
                             "Int64Value bigint, int_value int, StringValue text, TimeUuidValue timeuuid, UuidValue uuid, " +
-                            "PRIMARY KEY ((StringValue, int_value), DateTimeValue))", createQuery);
+                            "PRIMARY KEY ((StringValue, int_value), DateTimeValue))", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -122,10 +122,10 @@ namespace Cassandra.Tests.Mapping.Linq
                 .ClusteringKey(t => t.Int64Value);
             var table = GetTable<AllTypesDecorated>(sessionMock.Object, typeDefinition);
             table.Create();
-            Assert.AreEqual("CREATE TABLE AllTypesDecorated " +
+            Assert.That("CREATE TABLE AllTypesDecorated " +
                             "(BooleanValue boolean, DateTimeValue timestamp, DecimalValue decimal, DoubleValue double, " +
                             "int_value int, long_value bigint, StringValue text, TimeUuidValue timeuuid, UuidValue uuid, " +
-                            "PRIMARY KEY (StringValue, DateTimeValue, long_value))", createQuery);
+                            "PRIMARY KEY (StringValue, DateTimeValue, long_value))", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -146,10 +146,10 @@ namespace Cassandra.Tests.Mapping.Linq
                 .ClusteringKey(t => t.DateTimeValue);
             var table = GetTable<AllTypesDecorated>(sessionMock.Object, typeDefinition);
             table.Create();
-            Assert.AreEqual("CREATE TABLE AllTypesDecorated " +
+            Assert.That("CREATE TABLE AllTypesDecorated " +
                             "(BooleanValue boolean, DateTimeValue timestamp, DecimalValue decimal, DoubleValue double, " +
                             "int_value int, long_value bigint, StringValue text, TimeUuidValue timeuuid, UuidValue uuid, " +
-                            "PRIMARY KEY (StringValue, long_value, DateTimeValue)) WITH CLUSTERING ORDER BY (long_value DESC)", createQuery);
+                            "PRIMARY KEY (StringValue, long_value, DateTimeValue)) WITH CLUSTERING ORDER BY (long_value DESC)", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -172,9 +172,9 @@ namespace Cassandra.Tests.Mapping.Linq
                 .ExplicitColumns();
             var table = GetTable<AllTypesDecorated>(sessionMock.Object, typeDefinition);
             table.Create();
-            Assert.AreEqual("CREATE TABLE AllTypesDecorated " +
+            Assert.That("CREATE TABLE AllTypesDecorated " +
                             "(bigint_value bigint, int_value int, StringValue text, TimeUuidValue timeuuid, " +
-                            "PRIMARY KEY ((StringValue, int_value), TimeUuidValue))", createQuery);
+                            "PRIMARY KEY ((StringValue, int_value), TimeUuidValue))", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -195,7 +195,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 .ExplicitColumns();
             var table = GetTable<AllTypesDecorated>(sessionMock.Object, typeDefinition);
             table.Create();
-            Assert.AreEqual("CREATE TABLE item_visits (id uuid, visits counter, PRIMARY KEY (id))", createQuery);
+            Assert.That("CREATE TABLE item_visits (id uuid, visits counter, PRIMARY KEY (id))", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -241,8 +241,8 @@ namespace Cassandra.Tests.Mapping.Linq
                 .ExplicitColumns();
             var table = GetTable<AllTypesDecorated>(sessionMock.Object, typeDefinition);
             table.Create();
-            Assert.AreEqual(@"CREATE TABLE ""USERS"" (""city_id"" int, ""name"" text, ""user_id"" uuid, PRIMARY KEY (""user_id""))", createQueries[0]);
-            Assert.AreEqual(@"CREATE INDEX ON ""USERS"" (""city_id"")", createQueries[1]);
+            Assert.That(@"CREATE TABLE ""USERS"" (""city_id"" int, ""name"" text, ""user_id"" uuid, PRIMARY KEY (""user_id""))", Is.EqualTo(createQueries[0]));
+            Assert.That(@"CREATE INDEX ON ""USERS"" (""city_id"")", Is.EqualTo(createQueries[1]));
         }
 
         [Test]
@@ -264,7 +264,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 .ExplicitColumns();
             var table = GetTable<AllTypesDecorated>(sessionMock.Object, typeDefinition);
             table.Create();
-            Assert.AreEqual(@"CREATE TABLE tbl1 (city_id int, name text, user_id uuid, PRIMARY KEY (user_id)) WITH COMPACT STORAGE", createQuery);
+            Assert.That(@"CREATE TABLE tbl1 (city_id int, name text, user_id uuid, PRIMARY KEY (user_id)) WITH COMPACT STORAGE", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -286,10 +286,10 @@ namespace Cassandra.Tests.Mapping.Linq
                                  .CompactStorage();
             var table = GetTable<AllTypesDecorated>(sessionMock.Object, typeDefinition);
             table.Create();
-            Assert.AreEqual("CREATE TABLE AllTypesDecorated " +
+            Assert.That("CREATE TABLE AllTypesDecorated " +
                             "(BooleanValue boolean, DateTimeValue timestamp, DecimalValue decimal, DoubleValue double, " +
                             "int_value int, long_value bigint, StringValue text, TimeUuidValue timeuuid, UuidValue uuid, " +
-                            "PRIMARY KEY (StringValue, long_value, DateTimeValue)) WITH CLUSTERING ORDER BY (long_value DESC) AND COMPACT STORAGE", createQuery);
+                            "PRIMARY KEY (StringValue, long_value, DateTimeValue)) WITH CLUSTERING ORDER BY (long_value DESC) AND COMPACT STORAGE", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -312,7 +312,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 .ExplicitColumns();
             var table = GetTable<AllTypesDecorated>(sessionMock.Object, typeDefinition);
             table.Create();
-            Assert.AreEqual(@"CREATE TABLE ""ks1"".""TBL1"" (""city_id"" int, ""name"" text, ""user_id"" uuid, PRIMARY KEY (""user_id""))", createQuery);
+            Assert.That(@"CREATE TABLE ""ks1"".""TBL1"" (""city_id"" int, ""name"" text, ""user_id"" uuid, PRIMARY KEY (""user_id""))", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -335,10 +335,10 @@ namespace Cassandra.Tests.Mapping.Linq
             var table = GetTable<AllTypesDecorated>(sessionMock.Object, typeDefinition);
             table.Create();
             //keyspace.table in table creation
-            Assert.AreEqual(@"CREATE TABLE KS2.tbl2 (city_id int, name text, user_id uuid, PRIMARY KEY (user_id))", createQueries[0]);
+            Assert.That(@"CREATE TABLE KS2.tbl2 (city_id int, name text, user_id uuid, PRIMARY KEY (user_id))", Is.EqualTo(createQueries[0]));
 
             //keyspace.table in index creation
-            Assert.AreEqual(@"CREATE INDEX ON KS2.tbl2 (city_id)", createQueries[1]);
+            Assert.That(@"CREATE INDEX ON KS2.tbl2 (city_id)", Is.EqualTo(createQueries[1]));
         }
 
         [Test]
@@ -353,9 +353,9 @@ namespace Cassandra.Tests.Mapping.Linq
             var table = sessionMock.Object.GetTable<LinqDecoratedCaseInsensitiveEntity>();
             table.Create();
             //keyspace.table in table creation
-            Assert.AreEqual(@"CREATE TABLE tbl1 (Date timestamp, i_id bigint, val1 text, val2 text, PRIMARY KEY (i_id))", createQueries[0]);
+            Assert.That(@"CREATE TABLE tbl1 (Date timestamp, i_id bigint, val1 text, val2 text, PRIMARY KEY (i_id))", Is.EqualTo(createQueries[0]));
             //keyspace.table in index creation
-            Assert.AreEqual(@"CREATE INDEX ON tbl1 (val2)", createQueries[1]);
+            Assert.That(@"CREATE INDEX ON tbl1 (val2)", Is.EqualTo(createQueries[1]));
         }
 
         [Test]
@@ -390,7 +390,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 .TableName("tbl1");
             var table = GetTable<VarintPoco>(sessionMock.Object, typeDefinition);
             table.Create();
-            Assert.AreEqual(@"CREATE TABLE tbl1 (Id uuid, Name text, VarintValue varint, PRIMARY KEY (Id))", createQuery);
+            Assert.That(@"CREATE TABLE tbl1 (Id uuid, Name text, VarintValue varint, PRIMARY KEY (Id))", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -405,7 +405,7 @@ namespace Cassandra.Tests.Mapping.Linq
             var table = sessionMock.Object.GetTable<LinqDecoratedEntity>();
             table.Create();
             //It contains Ignored props: Ignored1 and Ignored2
-            Assert.AreEqual(@"CREATE TABLE x_t (x_ck1 int, x_ck2 int, x_f1 int, x_pk text, PRIMARY KEY (x_pk, x_ck1, x_ck2))", createQuery);
+            Assert.That(@"CREATE TABLE x_t (x_ck1 int, x_ck2 int, x_f1 int, x_pk text, PRIMARY KEY (x_pk, x_ck1, x_ck2))", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -421,7 +421,7 @@ namespace Cassandra.Tests.Mapping.Linq
             var table = GetTable<DecoratedTimeSeries>(sessionMock.Object, definition);
             table.Create();
             //It contains Ignored props: Ignored1 and Ignored2
-            Assert.AreEqual(@"CREATE TABLE ""ks1"".""tbl1"" (""name"" text, ""Slice"" int, ""Time"" timeuuid, ""val"" double, ""Value2"" text, PRIMARY KEY ((""name"", ""Slice""), ""Time""))", createQuery);
+            Assert.That(@"CREATE TABLE ""ks1"".""tbl1"" (""name"" text, ""Slice"" int, ""Time"" timeuuid, ""val"" double, ""Value2"" text, PRIMARY KEY ((""name"", ""Slice""), ""Time""))", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -439,7 +439,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 .TableName("tbl1");
             var table = GetTable<CollectionTypesEntity>(sessionMock.Object, definition);
             table.Create();
-            Assert.AreEqual("CREATE TABLE tbl1 (Favs map<text, text>, Id bigint, Scores list<int>, Tags set<text>, PRIMARY KEY (Id))", createQuery);
+            Assert.That("CREATE TABLE tbl1 (Favs map<text, text>, Id bigint, Scores list<int>, Tags set<text>, PRIMARY KEY (Id))", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -459,7 +459,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 .TableName("tbl1");
             var table = GetTable<UdtAndTuplePoco>(sessionMock.Object, definition);
             table.Create();
-            Assert.AreEqual("CREATE TABLE tbl1 (id uuid, position tuple<bigint, bigint, text>, PRIMARY KEY (id))", createQuery);
+            Assert.That("CREATE TABLE tbl1 (id uuid, position tuple<bigint, bigint, text>, PRIMARY KEY (id))", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -487,7 +487,7 @@ namespace Cassandra.Tests.Mapping.Linq
             serializer.SetUdtMap("song", udtMap);
             var table = GetTable<UdtAndTuplePoco>(sessionMock.Object, definition);
             table.Create();
-            Assert.AreEqual("CREATE TABLE tbl1 (id uuid, my_udt frozen<\"ks1\".\"song\">, PRIMARY KEY (id))", createQuery);
+            Assert.That("CREATE TABLE tbl1 (id uuid, my_udt frozen<\"ks1\".\"song\">, PRIMARY KEY (id))", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -507,7 +507,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 .TableName("tbl1");
             var table = GetTable<UdtAndTuplePoco>(sessionMock.Object, definition);
             table.Create();
-            Assert.AreEqual("CREATE TABLE tbl1 (id uuid, position frozen<tuple<bigint, bigint, text>>, PRIMARY KEY (id))", createQuery);
+            Assert.That("CREATE TABLE tbl1 (id uuid, position frozen<tuple<bigint, bigint, text>>, PRIMARY KEY (id))", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -536,7 +536,7 @@ namespace Cassandra.Tests.Mapping.Linq
             serializer.SetUdtMap("song", udtMap);
             var table = GetTable<UdtAndTuplePoco>(sessionMock.Object, definition);
             table.Create();
-            Assert.AreEqual("CREATE TABLE tbl1 (id uuid, my_map map<frozen<tuple<double, double>>, text>, my_set set<frozen<\"song\">>, PRIMARY KEY (id))", createQuery);
+            Assert.That("CREATE TABLE tbl1 (id uuid, my_map map<frozen<tuple<double, double>>, text>, my_set set<frozen<\"song\">>, PRIMARY KEY (id))", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -565,7 +565,7 @@ namespace Cassandra.Tests.Mapping.Linq
             serializer.SetUdtMap("song", udtMap);
             var table = GetTable<UdtAndTuplePoco>(sessionMock.Object, definition);
             table.Create();
-            Assert.AreEqual("CREATE TABLE tbl1 (id uuid, my_list list<frozen<\"song\">>, my_map map<text, frozen<tuple<double, double>>>, PRIMARY KEY (id))", createQuery);
+            Assert.That("CREATE TABLE tbl1 (id uuid, my_list list<frozen<\"song\">>, my_map map<text, frozen<tuple<double, double>>>, PRIMARY KEY (id))", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -580,7 +580,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 .Callback<string>(q => createQuery = q);
             var table = new Table<AttributeMappingClass>(sessionMock.Object, new MappingConfiguration());
             table.Create();
-            Assert.AreEqual("CREATE TABLE attr_mapping_class_table (bool_value_col boolean, clustering_key_0 bigint, clustering_key_1 text, clustering_key_2 uuid, decimal_value_col decimal, float_value_col float, partition_key int, PRIMARY KEY (partition_key, clustering_key_0, clustering_key_1, clustering_key_2)) WITH CLUSTERING ORDER BY (clustering_key_0 ASC, clustering_key_1 ASC, clustering_key_2 DESC)", createQuery);
+            Assert.That("CREATE TABLE attr_mapping_class_table (bool_value_col boolean, clustering_key_0 bigint, clustering_key_1 text, clustering_key_2 uuid, decimal_value_col decimal, float_value_col float, partition_key int, PRIMARY KEY (partition_key, clustering_key_0, clustering_key_1, clustering_key_2)) WITH CLUSTERING ORDER BY (clustering_key_0 ASC, clustering_key_1 ASC, clustering_key_2 DESC)", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -607,9 +607,9 @@ namespace Cassandra.Tests.Mapping.Linq
                                                                           .AsCounter()));
 
             table.Create();
-            Assert.AreEqual("CREATE TABLE tbl1 (" +
+            Assert.That("CREATE TABLE tbl1 (" +
                             "counter_col1 counter static, counter_col2 counter, id1 uuid, id2 text," +
-                            " PRIMARY KEY (id1, id2))", createQuery);
+                            " PRIMARY KEY (id1, id2))", Is.EqualTo(createQuery));
         }
 
         private static Mock<ISession> GetSessionMock(ISerializerManager serializer = null)

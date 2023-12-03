@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests
 {
@@ -73,7 +74,7 @@ namespace Cassandra.Tests
                 var loggerHandler = new Logger.TraceBasedLoggerHandler(typeof(int));
                 UseAllMethods(loggerHandler);
                 Trace.Listeners.Remove(listener);
-                Assert.AreEqual(6, listener.Messages.Count);
+                Assert.That(6, Is.EqualTo(listener.Messages.Count));
                 var expectedMessages = new[]
                 {
                     "Test exception 1",
@@ -106,7 +107,7 @@ namespace Cassandra.Tests
                 var loggerHandler = new Logger.TraceBasedLoggerHandler(typeof(int));
                 UseAllMethods(loggerHandler);
                 Trace.Listeners.Remove(listener);
-                Assert.AreEqual(6, listener.Messages.Count);
+                Assert.That(6, Is.EqualTo(listener.Messages.Count));
                 var actions = Enumerable
                               .Repeat(true, 1000)
                               .Select<bool, Action>((_, index) => () =>

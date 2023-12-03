@@ -32,6 +32,7 @@ using Cassandra.Tasks;
 using Moq;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 // ReSharper disable AccessToModifiedClosure
 
@@ -130,7 +131,7 @@ namespace Cassandra.Tests
             var pool = _mock.Object;
             var creation = pool.EnsureCreate();
             creation.Wait();
-            Assert.AreEqual(1, creation.Result.Length);
+            Assert.That(1, Is.EqualTo(creation.Result.Length));
             //yield the third connection first
             CollectionAssert.AreEqual(new[] { GetIpEndPoint() }, creation.Result.Select(c => c.EndPoint.GetHostIpEndPointWithFallback()));
         }
@@ -152,7 +153,7 @@ namespace Cassandra.Tests
             });
             var pool = _mock.Object;
             var connections = await pool.EnsureCreate().ConfigureAwait(false);
-            Assert.AreEqual(connections.Length, 1);
+            Assert.That(connections.Length, Is.EqualTo(1));
         }
 
         [Test]
@@ -177,10 +178,10 @@ namespace Cassandra.Tests
             creationTasks[3] = pool.EnsureCreate();
             // ReSharper disable once CoVariantArrayConversion
             Task.WaitAll(creationTasks);
-            Assert.AreEqual(1, TaskHelper.WaitToComplete(creationTasks[0]).Length);
+            Assert.That(1, Is.EqualTo(TaskHelper.WaitToComplete(creationTasks[0]).Length));
             for (var i = 1; i < creationTasks.Length; i++)
             {
-                Assert.AreEqual(1, TaskHelper.WaitToComplete(creationTasks[i]).Length);
+                Assert.That(1, Is.EqualTo(TaskHelper.WaitToComplete(creationTasks[i]).Length));
             }
         }
 
@@ -200,13 +201,13 @@ namespace Cassandra.Tests
             }, 10);
             // ReSharper disable once CoVariantArrayConversion
             Task.WaitAll(creationTasks);
-            Assert.AreEqual(1, TaskHelper.WaitToComplete(initialCreate).Length);
+            Assert.That(1, Is.EqualTo(TaskHelper.WaitToComplete(initialCreate).Length));
 
             foreach (var t in creationTasks)
             {
-                Assert.AreEqual(1, TaskHelper.WaitToComplete(t).Length);
+                Assert.That(1, Is.EqualTo(TaskHelper.WaitToComplete(t).Length));
             }
-            Assert.AreEqual(1, lastByte);
+            Assert.That(1, Is.EqualTo(lastByte));
         }
 
         [Test]
@@ -232,8 +233,8 @@ namespace Cassandra.Tests
             Assert.Throws<AggregateException>(() => initialCreate.Wait());
 
             var aggregateException = Assert.Throws<AggregateException>(() => Task.WaitAll(creationTasks));
-            Assert.AreEqual(times, aggregateException.InnerExceptions.Count);
-            Assert.AreEqual(1, Volatile.Read(ref openConnectionAttempts));
+            Assert.That(times, Is.EqualTo(aggregateException.InnerExceptions.Count));
+            Assert.That(1, Is.EqualTo(Volatile.Read(ref openConnectionAttempts)));
 
             // Serially, attempt calls to create
             Interlocked.Exchange(ref counter, -1);
@@ -243,8 +244,8 @@ namespace Cassandra.Tests
             }, times);
 
             aggregateException = Assert.Throws<AggregateException>(() => Task.WaitAll(creationTasks));
-            Assert.AreEqual(times, aggregateException.InnerExceptions.Count);
-            Assert.AreEqual(1, Volatile.Read(ref openConnectionAttempts));
+            Assert.That(times, Is.EqualTo(aggregateException.InnerExceptions.Count));
+            Assert.That(1, Is.EqualTo(Volatile.Read(ref openConnectionAttempts)));
         }
 
         [Test]
@@ -259,7 +260,7 @@ namespace Cassandra.Tests
             var pool = _mock.Object;
             var task = pool.EnsureCreate();
             var ex = Assert.Throws<Exception>(() => TaskHelper.WaitToComplete(task));
-            Assert.AreEqual(testException, ex);
+            Assert.That(testException, Is.EqualTo(ex));
         }
 
         [Test]
@@ -276,14 +277,14 @@ namespace Cassandra.Tests
             });
             var pool = _mock.Object;
             pool.SetDistance(HostDistance.Local);
-            Assert.AreEqual(0, pool.OpenConnections);
-            Assert.AreEqual(0, Volatile.Read(ref creationCounter));
-            Assert.AreEqual(0, Volatile.Read(ref isCreating));
+            Assert.That(0, Is.EqualTo(pool.OpenConnections));
+            Assert.That(0, Is.EqualTo(Volatile.Read(ref creationCounter)));
+            Assert.That(0, Is.EqualTo(Volatile.Read(ref isCreating)));
             pool.OnHostUp(null);
             await TestHelper.WaitUntilAsync(() => pool.OpenConnections == 2).ConfigureAwait(false);
-            Assert.AreEqual(2, pool.OpenConnections);
-            Assert.AreEqual(2, Volatile.Read(ref creationCounter));
-            Assert.AreEqual(0, Volatile.Read(ref isCreating));
+            Assert.That(2, Is.EqualTo(pool.OpenConnections));
+            Assert.That(2, Is.EqualTo(Volatile.Read(ref creationCounter)));
+            Assert.That(0, Is.EqualTo(Volatile.Read(ref isCreating)));
         }
 
         [Test]
@@ -298,12 +299,12 @@ namespace Cassandra.Tests
             });
             var pool = _mock.Object;
             pool.SetDistance(HostDistance.Ignored);
-            Assert.AreEqual(0, pool.OpenConnections);
-            Assert.AreEqual(0, Volatile.Read(ref creationCounter));
+            Assert.That(0, Is.EqualTo(pool.OpenConnections));
+            Assert.That(0, Is.EqualTo(Volatile.Read(ref creationCounter)));
             pool.OnHostUp(null);
             Thread.Sleep(200);
-            Assert.AreEqual(0, pool.OpenConnections);
-            Assert.AreEqual(0, Volatile.Read(ref creationCounter));
+            Assert.That(0, Is.EqualTo(pool.OpenConnections));
+            Assert.That(0, Is.EqualTo(Volatile.Read(ref creationCounter)));
         }
 
         [Test]
@@ -320,15 +321,15 @@ namespace Cassandra.Tests
             });
             var pool = _mock.Object;
             pool.SetDistance(HostDistance.Local);
-            Assert.AreEqual(0, pool.OpenConnections);
+            Assert.That(0, Is.EqualTo(pool.OpenConnections));
             Thread.Sleep(100);
             pool.OnHostUp(null);
             await pool.EnsureCreate().ConfigureAwait(false);
-            Assert.AreEqual(1, pool.OpenConnections);
+            Assert.That(1, Is.EqualTo(pool.OpenConnections));
             await TestHelper.WaitUntilAsync(() => pool.OpenConnections == 2, 200, 30).ConfigureAwait(false);
-            Assert.AreEqual(2, Volatile.Read(ref creationCounter));
-            Assert.AreEqual(2, pool.OpenConnections);
-            Assert.AreEqual(0, Volatile.Read(ref isCreating));
+            Assert.That(2, Is.EqualTo(Volatile.Read(ref creationCounter)));
+            Assert.That(2, Is.EqualTo(pool.OpenConnections));
+            Assert.That(0, Is.EqualTo(Volatile.Read(ref isCreating)));
         }
 
         [Test]
@@ -345,19 +346,19 @@ namespace Cassandra.Tests
             });
             var pool = _mock.Object;
             pool.SetDistance(HostDistance.Local);
-            Assert.AreEqual(0, pool.OpenConnections);
+            Assert.That(0, Is.EqualTo(pool.OpenConnections));
             var tasks = new Task[100];
             for (var i = 0; i < 100; i++)
             {
                 tasks[i] = Task.Run(async () => await pool.EnsureCreate().ConfigureAwait(false));
             }
             await Task.WhenAll(tasks).ConfigureAwait(false);
-            Assert.Greater(pool.OpenConnections, 0);
-            Assert.LessOrEqual(pool.OpenConnections, 3);
+            Assert.That(pool.OpenConnections, Is.GreaterThan(0));
+            Assert.That(pool.OpenConnections, Is.LessThanOrEqualTo(3));
             await TestHelper.WaitUntilAsync(() => Volatile.Read(ref creationCounter) == 3, 200, 20).ConfigureAwait(false);
-            Assert.AreEqual(3, Volatile.Read(ref creationCounter));
-            Assert.AreEqual(0, Volatile.Read(ref isCreating));
-            Assert.AreEqual(3, pool.OpenConnections);
+            Assert.That(3, Is.EqualTo(Volatile.Read(ref creationCounter)));
+            Assert.That(0, Is.EqualTo(Volatile.Read(ref isCreating)));
+            Assert.That(3, Is.EqualTo(pool.OpenConnections));
         }
 
         [Test]
@@ -373,31 +374,31 @@ namespace Cassandra.Tests
             };
             var index = 0;
             var c = HostConnectionPool.MinInFlight(connections, ref index, 100, out int inFlight);
-            Assert.AreEqual(index, 1);
-            Assert.AreSame(connections[1], c);
-            Assert.AreEqual(1, inFlight);
+            Assert.That(index, Is.EqualTo(1));
+            Assert.That(connections[1], Is.SameAs(c));
+            Assert.That(1, Is.EqualTo(inFlight));
             c = HostConnectionPool.MinInFlight(connections, ref index, 100, out inFlight);
-            Assert.AreEqual(index, 2);
+            Assert.That(index, Is.EqualTo(2));
             //previous had less in flight
-            Assert.AreSame(connections[2], c);
-            Assert.AreEqual(1, inFlight);
+            Assert.That(connections[2], Is.SameAs(c));
+            Assert.That(1, Is.EqualTo(inFlight));
             c = HostConnectionPool.MinInFlight(connections, ref index, 100, out inFlight);
-            Assert.AreEqual(index, 3);
-            Assert.AreSame(connections[4], c);
-            Assert.AreEqual(1, inFlight);
+            Assert.That(index, Is.EqualTo(3));
+            Assert.That(connections[4], Is.SameAs(c));
+            Assert.That(1, Is.EqualTo(inFlight));
             c = HostConnectionPool.MinInFlight(connections, ref index, 100, out inFlight);
-            Assert.AreEqual(index, 4);
-            Assert.AreSame(connections[0], c);
-            Assert.AreEqual(0, inFlight);
+            Assert.That(index, Is.EqualTo(4));
+            Assert.That(connections[0], Is.SameAs(c));
+            Assert.That(0, Is.EqualTo(inFlight));
             c = HostConnectionPool.MinInFlight(connections, ref index, 100, out inFlight);
-            Assert.AreEqual(index, 5);
-            Assert.AreSame(connections[0], c);
-            Assert.AreEqual(0, inFlight);
+            Assert.That(index, Is.EqualTo(5));
+            Assert.That(connections[0], Is.SameAs(c));
+            Assert.That(0, Is.EqualTo(inFlight));
             index = 9;
             c = HostConnectionPool.MinInFlight(connections, ref index, 100, out inFlight);
-            Assert.AreEqual(index, 10);
-            Assert.AreSame(connections[0], c);
-            Assert.AreEqual(0, inFlight);
+            Assert.That(index, Is.EqualTo(10));
+            Assert.That(connections[0], Is.SameAs(c));
+            Assert.That(0, Is.EqualTo(inFlight));
         }
 
         [Test]
@@ -414,15 +415,15 @@ namespace Cassandra.Tests
             var index = 0;
 
             var c = HostConnectionPool.MinInFlight(connections, ref index, 100, out int inFlight);
-            Assert.AreEqual(index, 1);
-            Assert.AreSame(connections[1], c);
-            Assert.AreEqual(1, inFlight);
+            Assert.That(index, Is.EqualTo(1));
+            Assert.That(connections[1], Is.SameAs(c));
+            Assert.That(1, Is.EqualTo(inFlight));
 
             c = HostConnectionPool.MinInFlight(connections, ref index, 100, out inFlight);
-            Assert.AreEqual(index, 2);
+            Assert.That(index, Is.EqualTo(2));
             // Should pick the first below the threshold
-            Assert.AreSame(connections[0], c);
-            Assert.AreEqual(10, inFlight);
+            Assert.That(connections[0], Is.SameAs(c));
+            Assert.That(10, Is.EqualTo(inFlight));
         }
 
         [Test]
@@ -440,10 +441,10 @@ namespace Cassandra.Tests
             pool.AllConnectionClosed += (_, __) => Interlocked.Increment(ref eventRaised);
             pool.ScheduleReconnection();
             Thread.Sleep(1500);
-            Assert.AreEqual(0, pool.OpenConnections);
-            Assert.AreEqual(1, Interlocked.CompareExchange(ref eventRaised, 0, 0));
+            Assert.That(0, Is.EqualTo(pool.OpenConnections));
+            Assert.That(1, Is.EqualTo(Interlocked.CompareExchange(ref eventRaised, 0, 0)));
             // Should not retry to reconnect, should relay on external consumer
-            Assert.AreEqual(1, Interlocked.CompareExchange(ref openConnectionsAttempts, 0, 0));
+            Assert.That(1, Is.EqualTo(Interlocked.CompareExchange(ref openConnectionsAttempts, 0, 0)));
         }
 
         [Test]
@@ -463,10 +464,10 @@ namespace Cassandra.Tests
             pool.AllConnectionClosed += (_, __) => Interlocked.Increment(ref eventRaised);
             pool.ScheduleReconnection();
             Thread.Sleep(600);
-            Assert.AreEqual(0, pool.OpenConnections);
-            Assert.AreEqual(0, Volatile.Read(ref eventRaised));
+            Assert.That(0, Is.EqualTo(pool.OpenConnections));
+            Assert.That(0, Is.EqualTo(Volatile.Read(ref eventRaised)));
             // Should continue to reconnect
-            Assert.Greater(Volatile.Read(ref openConnectionsAttempts), 1);
+            Assert.That(Volatile.Read(ref openConnectionsAttempts), Is.GreaterThan(1));
             pool.Dispose();
         }
 
@@ -483,14 +484,14 @@ namespace Cassandra.Tests
                 });
             var pool = _mock.Object;
             pool.SetDistance(HostDistance.Local);
-            Assert.AreEqual(0, pool.OpenConnections);
+            Assert.That(0, Is.EqualTo(pool.OpenConnections));
             await pool.EnsureCreate().ConfigureAwait(false);
             // Wait for the pool to be created
             await Task.Delay(100).ConfigureAwait(false);
-            Assert.AreEqual(3, pool.OpenConnections);
+            Assert.That(3, Is.EqualTo(pool.OpenConnections));
             var c = await pool.BorrowConnectionAsync().ConfigureAwait(false);
             pool.CheckHealth(c);
-            TestHelper.RetryAssert(() => Assert.AreEqual(2, pool.OpenConnections), 20, 50);
+            TestHelper.RetryAssert(() => ClassicAssert.AreEqual(2, pool.OpenConnections), 20, 50);
         }
 
         [Test, Repeat(10)]
@@ -507,14 +508,14 @@ namespace Cassandra.Tests
                 return c;
             });
             var pool = _mock.Object;
-            Assert.AreEqual(0, pool.OpenConnections);
+            Assert.That(0, Is.EqualTo(pool.OpenConnections));
             pool.SetDistance(HostDistance.Local);
             await pool.EnsureCreate().ConfigureAwait(false);
-            Assert.Greater(pool.OpenConnections, 0);
+            Assert.That(pool.OpenConnections, Is.GreaterThan(0));
             // Wait for the pool to be gaining size
             TestHelper.RetryAssert(() =>
             {
-                Assert.Greater(pool.OpenConnections, 1);
+                Assert.That(pool.OpenConnections, Is.GreaterThan(1));
             },
             20,
             100);
@@ -525,7 +526,7 @@ namespace Cassandra.Tests
             
             TestHelper.RetryAssert(() =>
             {
-                Assert.AreEqual(0, pool.OpenConnections);
+                Assert.That(0, Is.EqualTo(pool.OpenConnections));
             },
             20,
             100);
@@ -537,15 +538,15 @@ namespace Cassandra.Tests
             _mock = GetPoolMock(null, GetConfig(4, 4));
             _mock.Setup(p => p.DoCreateAndOpen(It.IsAny<bool>())).Returns(() => TaskHelper.ToTask(CreateConnection()));
             var pool = _mock.Object;
-            Assert.AreEqual(0, pool.OpenConnections);
+            Assert.That(0, Is.EqualTo(pool.OpenConnections));
             pool.SetDistance(HostDistance.Local);
             var eventRaised = 0;
             pool.AllConnectionClosed += (_, __) => Interlocked.Increment(ref eventRaised);
             await pool.EnsureCreate().ConfigureAwait(false);
-            Assert.Greater(pool.OpenConnections, 0);
+            Assert.That(pool.OpenConnections, Is.GreaterThan(0));
             pool.Dispose();
             await Task.Delay(20).ConfigureAwait(false);
-            Assert.AreEqual(0, Volatile.Read(ref eventRaised));
+            Assert.That(0, Is.EqualTo(Volatile.Read(ref eventRaised)));
         }
 
         [Test]
@@ -559,13 +560,13 @@ namespace Cassandra.Tests
                 return TaskHelper.ToTask(CreateConnection());
             });
             var pool = _mock.Object;
-            Assert.AreEqual(0, pool.OpenConnections);
+            Assert.That(0, Is.EqualTo(pool.OpenConnections));
             pool.SetDistance(HostDistance.Local);
             pool.ScheduleReconnection();
             pool.Dispose();
             await Task.Delay(400).ConfigureAwait(false);
-            Assert.AreEqual(0, Volatile.Read(ref openConnectionAttempts));
-            Assert.AreEqual(0, pool.OpenConnections);
+            Assert.That(0, Is.EqualTo(Volatile.Read(ref openConnectionAttempts)));
+            Assert.That(0, Is.EqualTo(pool.OpenConnections));
         }
 
         [Test]
@@ -586,7 +587,7 @@ namespace Cassandra.Tests
             var pool = _mock.Object;
             pool.SetDistance(HostDistance.Local);
             Assert.ThrowsAsync<SocketException>(async () => await pool.Warmup().ConfigureAwait(false));
-            Assert.AreEqual(1, Volatile.Read(ref openConnectionAttempts));
+            Assert.That(1, Is.EqualTo(Volatile.Read(ref openConnectionAttempts)));
         }
 
         [Test]
@@ -607,7 +608,7 @@ namespace Cassandra.Tests
             var pool = _mock.Object;
             pool.SetDistance(HostDistance.Local);
             Assert.DoesNotThrowAsync(async () => await pool.Warmup().ConfigureAwait(false));
-            Assert.AreEqual(2, Volatile.Read(ref openConnectionAttempts));
+            Assert.That(2, Is.EqualTo(Volatile.Read(ref openConnectionAttempts)));
         }
 
         [Test]
@@ -624,7 +625,7 @@ namespace Cassandra.Tests
             var pool = _mock.Object;
             pool.SetDistance(HostDistance.Local);
             Assert.DoesNotThrowAsync(async () => await pool.Warmup().ConfigureAwait(false));
-            Assert.AreEqual(4, Volatile.Read(ref openConnectionAttempts));
+            Assert.That(4, Is.EqualTo(Volatile.Read(ref openConnectionAttempts)));
         }
     }
 }

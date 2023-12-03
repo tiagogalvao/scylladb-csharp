@@ -88,7 +88,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                       .ThenRowsSuccess(Movie.GetColumns()));
 
             Movie foundMovie = _movieTable.First(m => m.Title == existingMovie.Title && m.MovieMaker == randomStr).Execute();
-            Assert.Null(foundMovie);
+            Assert.That(foundMovie, Is.Null);
             
             VerifyBoundStatement(
                 "SELECT \"director\", \"list\", \"mainGuy\", \"movie_maker\", \"unique_movie_title\", \"yearMade\" " +
@@ -120,7 +120,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           rows => rows.WithParams(100, 1))
                       .ThenServerError(ServerError.Invalid, "msg"));
             var ex = Assert.Throws<InvalidQueryException>(() => _movieTable.First(m => m.Year == 100).Execute());
-            Assert.AreEqual("msg", ex.Message);
+            Assert.That("msg", Is.EqualTo(ex.Message));
             
             TestCluster.PrimeFluent(
                 b => b.WhenQuery(
@@ -129,7 +129,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           rows => rows.WithParam(DataType.Ascii, null).WithParam(DataType.Int, 1))
                       .ThenServerError(ServerError.Invalid, "msg"));
             ex = Assert.Throws<InvalidQueryException>(() => _movieTable.First(m => m.MainActor == null).Execute());
-            Assert.AreEqual("msg", ex.Message);
+            Assert.That("msg", Is.EqualTo(ex.Message));
         }
 
         [Test]
@@ -175,7 +175,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
             }
             catch (InvalidQueryException e)
             {
-                Assert.AreEqual(expectedErrMsg, e.Message);
+                Assert.That(expectedErrMsg, Is.EqualTo(e.Message));
             }
         }
     }

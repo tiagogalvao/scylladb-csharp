@@ -36,8 +36,8 @@ namespace Cassandra.Tests
                 new ReplicationStrategyFactory(), 
                 null);
 
-            Assert.IsNotNull(ks.Strategy);
-            Assert.AreEqual(ReplicationStrategies.NetworkTopologyStrategy, ks.StrategyClass);
+            Assert.That(ks.Strategy, Is.Not.Null);
+            Assert.That(ReplicationStrategies.NetworkTopologyStrategy, Is.EqualTo(ks.StrategyClass));
         }
         
         [Test]
@@ -52,8 +52,8 @@ namespace Cassandra.Tests
                 new ReplicationStrategyFactory(), 
                 null);
 
-            Assert.IsNotNull(ks.Strategy);
-            Assert.AreEqual(ReplicationStrategies.SimpleStrategy, ks.StrategyClass);
+            Assert.That(ks.Strategy, Is.Not.Null);
+            Assert.That(ReplicationStrategies.SimpleStrategy, Is.EqualTo(ks.StrategyClass));
         }
         
         [Test]
@@ -68,8 +68,8 @@ namespace Cassandra.Tests
                 new ReplicationStrategyFactory(), 
                 null);
 
-            Assert.IsNotNull(ks.Strategy);
-            Assert.AreEqual(ReplicationStrategies.NetworkTopologyStrategy, ks.StrategyClass);
+            Assert.That(ks.Strategy, Is.Not.Null);
+            Assert.That(ReplicationStrategies.NetworkTopologyStrategy, Is.EqualTo(ks.StrategyClass));
         }
         
         [Test]
@@ -84,8 +84,8 @@ namespace Cassandra.Tests
                 new ReplicationStrategyFactory(), 
                 null);
 
-            Assert.IsNotNull(ks.Strategy);
-            Assert.AreEqual(ReplicationStrategies.SimpleStrategy, ks.StrategyClass);
+            Assert.That(ks.Strategy, Is.Not.Null);
+            Assert.That(ReplicationStrategies.SimpleStrategy, Is.EqualTo(ks.StrategyClass));
         }
         
         [Test]
@@ -100,8 +100,8 @@ namespace Cassandra.Tests
                 new ReplicationStrategyFactory(), 
                 null);
 
-            Assert.IsNull(ks.Strategy);
-            Assert.AreEqual("random", ks.StrategyClass);
+            Assert.That(ks.Strategy, Is.Null);
+            Assert.That("random", Is.EqualTo(ks.StrategyClass));
         }
         /// <summary>
         /// This scenario happens when it's a virtual keyspace.
@@ -118,7 +118,7 @@ namespace Cassandra.Tests
                 new ReplicationStrategyFactory(), 
                 null,
                 true);
-            Assert.IsNull(sut.Strategy);
+            Assert.That(sut.Strategy, Is.Null);
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace Cassandra.Tests
         {
             var sut = new KeyspaceMetadata(
                 null, "name", false, null, null, new ReplicationStrategyFactory(), null, true);
-            Assert.IsNull(sut.StrategyClass);
+            Assert.That(sut.StrategyClass, Is.Null);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace Cassandra.Tests
         {
             var sut = new KeyspaceMetadata(
                 null, "name", false, null, null, new ReplicationStrategyFactory(), null, true);
-            Assert.IsNull(sut.Replication);
+            Assert.That(sut.Replication, Is.Null);
         }
 
         [Test]
@@ -148,7 +148,7 @@ namespace Cassandra.Tests
         {
             var sut = new KeyspaceMetadata(
                 null, "name", true, "SimpleStrategy", null, new ReplicationStrategyFactory(), null, true);
-            Assert.IsNull(sut.Strategy);
+            Assert.That(sut.Strategy, Is.Null);
         }
 
         [Test]
@@ -156,7 +156,7 @@ namespace Cassandra.Tests
         {
             var sut = new KeyspaceMetadata(
                 null, "name", true, "SimpleStrategy", null, new ReplicationStrategyFactory(), null, true);
-            Assert.IsNull(sut.Replication);
+            Assert.That(sut.Replication, Is.Null);
         }
 
         [Test]
@@ -164,7 +164,7 @@ namespace Cassandra.Tests
         {
             var sut = new KeyspaceMetadata(
                 null, "name", true, "SimpleStrategy", null, new ReplicationStrategyFactory(), null, true);
-            Assert.IsNotNull(sut.StrategyClass);
+            Assert.That(sut.StrategyClass, Is.Not.Null);
         }
         
         [Test]
@@ -172,7 +172,7 @@ namespace Cassandra.Tests
         {
             var sut = new KeyspaceMetadata(
                 null, "name", true, null, new ConcurrentDictionary<string, string>(), new ReplicationStrategyFactory(), null, true);
-            Assert.IsNull(sut.Strategy);
+            Assert.That(sut.Strategy, Is.Null);
         }
 
         [Test]
@@ -180,7 +180,7 @@ namespace Cassandra.Tests
         {
             var sut = new KeyspaceMetadata(
                 null, "name", true, null, new ConcurrentDictionary<string, string>(), new ReplicationStrategyFactory(), null, true);
-            Assert.IsNotNull(sut.Replication);
+            Assert.That(sut.Replication, Is.Not.Null);
         }
 
         [Test]
@@ -188,7 +188,7 @@ namespace Cassandra.Tests
         {
             var sut = new KeyspaceMetadata(
                 null, "name", true, null, new ConcurrentDictionary<string, string>(), new ReplicationStrategyFactory(), null, true);
-            Assert.IsNull(sut.StrategyClass);
+            Assert.That(sut.StrategyClass, Is.Null);
         }
     }
 }

@@ -23,6 +23,7 @@ using Cassandra.Tests.Mapping.Pocos;
 using Cassandra.Tests.Mapping.TestData;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.Mapping
 {
@@ -179,7 +180,7 @@ namespace Cassandra.Tests.Mapping
                 mapper.Delete(song, "testProfile");
             }
 
-            Assert.AreEqual("DELETE FROM Song WHERE Id = ?", query);
+            Assert.That("DELETE FROM Song WHERE Id = ?", Is.EqualTo(query));
             CollectionAssert.AreEqual(new object[] { song.Id }, parameters);
             Mock.Get(session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>(), "testProfile"), Times.Once);
             Mock.Get(session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>()), Times.Never);
@@ -205,7 +206,7 @@ namespace Cassandra.Tests.Mapping
                 mapper.DeleteIf<Song>(Cql.New("WHERE id = ? IF title = ?", Guid.NewGuid(), "All of My love").WithExecutionProfile("testProfile"));
             }
 
-            Assert.AreEqual("DELETE FROM Song WHERE id = ? IF title = ?", query);
+            Assert.That("DELETE FROM Song WHERE id = ? IF title = ?", Is.EqualTo(query));
             Mock.Get(session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>(), "testProfile"), Times.Once);
             Mock.Get(session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>()), Times.Never);
             Mock.Get(session).Verify(s => s.Execute(It.IsAny<IStatement>(), "testProfile"), Times.Never);
@@ -236,9 +237,9 @@ namespace Cassandra.Tests.Mapping
                 mapperAndSession.Mapper.Insert(song, "testProfile", false, ttl);
             }
 
-            Assert.AreEqual("INSERT INTO Song (Id, ReleaseDate) VALUES (?, ?) USING TTL ?", query);
-            Assert.AreEqual(song.Id, parameters[0]);
-            Assert.AreEqual(ttl, parameters.Last());
+            Assert.That("INSERT INTO Song (Id, ReleaseDate) VALUES (?, ?) USING TTL ?", Is.EqualTo(query));
+            Assert.That(song.Id, Is.EqualTo(parameters[0]));
+            Assert.That(ttl, Is.EqualTo(parameters.Last()));
             Mock.Get(mapperAndSession.Session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>(), "testProfile"), Times.Once);
             Mock.Get(mapperAndSession.Session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>()), Times.Never);
             Mock.Get(mapperAndSession.Session).Verify(s => s.Execute(It.IsAny<IStatement>(), "testProfile"), Times.Never);
@@ -269,11 +270,11 @@ namespace Cassandra.Tests.Mapping
                 mapperAndSession.Mapper.InsertIfNotExists(song, "testProfile", false, ttl);
             }
 
-            Assert.AreEqual("INSERT INTO Song (Id, ReleaseDate, Title) VALUES (?, ?, ?) IF NOT EXISTS USING TTL ?", query);
-            Assert.AreEqual(song.Id, parameters[0]);
-            Assert.AreEqual(song.ReleaseDate, parameters[1]);
-            Assert.AreEqual(song.Title, parameters[2]);
-            Assert.AreEqual(ttl, parameters[3]);
+            Assert.That("INSERT INTO Song (Id, ReleaseDate, Title) VALUES (?, ?, ?) IF NOT EXISTS USING TTL ?", Is.EqualTo(query));
+            Assert.That(song.Id, Is.EqualTo(parameters[0]));
+            Assert.That(song.ReleaseDate, Is.EqualTo(parameters[1]));
+            Assert.That(song.Title, Is.EqualTo(parameters[2]));
+            Assert.That(ttl, Is.EqualTo(parameters[3]));
             Mock.Get(mapperAndSession.Session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>(), "testProfile"), Times.Once);
             Mock.Get(mapperAndSession.Session).Verify(s => s.ExecuteAsync(It.IsAny<IStatement>()), Times.Never);
             Mock.Get(mapperAndSession.Session).Verify(s => s.Execute(It.IsAny<IStatement>(), "testProfile"), Times.Never);

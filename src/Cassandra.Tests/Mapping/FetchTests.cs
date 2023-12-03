@@ -25,6 +25,7 @@ using Cassandra.Tests.Mapping.Pocos;
 using Cassandra.Tests.Mapping.TestData;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.Mapping
 {
@@ -37,8 +38,8 @@ namespace Cassandra.Tests.Mapping
             var mappingClient = GetMappingClient(rowset);
             var userTask = mappingClient.FetchAsync<PlainUser>("SELECT * FROM users");
             var users = userTask.Result;
-            Assert.NotNull(users);
-            Assert.AreEqual(0, users.Count());
+            Assert.That(users, Is.Not.Null);
+            Assert.That(0, Is.EqualTo(users.Count()));
         }
 
         [Test]
@@ -50,7 +51,7 @@ namespace Cassandra.Tests.Mapping
             var mappingClient = GetMappingClient(rowset);
             var userTask = mappingClient.FetchAsync<PlainUser>("SELECT * FROM users");
             var users = userTask.Result;
-            Assert.NotNull(users);
+            Assert.That(users, Is.Not.Null);
             CollectionAssert.AreEqual(usersExpected, users, new TestHelper.PropertyComparer());
         }
 
@@ -78,7 +79,7 @@ namespace Cassandra.Tests.Mapping
             }
 
             Task.WaitAll(taskList.Select(t => (Task)t).ToArray(), 5000);
-            Assert.True(taskList.All(t => t.Result.Count() == 10));
+            Assert.That(taskList.All(t => t.Result.Count() == 10), Is.True);
             sessionMock.Verify();
             //Prepare should be called just once
             sessionMock
@@ -104,7 +105,7 @@ namespace Cassandra.Tests.Mapping
                 .Verifiable();
             var mappingClient = GetMappingClient(sessionMock);
             var ex = Assert.Throws<InvalidQueryException>(() => mappingClient.Fetch<PlainUser>("SELECT WILL FAIL FOR INVALID"));
-            Assert.AreEqual(ex.Message, "Mocked Exception");
+            Assert.That(ex.Message, Is.EqualTo("Mocked Exception"));
             sessionMock.Verify();
         }
 
@@ -119,7 +120,7 @@ namespace Cassandra.Tests.Mapping
                 .Verifiable();
             var mappingClient = GetMappingClient(sessionMock);
             var ex = Assert.Throws<SyntaxError>(() => mappingClient.Fetch<PlainUser>("SELECT WILL FAIL FOR SYNTAX"));
-            Assert.AreEqual(ex.Message, "Mocked Exception 2");
+            Assert.That(ex.Message, Is.EqualTo("Mocked Exception 2"));
             sessionMock.Verify();
         }
 
@@ -140,15 +141,15 @@ namespace Cassandra.Tests.Mapping
             var rowset = TestDataHelper.GetUsersRowSet(usersOriginal);
             var mappingClient = GetMappingClient(rowset);
             var users = mappingClient.Fetch<FluentUser>("SELECT * FROM users").ToList();
-            Assert.AreEqual(usersOriginal.Count, users.Count);
+            Assert.That(usersOriginal.Count, Is.EqualTo(users.Count));
             for (var i = 0; i < users.Count; i++)
             {
                 var expected = usersOriginal[i];
                 var user = users[i];
-                Assert.AreEqual(expected.UserId, user.Id);
-                Assert.AreEqual(expected.Age, user.Age);
-                Assert.AreEqual(expected.ChildrenAges.ToDictionary(t => t.Key, t => t.Value), user.ChildrenAges.ToDictionary(t => t.Key, t => t.Value));
-                Assert.AreEqual(expected.HairColor, user.HairColor);
+                Assert.That(expected.UserId, Is.EqualTo(user.Id));
+                Assert.That(expected.Age, Is.EqualTo(user.Age));
+                Assert.That(expected.ChildrenAges.ToDictionary(t => t.Key, t => t.Value), Is.EqualTo(user.ChildrenAges.ToDictionary(t => t.Key, t => t.Value)));
+                Assert.That(expected.HairColor, Is.EqualTo(user.HairColor));
             }
         }
 
@@ -205,7 +206,7 @@ namespace Cassandra.Tests.Mapping
             var songs = mappingClient.Fetch<Song>("SELECT * FROM songs");
             //Page to all the values
             var allSongs = songs.ToList();
-            Assert.AreEqual(pageSize * totalPages, allSongs.Count);
+            Assert.That(pageSize * totalPages, Is.EqualTo(allSongs.Count));
         }
 
         [Test]
@@ -228,12 +229,12 @@ namespace Cassandra.Tests.Mapping
                 .Verifiable();
             var mappingClient = GetMappingClient(sessionMock);
             IPage<PlainUser> page = mappingClient.FetchPageAsync<PlainUser>(Cql.New("SELECT * FROM users")).Result;
-            Assert.Null(page.CurrentPagingState);
-            Assert.NotNull(page.PagingState);
-            Assert.AreEqual(rs.PagingState, page.PagingState);
+            Assert.That(page.CurrentPagingState, Is.Null);
+            Assert.That(page.PagingState, Is.Not.Null);
+            Assert.That(rs.PagingState, Is.EqualTo(page.PagingState));
             sessionMock.Verify();
-            Assert.False(stmt.AutoPage);
-            Assert.AreEqual(0, stmt.PageSize);
+            Assert.That(stmt.AutoPage, Is.False);
+            Assert.That(0, Is.EqualTo(stmt.PageSize));
         }
 
         [Test]
@@ -258,13 +259,13 @@ namespace Cassandra.Tests.Mapping
                 .Verifiable();
             var mappingClient = GetMappingClient(sessionMock);
             IPage<PlainUser> page = mappingClient.FetchPageAsync<PlainUser>(Cql.New("SELECT * FROM users").WithOptions(opt => opt.SetPageSize(pageSize))).Result;
-            Assert.Null(page.CurrentPagingState);
-            Assert.NotNull(page.PagingState);
-            Assert.AreEqual(rs.PagingState, page.PagingState);
+            Assert.That(page.CurrentPagingState, Is.Null);
+            Assert.That(page.PagingState, Is.Not.Null);
+            Assert.That(rs.PagingState, Is.EqualTo(page.PagingState));
             CollectionAssert.AreEqual(page, usersExpected, new TestHelper.PropertyComparer());
             sessionMock.Verify();
-            Assert.False(stmt.AutoPage);
-            Assert.AreEqual(pageSize, stmt.PageSize);
+            Assert.That(stmt.AutoPage, Is.False);
+            Assert.That(pageSize, Is.EqualTo(stmt.PageSize));
         }
 
         [Test]
@@ -307,8 +308,8 @@ namespace Cassandra.Tests.Mapping
                 .Verifiable();
             var mapper = GetMappingClient(sessionMock);
             mapper.Fetch<PlainUser>(new Cql("SELECT").WithOptions(o => o.SetConsistencyLevel(ConsistencyLevel.EachQuorum).SetSerialConsistencyLevel(ConsistencyLevel.Serial)));
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, consistency);
-            Assert.AreEqual(ConsistencyLevel.Serial, serialConsistency);
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(consistency));
+            Assert.That(ConsistencyLevel.Serial, Is.EqualTo(serialConsistency));
         }
 
         [Test]
@@ -338,8 +339,8 @@ namespace Cassandra.Tests.Mapping
                 .Verifiable();
             var mapper = GetMappingClient(sessionMock);
             var song = mapper.Fetch<Song2>(new Cql("SELECT * FROM songs")).First();
-            Assert.AreEqual("Come Away with Me", song.Title);
-            Assert.AreEqual(DateTimeOffset.Parse("2002-01-01 +0").DateTime, song.ReleaseDate);
+            Assert.That("Come Away with Me", Is.EqualTo(song.Title));
+            Assert.That(DateTimeOffset.Parse("2002-01-01 +0").DateTime, Is.EqualTo(song.ReleaseDate));
         }
 
 
@@ -347,9 +348,9 @@ namespace Cassandra.Tests.Mapping
         public void Fetch_Anonymous_Type_With_Nullable_Column()
         {
             var songs = FetchAnonymous(x => new { x.Title, x.ReleaseDate });
-            Assert.AreEqual("Come Away with Me", songs[0].Title);
-            Assert.AreEqual(DateTimeOffset.Parse("2002-01-01 +0").DateTime, songs[0].ReleaseDate);
-            Assert.AreEqual(false, songs[1].ReleaseDate.HasValue);
+            Assert.That("Come Away with Me", Is.EqualTo(songs[0].Title));
+            Assert.That(DateTimeOffset.Parse("2002-01-01 +0").DateTime, Is.EqualTo(songs[0].ReleaseDate));
+            Assert.That(false, Is.EqualTo(songs[1].ReleaseDate.HasValue));
         }
 
         // ReSharper disable once UnusedParameter.Local
@@ -401,9 +402,9 @@ namespace Cassandra.Tests.Mapping
             );
             var mapper = GetMappingClient(rs, config);
             var result = mapper.Fetch<PocoWithEnumCollections>("SELECT * FROM tbl1 WHERE id = ?", 1).First();
-            Assert.NotNull(result);
-            Assert.AreEqual(1L, result.Id);
-            Assert.AreEqual(HairColor.Gray, result.Enum1);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(1L, Is.EqualTo(result.Id));
+            Assert.That(HairColor.Gray, Is.EqualTo(result.Enum1));
         }
 
         [Test]
@@ -430,17 +431,17 @@ namespace Cassandra.Tests.Mapping
             var config = new MappingConfiguration().Define(PocoWithEnumCollections.DefaultMapping);
             var mapper = GetMappingClient(rs, config);
             var result = mapper.Fetch<PocoWithEnumCollections>("SELECT * FROM tbl1 WHERE id = ?", 1).First();
-            Assert.NotNull(result);
-            Assert.AreEqual(1L, result.Id);
-            Assert.AreEqual(expectedCollection, result.List1);
-            Assert.AreEqual(expectedCollection, result.List2);
-            Assert.AreEqual(expectedCollection, result.Array1);
-            Assert.AreEqual(expectedCollection, result.Set1);
-            Assert.AreEqual(expectedCollection, result.Set2);
-            Assert.AreEqual(expectedCollection, result.Set3);
-            Assert.AreEqual(expectedMap, result.Dictionary1);
-            Assert.AreEqual(expectedMap, result.Dictionary2);
-            Assert.AreEqual(expectedMap, result.Dictionary3);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(1L, Is.EqualTo(result.Id));
+            Assert.That(expectedCollection, Is.EqualTo(result.List1));
+            Assert.That(expectedCollection, Is.EqualTo(result.List2));
+            Assert.That(expectedCollection, Is.EqualTo(result.Array1));
+            Assert.That(expectedCollection, Is.EqualTo(result.Set1));
+            Assert.That(expectedCollection, Is.EqualTo(result.Set2));
+            Assert.That(expectedCollection, Is.EqualTo(result.Set3));
+            Assert.That(expectedMap, Is.EqualTo(result.Dictionary1));
+            Assert.That(expectedMap, Is.EqualTo(result.Dictionary2));
+            Assert.That(expectedMap, Is.EqualTo(result.Dictionary3));
         }
 
         private static void SetFetchNextMethod(RowSet rs, Func<byte[], RowSet> handler)

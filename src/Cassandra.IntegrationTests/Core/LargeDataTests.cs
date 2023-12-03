@@ -105,7 +105,7 @@ namespace Cassandra.IntegrationTests.Core
             using (var rs = _session.Execute(string.Format("SELECT * FROM {0} WHERE k = {1}", uniqueTableName, Key.ToString()), ConsistencyLevel.Quorum))
             {
                 Row row = rs.GetRows().FirstOrDefault();
-                Assert.True(b.Equals(((List<string>)row["i"])[0]));
+                Assert.That(b.Equals(((List<string>)row["i"])[0]), Is.True);
             }
         }
 
@@ -125,7 +125,7 @@ namespace Cassandra.IntegrationTests.Core
             using (var rs = _session.Execute(string.Format("SELECT * FROM {0} WHERE k = {1}", uniqueTableName, Key), ConsistencyLevel.Quorum))
             {
                 Row row = rs.GetRows().FirstOrDefault();
-                Assert.AreEqual(setVal, ((List<string>)row["i"]).First());
+                Assert.That(setVal, Is.EqualTo(((List<string>)row["i"]).First()));
             }
         }
 
@@ -150,7 +150,7 @@ namespace Cassandra.IntegrationTests.Core
             catch (InvalidQueryException e)
             {
                 string expectedErrMsg = "The sum of all clustering columns is too long";
-                Assert.True(e.Message.Contains(expectedErrMsg), "Exception message {0} did not contain expected error message {1}.", e.Message, expectedErrMsg);
+                Assert.That(e.Message.Contains(expectedErrMsg), Is.True, "Exception message {0} did not contain expected error message {1}.", e.Message, expectedErrMsg);
             }
         }
 
@@ -171,8 +171,8 @@ namespace Cassandra.IntegrationTests.Core
             using (var rs = _session.Execute(string.Format("SELECT * FROM {0} WHERE k = {1}", uniqueTableName, Key.ToString()), ConsistencyLevel.Quorum))
             {
                 Row row = rs.GetRows().FirstOrDefault();
-                Assert.AreEqual(mapKey, ((SortedDictionary<string, string>)row["i"]).First().Key);
-                Assert.AreEqual(mapVal, ((SortedDictionary<string, string>)row["i"]).First().Value);
+                Assert.That(mapKey, Is.EqualTo(((SortedDictionary<string, string>)row["i"]).First().Key));
+                Assert.That(mapVal, Is.EqualTo(((SortedDictionary<string, string>)row["i"]).First().Value));
             }
         }
 
@@ -198,7 +198,7 @@ namespace Cassandra.IntegrationTests.Core
             catch (InvalidQueryException e)
             {
                 string expectedErrMsg = "The sum of all clustering columns is too long";
-                Assert.True(e.Message.Contains(expectedErrMsg),
+                Assert.That(e.Message.Contains(expectedErrMsg), Is.True,
                     string.Format("Exception message: '{0}' did not contain error message '{1}'", e.Message, expectedErrMsg));
             }
         }
@@ -223,7 +223,7 @@ namespace Cassandra.IntegrationTests.Core
             catch (InvalidQueryException e)
             {
                 string expectedErrMsg = "Map value is too long.";
-                Assert.True(e.Message.Contains(expectedErrMsg),
+                Assert.That(e.Message.Contains(expectedErrMsg), Is.True,
                     string.Format("Exception message: '{0}' did not contain error message '{1}'", e.Message, expectedErrMsg));
             }
         }
@@ -262,7 +262,7 @@ namespace Cassandra.IntegrationTests.Core
                 // Verify data
                 List<Row> rows = rs.GetRows().ToList();
                 for (int j = 0; j < rows.Count; j++)
-                    Assert.AreEqual(expectedStrings[j].ToString(), rows[j]["str"]);
+                    Assert.That(expectedStrings[j].ToString(), Is.EqualTo(rows[j]["str"]));
             }
         }
 
@@ -291,7 +291,7 @@ namespace Cassandra.IntegrationTests.Core
                 // Verify data
                 List<Row> rows = rs.GetRows().ToList();
                 for (int j = 0; j < rows.Count; j++)
-                    Assert.AreEqual(expectedStrings[j].ToString(), rows[j]["str"]);
+                    Assert.That(expectedStrings[j].ToString(), Is.EqualTo(rows[j]["str"]));
             }
         }
 
@@ -317,7 +317,7 @@ namespace Cassandra.IntegrationTests.Core
             var rs = session.Execute("SELECT i FROM " + tableName + " WHERE k = " + Key, ConsistencyLevel.Quorum);
             // Verify data            
             foreach (var row in rs)
-                Assert.AreEqual((byte[])row["i"], bb);
+                Assert.That((byte[])row["i"], Is.EqualTo(bb));
         }
 
         // Test a row with a single extra large text value
@@ -337,7 +337,7 @@ namespace Cassandra.IntegrationTests.Core
             {
                 Row row = rs.GetRows().FirstOrDefault(); // select().all().from("large_text").where(eq("k", key))).one();
                 // Verify data
-                Assert.True(b.ToString().Equals(row["i"]));
+                Assert.That(b.ToString().Equals(row["i"]), Is.True);
             }
         }
 
@@ -381,16 +381,16 @@ namespace Cassandra.IntegrationTests.Core
             var rs = session.Execute("SELECT * FROM " + tableName + " WHERE k = " + Key, ConsistencyLevel.Quorum);
             {
                 Row row = rs.GetRows().FirstOrDefault();
-                Assert.True(row != null, "row is null");
-                Assert.True(row.Length >= 330, "not enough columns");
+                Assert.That(row != null, Is.True, "row is null");
+                Assert.That(row.Length >= 330, Is.True, "not enough columns");
 
                 // Verify data
                 for (int i = 0; i < 330; ++i)
                 {
                     string cn = CreateColumnName(i);
-                    Assert.True(row[cn] != null, "column is null");
-                    Assert.True(row[cn] is int, "column is not int");
-                    Assert.True((int)row[cn] == i);
+                    Assert.That(row[cn] != null, Is.True, "column is null");
+                    Assert.That(row[cn] is int, Is.True, "column is not int");
+                    Assert.That((int)row[cn] == i, Is.True);
                 }
             }
         }

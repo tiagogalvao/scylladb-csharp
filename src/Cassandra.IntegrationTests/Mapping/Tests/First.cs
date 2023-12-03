@@ -78,7 +78,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
         {
             string cqlToFindNothing = _selectAllDefaultCql + " where moviemaker ='" + Randomm.RandomAlphaNum(20) + "'";
             var err = Assert.Throws<InvalidOperationException>(() => _mapper.First<Movie>(cqlToFindNothing));
-            Assert.AreEqual("Sequence contains no elements", err.Message);
+            Assert.That("Sequence contains no elements", Is.EqualTo(err.Message));
         }
 
         [Test]
@@ -91,8 +91,8 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             }
             catch (AggregateException e)
             {
-                Assert.NotNull(e.InnerException);
-                Assert.AreEqual("Sequence contains no elements", e.InnerException.Message);
+                Assert.That(e.InnerException, Is.Not.Null);
+                Assert.That("Sequence contains no elements", Is.EqualTo(e.InnerException.Message));
             }
         }
 
@@ -124,31 +124,31 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             var mapper = new Mapper(Session, config);
             var result = mapper
                 .First<PocoWithEnumCollections>("SELECT * FROM tbl_with_enum_collections WHERE id = ?", 2000L);
-            Assert.NotNull(result);
-            Assert.AreEqual(2000L, result.Id);
-            Assert.AreEqual(expectedCollection, result.List1);
-            Assert.AreEqual(expectedCollection, result.List2);
-            Assert.AreEqual(expectedCollection, result.Array1);
-            Assert.AreEqual(expectedCollection, result.Set1);
-            Assert.AreEqual(expectedCollection, result.Set2);
-            Assert.AreEqual(expectedCollection, result.Set3);
-            Assert.AreEqual(expectedMap, result.Dictionary1);
-            Assert.AreEqual(expectedMap, result.Dictionary2);
-            Assert.AreEqual(expectedMap, result.Dictionary3);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(2000L, Is.EqualTo(result.Id));
+            Assert.That(expectedCollection, Is.EqualTo(result.List1));
+            Assert.That(expectedCollection, Is.EqualTo(result.List2));
+            Assert.That(expectedCollection, Is.EqualTo(result.Array1));
+            Assert.That(expectedCollection, Is.EqualTo(result.Set1));
+            Assert.That(expectedCollection, Is.EqualTo(result.Set2));
+            Assert.That(expectedCollection, Is.EqualTo(result.Set3));
+            Assert.That(expectedMap, Is.EqualTo(result.Dictionary1));
+            Assert.That(expectedMap, Is.EqualTo(result.Dictionary2));
+            Assert.That(expectedMap, Is.EqualTo(result.Dictionary3));
             
             result = mapper
                 .First<PocoWithEnumCollections>("SELECT * FROM tbl_with_enum_collections WHERE id = ?", 2001L);
-            Assert.NotNull(result);
-            Assert.AreEqual(2001L, result.Id);
-            Assert.AreEqual(Array.Empty<HairColor>(), result.List1);
-            Assert.AreEqual(Array.Empty<HairColor>(), result.List2);
-            Assert.AreEqual(Array.Empty<HairColor>(), result.Array1);
-            Assert.AreEqual(Array.Empty<HairColor>(), result.Set1);
-            Assert.AreEqual(Array.Empty<HairColor>(), result.Set2);
-            Assert.AreEqual(Array.Empty<HairColor>(), result.Set3);
-            Assert.AreEqual(new Dictionary<HairColor, TimeUuid>(), result.Dictionary1);
-            Assert.AreEqual(new Dictionary<HairColor, TimeUuid>(), result.Dictionary2);
-            Assert.AreEqual(new Dictionary<HairColor, TimeUuid>(), result.Dictionary3);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(2001L, Is.EqualTo(result.Id));
+            Assert.That(Array.Empty<HairColor>(), Is.EqualTo(result.List1));
+            Assert.That(Array.Empty<HairColor>(), Is.EqualTo(result.List2));
+            Assert.That(Array.Empty<HairColor>(), Is.EqualTo(result.Array1));
+            Assert.That(Array.Empty<HairColor>(), Is.EqualTo(result.Set1));
+            Assert.That(Array.Empty<HairColor>(), Is.EqualTo(result.Set2));
+            Assert.That(Array.Empty<HairColor>(), Is.EqualTo(result.Set3));
+            Assert.That(new Dictionary<HairColor, TimeUuid>(), Is.EqualTo(result.Dictionary1));
+            Assert.That(new Dictionary<HairColor, TimeUuid>(), Is.EqualTo(result.Dictionary2));
+            Assert.That(new Dictionary<HairColor, TimeUuid>(), Is.EqualTo(result.Dictionary3));
         }
 
         ///////////////////////////////////////////////

@@ -163,7 +163,7 @@ namespace Cassandra.IntegrationTests.DataStax.Graph
                 for (var i = 0; i < 10; i++)
                 {
                     var rs = session.ExecuteGraph(new SimpleGraphStatement("g.V().count()").SetGraphSourceAnalytics().SetReadTimeoutMillis(120000));
-                    Assert.AreEqual(sparkHost, rs.Info.QueriedHost.Address.ToString());
+                    Assert.That(sparkHost, Is.EqualTo(rs.Info.QueriedHost.Address.ToString()));
                 }
             }
         }

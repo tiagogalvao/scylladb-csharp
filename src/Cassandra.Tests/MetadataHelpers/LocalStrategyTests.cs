@@ -35,12 +35,12 @@ namespace Cassandra.Tests.MetadataHelpers
                 testData.Ring, testData.PrimaryReplicas, testData.NumberOfHostsWithTokens, testData.Datacenters);
 
             // 3 dcs, 3 hosts per rack, 2 racks per dc, 10 tokens per host
-            Assert.AreEqual(10 * 3 * 2 * 3, result.Count);
+            Assert.That(10 * 3 * 2 * 3, Is.EqualTo(result.Count));
 
             foreach (var token in result)
             {
-                Assert.AreEqual(1, token.Value.Count);
-                Assert.AreEqual(testData.PrimaryReplicas[token.Key], token.Value.Single());
+                Assert.That(1, Is.EqualTo(token.Value.Count));
+                Assert.That(testData.PrimaryReplicas[token.Key], Is.EqualTo(token.Value.Single()));
             }
         }
     }

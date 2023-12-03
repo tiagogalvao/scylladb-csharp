@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Cassandra.IntegrationTests.TestBase;
+using NUnit.Framework.Legacy;
 using SortOrder = Cassandra.DataCollectionMetadata.SortOrder;
 
 namespace Cassandra.IntegrationTests.Core
@@ -44,10 +45,10 @@ namespace Cassandra.IntegrationTests.Core
             var cluster = testCluster.Cluster;
             var session = testCluster.Session;
             var initialLength = cluster.Metadata.GetKeyspaces().Count;
-            Assert.Greater(initialLength, 0);
+            Assert.That(initialLength, Is.GreaterThan(0));
 
             //GetReplicas should yield the primary replica when the Keyspace is not found
-            Assert.AreEqual(1, cluster.GetReplicas("ks2", new byte[] {0, 0, 0, 1}).Count);
+            Assert.That(1, Is.EqualTo(cluster.GetReplicas("ks2", new byte[] {0, 0, 0, 1}).Count));
 
             const string createKeyspaceQuery = "CREATE KEYSPACE {0} WITH replication = {{ 'class' : '{1}', {2} }}";
             session.Execute(string.Format(createKeyspaceQuery, "ks1", "SimpleStrategy", "'replication_factor' : 1"));
@@ -56,20 +57,20 @@ namespace Cassandra.IntegrationTests.Core
             session.Execute(string.Format(createKeyspaceQuery, "\"KS4\"", "SimpleStrategy", "'replication_factor' : 3"));
             //Let the magic happen
             Thread.Sleep(5000);
-            Assert.Greater(cluster.Metadata.GetKeyspaces().Count, initialLength);
+            Assert.That(cluster.Metadata.GetKeyspaces().Count, Is.GreaterThan(initialLength));
             var ks1 = cluster.Metadata.GetKeyspace("ks1");
-            Assert.NotNull(ks1);
-            Assert.AreEqual(ks1.Replication["replication_factor"], 1);
+            Assert.That(ks1, Is.Not.Null);
+            Assert.That(ks1.Replication["replication_factor"], Is.EqualTo(1));
             var ks2 = cluster.Metadata.GetKeyspace("ks2");
-            Assert.NotNull(ks2);
-            Assert.AreEqual(ks2.Replication["replication_factor"], 3);
+            Assert.That(ks2, Is.Not.Null);
+            Assert.That(ks2.Replication["replication_factor"], Is.EqualTo(3));
             //GetReplicas should yield the 2 replicas (rf=3 but cluster=2) when the Keyspace is found
-            Assert.AreEqual(2, cluster.GetReplicas("ks2", new byte[] {0, 0, 0, 1}).Count);
+            Assert.That(2, Is.EqualTo(cluster.GetReplicas("ks2", new byte[] {0, 0, 0, 1}).Count));
             var ks3 = cluster.Metadata.GetKeyspace("ks3");
-            Assert.NotNull(ks3);
-            Assert.AreEqual(ks3.Replication["dc1"], 1);
-            Assert.Null(cluster.Metadata.GetKeyspace("ks4"));
-            Assert.NotNull(cluster.Metadata.GetKeyspace("KS4"));
+            Assert.That(ks3, Is.Not.Null);
+            Assert.That(ks3.Replication["dc1"], Is.EqualTo(1));
+            Assert.That(cluster.Metadata.GetKeyspace("ks4"), Is.Null);
+            Assert.That(cluster.Metadata.GetKeyspace("KS4"), Is.Not.Null);
         }
 
         [Test]
@@ -78,17 +79,17 @@ namespace Cassandra.IntegrationTests.Core
             ITestCluster testCluster = TestClusterManager.GetNonShareableTestCluster(2);
             var cluster = testCluster.Cluster;
             //The control connection is connected to host 1
-            Assert.AreEqual(1, TestHelper.GetLastAddressByte(cluster.Metadata.ControlConnection.EndPoint.GetHostIpEndPointWithFallback()));
+            Assert.That(1, Is.EqualTo(TestHelper.GetLastAddressByte(cluster.Metadata.ControlConnection.EndPoint.GetHostIpEndPointWithFallback())));
             testCluster.StopForce(1);
             Thread.Sleep(10000);
 
             //The control connection is still connected to host 1
-            Assert.AreEqual(1, TestHelper.GetLastAddressByte(cluster.Metadata.ControlConnection.EndPoint.GetHostIpEndPointWithFallback()));
+            Assert.That(1, Is.EqualTo(TestHelper.GetLastAddressByte(cluster.Metadata.ControlConnection.EndPoint.GetHostIpEndPointWithFallback())));
             var t = cluster.Metadata.GetTable("system", "local");
-            Assert.NotNull(t);
+            Assert.That(t, Is.Not.Null);
 
             //The control connection should be connected to host 2
-            Assert.AreEqual(2, TestHelper.GetLastAddressByte(cluster.Metadata.ControlConnection.EndPoint.GetHostIpEndPointWithFallback()));
+            Assert.That(2, Is.EqualTo(TestHelper.GetLastAddressByte(cluster.Metadata.ControlConnection.EndPoint.GetHostIpEndPointWithFallback())));
         }
 
         [Test]
@@ -107,7 +108,7 @@ namespace Cassandra.IntegrationTests.Core
 
             //The control connection is connected to host 1
             //All host are up
-            Assert.True(cluster.AllHosts().All(h => h.IsUp));
+            Assert.That(cluster.AllHosts().All(h => h.IsUp), Is.True);
             testCluster.StopForce(2);
 
             var counter = 0;
@@ -121,9 +122,9 @@ namespace Cassandra.IntegrationTests.Core
                 }
                 Thread.Sleep(1000);
             }
-            Assert.True(cluster.AllHosts().Any(h => TestHelper.GetLastAddressByte(h) == 2 && !h.IsUp));
-            Assert.AreNotEqual(counter, maxWait, "Waited but it was never notified via events");
-            Assert.True(downEventFired);
+            Assert.That(cluster.AllHosts().Any(h => TestHelper.GetLastAddressByte(h) == 2 && !h.IsUp), Is.True);
+            Assert.That(counter, Is.Not.EqualTo(maxWait), "Waited but it was never notified via events");
+            Assert.That(downEventFired, Is.True);
         }
 
         /// <summary>
@@ -159,15 +160,15 @@ namespace Cassandra.IntegrationTests.Core
             testCluster.Stop(hostToKill);
             Thread.Sleep(10000);
             TestHelper.Invoke(() => session.Execute("SELECT key from system.local"), 10);
-            Assert.True(cluster.AllHosts().Any(h => TestHelper.GetLastAddressByte(h) == hostToKill && !h.IsUp));
-            Assert.True(downEventFired);
+            Assert.That(cluster.AllHosts().Any(h => TestHelper.GetLastAddressByte(h) == hostToKill && !h.IsUp), Is.True);
+            Assert.That(downEventFired, Is.True);
             testCluster.Start(hostToKill);
             Thread.Sleep(20000);
             TestHelper.Invoke(() => session.Execute("SELECT key from system.local"), 10);
-            Assert.True(cluster.AllHosts().All(h => h.IsConsiderablyUp));
+            Assert.That(cluster.AllHosts().All(h => h.IsConsiderablyUp), Is.True);
             //When the host of the control connection is used
             //It can result that event UP is not fired as it is not received by the control connection (it reconnected but missed the event) 
-            Assert.True(upEventFired || useControlConnectionHost);
+            Assert.That(upEventFired || useControlConnectionHost, Is.True);
         }
 
         private void CheckPureMetadata(Cluster cluster, ISession session, string tableName, string keyspaceName, TableOptions tableOptions = null)
@@ -216,23 +217,23 @@ namespace Cassandra.IntegrationTests.Core
             TestUtils.WaitForSchemaAgreement(session.Cluster);
 
             var table = cluster.Metadata.GetTable(keyspaceName, tableName);
-            Assert.AreEqual(tableName, table.Name);
+            Assert.That(tableName, Is.EqualTo(table.Name));
             foreach (var metaCol in table.TableColumns)
             {
-                Assert.True(columns.Keys.Contains(metaCol.Name));
-                Assert.True(metaCol.TypeCode == columns.First(tpc => tpc.Key == metaCol.Name).Value);
-                Assert.True(metaCol.Table == tableName);
-                Assert.True(metaCol.Keyspace == (keyspaceName));
+                Assert.That(columns.Keys.Contains(metaCol.Name), Is.True);
+                Assert.That(metaCol.TypeCode == columns.First(tpc => tpc.Key == metaCol.Name).Value, Is.True);
+                Assert.That(metaCol.Table == tableName, Is.True);
+                Assert.That(metaCol.Keyspace == (keyspaceName), Is.True);
             }
 
             if (tableOptions != null)
             {
-                Assert.AreEqual(tableOptions.Comment, table.Options.Comment);
-                Assert.AreEqual(tableOptions.ReadRepairChance, table.Options.ReadRepairChance);
-                Assert.AreEqual(tableOptions.LocalReadRepairChance, table.Options.LocalReadRepairChance);
-                Assert.AreEqual(tableOptions.ReplicateOnWrite, table.Options.replicateOnWrite);
-                Assert.AreEqual(tableOptions.GcGraceSeconds, table.Options.GcGraceSeconds);
-                Assert.AreEqual(tableOptions.bfFpChance, table.Options.bfFpChance);
+                Assert.That(tableOptions.Comment, Is.EqualTo(table.Options.Comment));
+                Assert.That(tableOptions.ReadRepairChance, Is.EqualTo(table.Options.ReadRepairChance));
+                Assert.That(tableOptions.LocalReadRepairChance, Is.EqualTo(table.Options.LocalReadRepairChance));
+                Assert.That(tableOptions.ReplicateOnWrite, Is.EqualTo(table.Options.replicateOnWrite));
+                Assert.That(tableOptions.GcGraceSeconds, Is.EqualTo(table.Options.GcGraceSeconds));
+                Assert.That(tableOptions.bfFpChance, Is.EqualTo(table.Options.bfFpChance));
                 if (tableOptions.Caching == "ALL")
                 {
                     //The string returned can be more complete than the provided
@@ -240,10 +241,10 @@ namespace Cassandra.IntegrationTests.Core
                 }
                 else
                 {
-                    Assert.AreEqual(tableOptions.Caching, table.Options.Caching);
+                    Assert.That(tableOptions.Caching, Is.EqualTo(table.Options.Caching));
                 }
-                Assert.AreEqual(tableOptions.CompactionOptions, table.Options.CompactionOptions);
-                Assert.AreEqual(tableOptions.CompressionParams, table.Options.CompressionParams);
+                Assert.That(tableOptions.CompactionOptions, Is.EqualTo(table.Options.CompactionOptions));
+                Assert.That(tableOptions.CompressionParams, Is.EqualTo(table.Options.CompressionParams));
             }
         }
 
@@ -275,9 +276,9 @@ namespace Cassandra.IntegrationTests.Core
             session.ChangeKeyspace(keyspaceName);
 
             KeyspaceMetadata ksmd = testCluster.Cluster.Metadata.GetKeyspace(keyspaceName);
-            Assert.AreEqual(strategyClass, ksmd.StrategyClass);
-            Assert.AreEqual(durableWrites, ksmd.DurableWrites);
-            Assert.AreEqual(replicationFactor, ksmd.Replication["replication_factor"]);
+            Assert.That(strategyClass, Is.EqualTo(ksmd.StrategyClass));
+            Assert.That(durableWrites, Is.EqualTo(ksmd.DurableWrites));
+            Assert.That(replicationFactor, Is.EqualTo(ksmd.Replication["replication_factor"]));
         }
 
         [Test]
@@ -299,10 +300,10 @@ namespace Cassandra.IntegrationTests.Core
                     datacentersReplicationFactors), durableWrites);
 
             KeyspaceMetadata ksmd = testCluster.Cluster.Metadata.GetKeyspace(keyspaceName);
-            Assert.AreEqual(strategyClass, ksmd.StrategyClass);
-            Assert.AreEqual(durableWrites, ksmd.DurableWrites);
+            Assert.That(strategyClass, Is.EqualTo(ksmd.StrategyClass));
+            Assert.That(durableWrites, Is.EqualTo(ksmd.DurableWrites));
             if (datacentersReplicationFactors != null)
-                Assert.True(datacentersReplicationFactors.SequenceEqual(ksmd.Replication));
+                Assert.That(datacentersReplicationFactors.SequenceEqual(ksmd.Replication), Is.True);
         }
 
         [Test]
@@ -354,9 +355,9 @@ namespace Cassandra.IntegrationTests.Core
             }
 
             var ksmd = testCluster.Cluster.Metadata.GetKeyspace(keyspaceName);
-            Assert.True(ksmd.DurableWrites == durableWrites);
-            Assert.True(ksmd.Replication.First(opt => opt.Key == "replication_factor").Value == replicationFactor);
-            Assert.True(ksmd.StrategyClass == strategyClass);
+            Assert.That(ksmd.DurableWrites == durableWrites, Is.True);
+            Assert.That(ksmd.Replication.First(opt => opt.Key == "replication_factor").Value == replicationFactor, Is.True);
+            Assert.That(ksmd.StrategyClass == strategyClass, Is.True);
         }
 
         [Test]
@@ -385,38 +386,38 @@ namespace Cassandra.IntegrationTests.Core
                                .GetKeyspace(keyspaceName)
                                .GetTableMetadata(tableName);
 
-            Assert.AreEqual(4, table.TableColumns.Length);
+            Assert.That(4, Is.EqualTo(table.TableColumns.Length));
             var map1 = table.TableColumns.First(c => c.Name == "map1");
-            Assert.AreEqual(ColumnTypeCode.Map, map1.TypeCode);
-            Assert.IsInstanceOf<MapColumnInfo>(map1.TypeInfo);
+            Assert.That(ColumnTypeCode.Map, Is.EqualTo(map1.TypeCode));
+            ClassicAssert.IsInstanceOf<MapColumnInfo>(map1.TypeInfo);
             var map1Info = (MapColumnInfo)map1.TypeInfo;
-            Assert.True(map1Info.KeyTypeCode == ColumnTypeCode.Varchar || map1Info.KeyTypeCode == ColumnTypeCode.Text,
+            ClassicAssert.True(map1Info.KeyTypeCode == ColumnTypeCode.Varchar || map1Info.KeyTypeCode == ColumnTypeCode.Text,
                 "Expected {0} but was {1}", ColumnTypeCode.Varchar, map1Info.KeyTypeCode);
-            Assert.AreEqual(ColumnTypeCode.List, map1Info.ValueTypeCode);
-            Assert.IsInstanceOf<ListColumnInfo>(map1Info.ValueTypeInfo);
+            Assert.That(ColumnTypeCode.List, Is.EqualTo(map1Info.ValueTypeCode));
+            ClassicAssert.IsInstanceOf<ListColumnInfo>(map1Info.ValueTypeInfo);
             var map1ListInfo = (ListColumnInfo)map1Info.ValueTypeInfo;
-            Assert.AreEqual(ColumnTypeCode.Timeuuid, map1ListInfo.ValueTypeCode);
+            Assert.That(ColumnTypeCode.Timeuuid, Is.EqualTo(map1ListInfo.ValueTypeCode));
 
             var map2 = table.TableColumns.First(c => c.Name == "map2");
-            Assert.AreEqual(ColumnTypeCode.Map, map2.TypeCode);
-            Assert.IsInstanceOf<MapColumnInfo>(map2.TypeInfo);
+            Assert.That(ColumnTypeCode.Map, Is.EqualTo(map2.TypeCode));
+            ClassicAssert.IsInstanceOf<MapColumnInfo>(map2.TypeInfo);
             var map2Info = (MapColumnInfo)map2.TypeInfo;
-            Assert.AreEqual(ColumnTypeCode.Int, map2Info.KeyTypeCode);
-            Assert.AreEqual(ColumnTypeCode.Map, map2Info.ValueTypeCode);
-            Assert.IsInstanceOf<MapColumnInfo>(map2Info.ValueTypeInfo);
+            Assert.That(ColumnTypeCode.Int, Is.EqualTo(map2Info.KeyTypeCode));
+            Assert.That(ColumnTypeCode.Map, Is.EqualTo(map2Info.ValueTypeCode));
+            ClassicAssert.IsInstanceOf<MapColumnInfo>(map2Info.ValueTypeInfo);
             var map2MapInfo = (MapColumnInfo)map2Info.ValueTypeInfo;
-            Assert.AreEqual(ColumnTypeCode.Uuid, map2MapInfo.KeyTypeCode);
-            Assert.AreEqual(ColumnTypeCode.Bigint, map2MapInfo.ValueTypeCode);
+            Assert.That(ColumnTypeCode.Uuid, Is.EqualTo(map2MapInfo.KeyTypeCode));
+            Assert.That(ColumnTypeCode.Bigint, Is.EqualTo(map2MapInfo.ValueTypeCode));
 
             var list1 = table.TableColumns.First(c => c.Name == "list1");
-            Assert.AreEqual(ColumnTypeCode.List, list1.TypeCode);
-            Assert.IsInstanceOf<ListColumnInfo>(list1.TypeInfo);
+            Assert.That(ColumnTypeCode.List, Is.EqualTo(list1.TypeCode));
+            ClassicAssert.IsInstanceOf<ListColumnInfo>(list1.TypeInfo);
             var list1Info = (ListColumnInfo)list1.TypeInfo;
-            Assert.AreEqual(ColumnTypeCode.Map, list1Info.ValueTypeCode);
-            Assert.IsInstanceOf<MapColumnInfo>(list1Info.ValueTypeInfo);
+            Assert.That(ColumnTypeCode.Map, Is.EqualTo(list1Info.ValueTypeCode));
+            ClassicAssert.IsInstanceOf<MapColumnInfo>(list1Info.ValueTypeInfo);
             var list1MapInfo = (MapColumnInfo)list1Info.ValueTypeInfo;
-            Assert.AreEqual(ColumnTypeCode.Uuid, list1MapInfo.KeyTypeCode);
-            Assert.AreEqual(ColumnTypeCode.Int, list1MapInfo.ValueTypeCode);
+            Assert.That(ColumnTypeCode.Uuid, Is.EqualTo(list1MapInfo.KeyTypeCode));
+            Assert.That(ColumnTypeCode.Int, Is.EqualTo(list1MapInfo.ValueTypeCode));
         }
 
         [Test]
@@ -446,19 +447,19 @@ namespace Cassandra.IntegrationTests.Core
                                .GetKeyspace(keyspaceName)
                                .GetTableMetadata(tableName);
 
-            Assert.AreEqual(6, table.TableColumns.Length);
+            Assert.That(6, Is.EqualTo(table.TableColumns.Length));
             CollectionAssert.AreEqual(table.PartitionKeys, new[] { table.TableColumns.First(c => c.Name == "id") });
             var map1 = table.TableColumns.First(c => c.Name == "map1");
-            Assert.AreEqual(ColumnTypeCode.Map, map1.TypeCode);
-            Assert.IsInstanceOf<MapColumnInfo>(map1.TypeInfo);
+            Assert.That(ColumnTypeCode.Map, Is.EqualTo(map1.TypeCode));
+            ClassicAssert.IsInstanceOf<MapColumnInfo>(map1.TypeInfo);
             var map1Info = (MapColumnInfo)map1.TypeInfo;
-            Assert.AreEqual(ColumnTypeCode.SmallInt, map1Info.KeyTypeCode);
-            Assert.AreEqual(ColumnTypeCode.Date, map1Info.ValueTypeCode);
+            Assert.That(ColumnTypeCode.SmallInt, Is.EqualTo(map1Info.KeyTypeCode));
+            Assert.That(ColumnTypeCode.Date, Is.EqualTo(map1Info.ValueTypeCode));
 
-            Assert.AreEqual(ColumnTypeCode.SmallInt, table.TableColumns.First(c => c.Name == "s").TypeCode);
-            Assert.AreEqual(ColumnTypeCode.TinyInt, table.TableColumns.First(c => c.Name == "b").TypeCode);
-            Assert.AreEqual(ColumnTypeCode.Date, table.TableColumns.First(c => c.Name == "d").TypeCode);
-            Assert.AreEqual(ColumnTypeCode.Time, table.TableColumns.First(c => c.Name == "t").TypeCode);
+            Assert.That(ColumnTypeCode.SmallInt, Is.EqualTo(table.TableColumns.First(c => c.Name == "s").TypeCode));
+            Assert.That(ColumnTypeCode.TinyInt, Is.EqualTo(table.TableColumns.First(c => c.Name == "b").TypeCode));
+            Assert.That(ColumnTypeCode.Date, Is.EqualTo(table.TableColumns.First(c => c.Name == "d").TypeCode));
+            Assert.That(ColumnTypeCode.Time, Is.EqualTo(table.TableColumns.First(c => c.Name == "t").TypeCode));
         }
 
         [Test]
@@ -475,8 +476,8 @@ namespace Cassandra.IntegrationTests.Core
                 var table = cluster.Metadata
                     .GetKeyspace("ks_meta_compac")
                     .GetTableMetadata("tbl5");
-                Assert.NotNull(table);
-                Assert.True(table.Options.IsCompactStorage);
+                Assert.That(table, Is.Not.Null);
+                Assert.That(table.Options.IsCompactStorage, Is.True);
                 CollectionAssert.AreEquivalent(new[] { "id1", "id2", "text1" }, table.TableColumns.Select(c => c.Name));
                 CollectionAssert.AreEqual(new[] { "id1" }, table.PartitionKeys.Select(c => c.Name));
                 CollectionAssert.AreEqual(new[] { "id2" }, table.ClusteringKeys.Select(c => c.Item1.Name));
@@ -485,11 +486,11 @@ namespace Cassandra.IntegrationTests.Core
                 table = cluster.Metadata
                     .GetKeyspace("ks_meta_compac")
                     .GetTableMetadata("tbl6");
-                Assert.NotNull(table);
-                Assert.True(table.Options.IsCompactStorage);
+                Assert.That(table, Is.Not.Null);
+                Assert.That(table.Options.IsCompactStorage, Is.True);
                 CollectionAssert.AreEquivalent(new[] { "id", "text1", "text2" }, table.TableColumns.Select(c => c.Name));
                 CollectionAssert.AreEqual(new[] { "id" }, table.PartitionKeys.Select(c => c.Name));
-                Assert.AreEqual(0, table.ClusteringKeys.Length);
+                Assert.That(0, Is.EqualTo(table.ClusteringKeys.Length));
             }
         }
 
@@ -572,31 +573,31 @@ namespace Cassandra.IntegrationTests.Core
                 }
                 
                 var ks = cluster.Metadata.GetKeyspace("ks_view_meta");
-                Assert.NotNull(ks);
+                Assert.That(ks, Is.Not.Null);
                 var view = ks.GetMaterializedViewMetadata("dailyhigh");
-                Assert.NotNull(view);
-                Assert.NotNull(view.Options);
+                Assert.That(view, Is.Not.Null);
+                Assert.That(view.Options, Is.Not.Null);
                 //Value is cached
                 var view2 = cluster.Metadata.GetMaterializedView("ks_view_meta", "dailyhigh");
-                Assert.AreSame(view, view2);
+                Assert.That(view, Is.SameAs(view2));
 
-                Assert.AreEqual("dailyhigh", view.Name);
-                Assert.AreEqual(
+                Assert.That("dailyhigh", Is.EqualTo(view.Name));
+                Assert.That(
                     "game IS NOT NULL AND year IS NOT NULL AND month IS NOT NULL AND day IS NOT NULL AND score IS NOT NULL AND user IS NOT NULL",
-                    view.WhereClause);
-                Assert.AreEqual(6, view.TableColumns.Length);
+                    Is.EqualTo(view.WhereClause));
+                Assert.That(6, Is.EqualTo(view.TableColumns.Length));
 
-                Assert.AreEqual(new[] { "ks_view_meta", "ks_view_meta", "ks_view_meta", "ks_view_meta", "ks_view_meta", "ks_view_meta" }, 
-                    view.TableColumns.Select(c => c.Keyspace));
-                Assert.AreEqual(new[] { "dailyhigh", "dailyhigh", "dailyhigh", "dailyhigh", "dailyhigh", "dailyhigh" },
-                    view.TableColumns.Select(c => c.Table));
+                Assert.That(new[] { "ks_view_meta", "ks_view_meta", "ks_view_meta", "ks_view_meta", "ks_view_meta", "ks_view_meta" }, 
+                    Is.EqualTo(view.TableColumns.Select(c => c.Keyspace)));
+                Assert.That(new[] { "dailyhigh", "dailyhigh", "dailyhigh", "dailyhigh", "dailyhigh", "dailyhigh" },
+                    Is.EqualTo(view.TableColumns.Select(c => c.Table)));
 
-                Assert.AreEqual(new[] { "day", "game", "month", "score", "user", "year" }, view.TableColumns.Select(c => c.Name));
-                Assert.AreEqual(new[] { ColumnTypeCode.Int, ColumnTypeCode.Varchar, ColumnTypeCode.Int, ColumnTypeCode.Int, ColumnTypeCode.Varchar, 
-                    ColumnTypeCode.Int }, view.TableColumns.Select(c => c.TypeCode));
-                Assert.AreEqual(new[] { "game", "year", "month", "day" }, view.PartitionKeys.Select(c => c.Name));
-                Assert.AreEqual(new[] { "score", "user" }, view.ClusteringKeys.Select(c => c.Item1.Name));
-                Assert.AreEqual(new[] { SortOrder.Descending, SortOrder.Ascending }, view.ClusteringKeys.Select(c => c.Item2));
+                Assert.That(new[] { "day", "game", "month", "score", "user", "year" }, Is.EqualTo(view.TableColumns.Select(c => c.Name)));
+                Assert.That(new[] { ColumnTypeCode.Int, ColumnTypeCode.Varchar, ColumnTypeCode.Int, ColumnTypeCode.Int, ColumnTypeCode.Varchar, 
+                    ColumnTypeCode.Int }, Is.EqualTo(view.TableColumns.Select(c => c.TypeCode)));
+                Assert.That(new[] { "game", "year", "month", "day" }, Is.EqualTo(view.PartitionKeys.Select(c => c.Name)));
+                Assert.That(new[] { "score", "user" }, Is.EqualTo(view.ClusteringKeys.Select(c => c.Item1.Name)));
+                Assert.That(new[] { SortOrder.Descending, SortOrder.Ascending }, Is.EqualTo(view.ClusteringKeys.Select(c => c.Item2)));
             }
         }
 
@@ -630,23 +631,23 @@ namespace Cassandra.IntegrationTests.Core
                 }
 
                 var ks = cluster.Metadata.GetKeyspace("ks_view_meta2");
-                Assert.NotNull(ks);
+                Assert.That(ks, Is.Not.Null);
                 var view = ks.GetMaterializedViewMetadata("mv1");
-                Assert.NotNull(view);
-                Assert.NotNull(view.Options);
+                Assert.That(view, Is.Not.Null);
+                Assert.That(view.Options, Is.Not.Null);
 
-                Assert.AreEqual("mv1", view.Name);
-                Assert.AreEqual(@"""theKey"" IS NOT NULL AND ""the;Clustering"" IS NOT NULL AND ""the Value"" IS NOT NULL", view.WhereClause);
-                Assert.AreEqual(3, view.TableColumns.Length);
+                Assert.That("mv1", Is.EqualTo(view.Name));
+                Assert.That(@"""theKey"" IS NOT NULL AND ""the;Clustering"" IS NOT NULL AND ""the Value"" IS NOT NULL", Is.EqualTo(view.WhereClause));
+                Assert.That(3, Is.EqualTo(view.TableColumns.Length));
 
-                Assert.AreEqual(new[] { "ks_view_meta2", "ks_view_meta2", "ks_view_meta2" }, view.TableColumns.Select(c => c.Keyspace));
-                Assert.AreEqual(new[] { "mv1", "mv1", "mv1" }, view.TableColumns.Select(c => c.Table));
+                Assert.That(new[] { "ks_view_meta2", "ks_view_meta2", "ks_view_meta2" }, Is.EqualTo(view.TableColumns.Select(c => c.Keyspace)));
+                Assert.That(new[] { "mv1", "mv1", "mv1" }, Is.EqualTo(view.TableColumns.Select(c => c.Table)));
 
-                Assert.AreEqual(new[] { "the Value", "the;Clustering", "theKey" }, view.TableColumns.Select(c => c.Name));
-                Assert.AreEqual(new[] { ColumnTypeCode.Int, ColumnTypeCode.Int, ColumnTypeCode.Int }, view.TableColumns.Select(c => c.TypeCode));
-                Assert.AreEqual(new[] { "theKey" }, view.PartitionKeys.Select(c => c.Name));
-                Assert.AreEqual(new[] { "the;Clustering" }, view.ClusteringKeys.Select(c => c.Item1.Name));
-                Assert.AreEqual(new[] { SortOrder.Ascending }, view.ClusteringKeys.Select(c => c.Item2));
+                Assert.That(new[] { "the Value", "the;Clustering", "theKey" }, Is.EqualTo(view.TableColumns.Select(c => c.Name)));
+                Assert.That(new[] { ColumnTypeCode.Int, ColumnTypeCode.Int, ColumnTypeCode.Int }, Is.EqualTo(view.TableColumns.Select(c => c.TypeCode)));
+                Assert.That(new[] { "theKey" }, Is.EqualTo(view.PartitionKeys.Select(c => c.Name)));
+                Assert.That(new[] { "the;Clustering" }, Is.EqualTo(view.ClusteringKeys.Select(c => c.Item1.Name)));
+                Assert.That(new[] { SortOrder.Ascending }, Is.EqualTo(view.ClusteringKeys.Select(c => c.Item2)));
             }
         }
     }

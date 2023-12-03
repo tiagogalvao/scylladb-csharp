@@ -40,13 +40,13 @@ namespace Cassandra.Tests.Connections
         public async Task Should_ResolveHostWithRefresh_When_Reconnection()
         {
             var target = CreatePool();
-            Assert.AreEqual(0, target.OpenConnections);
+            Assert.That(0, Is.EqualTo(target.OpenConnections));
 
             // create connection (which triggers a second connection creation in the background)
             var c = await target.BorrowConnectionAsync().ConfigureAwait(false);
             TestHelper.RetryAssert(() =>
             {
-                Assert.AreEqual(2, target.OpenConnections);
+                Assert.That(2, Is.EqualTo(target.OpenConnections));
             });
             Mock.Get(_resolver).Verify(resolver => resolver.GetConnectionEndPointAsync(_host, false), Times.Exactly(2));
             Mock.Get(_resolver).Verify(resolver => resolver.GetConnectionEndPointAsync(_host, true), Times.Never);
@@ -56,7 +56,7 @@ namespace Cassandra.Tests.Connections
 
             TestHelper.RetryAssert(() =>
             {
-                Assert.AreEqual(2, target.OpenConnections);
+                Assert.That(2, Is.EqualTo(target.OpenConnections));
             });
             Mock.Get(_resolver).Verify(resolver => resolver.GetConnectionEndPointAsync(_host, false), Times.Exactly(2));
             Mock.Get(_resolver).Verify(resolver => resolver.GetConnectionEndPointAsync(_host, true), Times.Once);
@@ -81,16 +81,16 @@ namespace Cassandra.Tests.Connections
             Mock.Get(sniOptionsProvider).Setup(m => m.GetAsync(It.IsAny<bool>())).ReturnsAsync(new SniOptions(null, 9032, "test", new SortedSet<string> { "t" }));
             var target = CreatePool(new SniEndPointResolver(sniOptionsProvider, mockDnsResolver, rand));
 
-            Assert.AreEqual(0, target.OpenConnections);
+            Assert.That(0, Is.EqualTo(target.OpenConnections));
 
             // create connection (which triggers a second connection creation in the background)
             var _ = await target.BorrowConnectionAsync().ConfigureAwait(false);
             TestHelper.RetryAssert(() =>
             {
-                Assert.AreEqual(2, target.OpenConnections);
+                Assert.That(2, Is.EqualTo(target.OpenConnections));
             });
-            Assert.AreEqual(new IPEndPoint(IPAddress.Parse("127.0.0.100"), 9032), target.ConnectionsSnapshot[0].EndPoint.SocketIpEndPoint);
-            Assert.AreEqual(new IPEndPoint(IPAddress.Parse("127.0.0.99"), 9032), target.ConnectionsSnapshot[1].EndPoint.SocketIpEndPoint);
+            Assert.That(new IPEndPoint(IPAddress.Parse("127.0.0.100"), 9032), Is.EqualTo(target.ConnectionsSnapshot[0].EndPoint.SocketIpEndPoint));
+            Assert.That(new IPEndPoint(IPAddress.Parse("127.0.0.99"), 9032), Is.EqualTo(target.ConnectionsSnapshot[1].EndPoint.SocketIpEndPoint));
         }
 
         private IHostConnectionPool CreatePool(IEndPointResolver res = null)

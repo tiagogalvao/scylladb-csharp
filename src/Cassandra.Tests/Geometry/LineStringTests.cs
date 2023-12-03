@@ -43,9 +43,9 @@ namespace Cassandra.Tests.Geometry
                     string.Join(",", line.Points.Select(p => "[" + p.X.ToString(CultureInfo.InvariantCulture) + "," + p.Y.ToString(CultureInfo.InvariantCulture) + "]")));
                 // Default serialization to JSON is GeoJson
                 var json = JsonConvert.SerializeObject(line);
-                Assert.AreEqual(expected, json);
-                Assert.AreEqual(expected, line.ToGeoJson());
-                Assert.AreEqual(expected, JsonConvert.DeserializeObject<LineString>(json).ToGeoJson());
+                Assert.That(expected, Is.EqualTo(json));
+                Assert.That(expected, Is.EqualTo(line.ToGeoJson()));
+                Assert.That(expected, Is.EqualTo(JsonConvert.DeserializeObject<LineString>(json).ToGeoJson()));
             }
         }
 
@@ -56,7 +56,7 @@ namespace Cassandra.Tests.Geometry
             {
                 var json = JsonConvert.SerializeObject(line, GraphSON1ContractResolver.Settings);
                 var expected = string.Format("\"{0}\"", line);
-                Assert.AreEqual(expected, json);
+                Assert.That(expected, Is.EqualTo(json));
             }
         }
 
@@ -68,11 +68,11 @@ namespace Cassandra.Tests.Geometry
             {
                 var serialized = typeSerializer.Serialize(1, item);
                 var deserialized = typeSerializer.Deserialize(1, serialized, 0, serialized.Length, null);
-                Assert.AreEqual(item, deserialized);
+                Assert.That(item, Is.EqualTo(deserialized));
                 //starting from offset
                 serialized = new byte[] { 1, 2, 3 }.Concat(serialized).ToArray();
                 deserialized = typeSerializer.Deserialize(1, serialized, 3, serialized.Length - 3, null);
-                Assert.AreEqual(item, deserialized);
+                Assert.That(item, Is.EqualTo(deserialized));
             }
         }
 
@@ -86,8 +86,8 @@ namespace Cassandra.Tests.Geometry
         [Test]
         public void ToString_Should_Retrieve_Wkt_Representation()
         {
-            Assert.AreEqual("LINESTRING EMPTY", new LineString().ToString());
-            Assert.AreEqual("LINESTRING (1 2, 3 4.1234)", new LineString(new Point(1, 2), new Point(3, 4.1234)).ToString());
+            Assert.That("LINESTRING EMPTY", Is.EqualTo(new LineString().ToString()));
+            Assert.That("LINESTRING (1 2, 3 4.1234)", Is.EqualTo(new LineString(new Point(1, 2), new Point(3, 4.1234)).ToString()));
         }
     }
 }

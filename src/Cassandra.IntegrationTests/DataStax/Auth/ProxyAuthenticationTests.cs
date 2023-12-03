@@ -20,6 +20,7 @@ using Cassandra.IntegrationTests.TestBase;
 using Cassandra.IntegrationTests.TestClusterManagement;
 using Cassandra.Tests;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.DataStax.Auth
 {
@@ -139,15 +140,15 @@ namespace Cassandra.IntegrationTests.DataStax.Auth
         {
             var ex = Assert.Throws<NoHostAvailableException>(
                 () => ConnectAndQuery(new DsePlainTextAuthProvider("steve", "steve", "alice")));
-            Assert.AreEqual(1, ex.Errors.Count);
-            Assert.IsInstanceOf<AuthenticationException>(ex.Errors.Values.First());
+            Assert.That(1, Is.EqualTo(ex.Errors.Count));
+            ClassicAssert.IsInstanceOf<AuthenticationException>(ex.Errors.Values.First());
 
 
             var exBatch = Assert.Throws<NoHostAvailableException>(
                 () => ConnectAndQuery(new DsePlainTextAuthProvider("steve", "steve", "alice"),
                 "DELETE FROM aliceks.alicetable WHERE KEY = 'doesnotexist'"));
-            Assert.AreEqual(1, exBatch.Errors.Count);
-            Assert.IsInstanceOf<AuthenticationException>(exBatch.Errors.Values.First());
+            Assert.That(1, Is.EqualTo(exBatch.Errors.Count));
+            ClassicAssert.IsInstanceOf<AuthenticationException>(exBatch.Errors.Values.First());
         }
 
         /// <summary>
@@ -200,7 +201,7 @@ namespace Cassandra.IntegrationTests.DataStax.Auth
                     statement.ExecutingAs(executeAs);
                 }
                 var rs = session.Execute(statement);
-                Assert.NotNull(rs.FirstOrDefault());
+                Assert.That(rs.FirstOrDefault(), Is.Not.Null);
             }
         }
 

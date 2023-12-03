@@ -27,6 +27,7 @@ using Cassandra.Serialization;
 using Cassandra.Tests;
 using Cassandra.Tests.Mapping.Pocos;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using HairColor = Cassandra.Tests.Mapping.Pocos.HairColor;
 #pragma warning disable 169
 
@@ -62,7 +63,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             var mappingConfig = new MappingConfiguration().Define(new Map<lowercaseclassnamepklowercase>()
                 .TableName(TestUtils.GetUniqueTableName().ToLowerInvariant()).PartitionKey(c => c.somepartitionkey).CaseSensitive());
             var table = new Table<lowercaseclassnamepklowercase>(_session, mappingConfig);
-            Assert.AreEqual(table.Name, table.Name.ToLower());
+            Assert.That(table.Name, Is.EqualTo(table.Name.ToLower()));
             table.Create();
 
             // Insert using Mapper.Insert
@@ -70,9 +71,9 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             var mapper = new Mapper(_session, mappingConfig);
             mapper.Insert(privateClassInstance);
             List<lowercaseclassnamepklowercase> instancesQueried = mapper.Fetch<lowercaseclassnamepklowercase>().ToList();
-            Assert.AreEqual(1, instancesQueried.Count);
+            Assert.That(1, Is.EqualTo(instancesQueried.Count));
             lowercaseclassnamepklowercase defaultInstance = new lowercaseclassnamepklowercase();
-            Assert.AreEqual(defaultInstance.somepartitionkey, instancesQueried[0].somepartitionkey);
+            Assert.That(defaultInstance.somepartitionkey, Is.EqualTo(instancesQueried[0].somepartitionkey));
         }
         
         /// <summary>
@@ -84,7 +85,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             // Setup
             var mappingConfig = new MappingConfiguration().Define(new Map<lowercaseclassnamepklowercase>().PartitionKey(c => c.somepartitionkey).CaseSensitive());
             var table = new Table<lowercaseclassnamepklowercase>(_session, mappingConfig);
-            Assert.AreEqual(table.Name, table.Name.ToLower());
+            Assert.That(table.Name, Is.EqualTo(table.Name.ToLower()));
             table.Create();
 
             // Insert using Mapper.Insert
@@ -99,9 +100,9 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             {
                 instancesQueried = mapper.Fetch<lowercaseclassnamepklowercase>().ToList();
             }
-            Assert.AreEqual(1, instancesQueried.Count);
+            Assert.That(1, Is.EqualTo(instancesQueried.Count));
             lowercaseclassnamepklowercase defaultInstance = new lowercaseclassnamepklowercase();
-            Assert.AreEqual(defaultInstance.somepartitionkey, instancesQueried[0].somepartitionkey);
+            Assert.That(defaultInstance.somepartitionkey, Is.EqualTo(instancesQueried[0].somepartitionkey));
         }
 
         /// <summary>
@@ -142,8 +143,8 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
                 {
                     instancesQueried = mapper.Fetch<lowercaseclassnamepklowercase>(cql).ToList();
                 }
-                Assert.AreEqual(1, instancesQueried.Count, "Unexpected failure for consistency level: " + consistencyLevel);
-                Assert.AreEqual(pocoInstance.somepartitionkey, instancesQueried[0].somepartitionkey);
+                Assert.That(1, Is.EqualTo(instancesQueried.Count), "Unexpected failure for consistency level: " + consistencyLevel);
+                Assert.That(pocoInstance.somepartitionkey, Is.EqualTo(instancesQueried[0].somepartitionkey));
             }
         }
 
@@ -239,18 +240,18 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             DateTime futureDateTime = DateTime.Now.AddSeconds(5);
             while (instancesRetrieved.Count < 1 && DateTime.Now < futureDateTime)
                 instancesRetrieved = mapper.Fetch<ClassWithTwoPartitionKeys>("SELECT * from \"" + table.Name + "\"").ToList();
-            Assert.AreEqual(1, instancesRetrieved.Count);
-            Assert.AreEqual(defaultInstance.PartitionKey1, instancesRetrieved[0].PartitionKey1);
-            Assert.AreEqual(defaultInstance.PartitionKey2, instancesRetrieved[0].PartitionKey2);
+            Assert.That(1, Is.EqualTo(instancesRetrieved.Count));
+            Assert.That(defaultInstance.PartitionKey1, Is.EqualTo(instancesRetrieved[0].PartitionKey1));
+            Assert.That(defaultInstance.PartitionKey2, Is.EqualTo(instancesRetrieved[0].PartitionKey2));
             instancesRetrieved.Clear();
 
             futureDateTime = DateTime.Now.AddSeconds(5);
             string cqlSelect = "SELECT * from \"" + table.Name + "\" where \"PartitionKey1\" = '" + instance.PartitionKey1 + "' and \"PartitionKey2\" = '" + instance.PartitionKey2 + "'";
             while (instancesRetrieved.Count < 1 && DateTime.Now < futureDateTime)
                 instancesRetrieved = mapper.Fetch<ClassWithTwoPartitionKeys>(cqlSelect).ToList();
-            Assert.AreEqual(1, instancesRetrieved.Count);
-            Assert.AreEqual(defaultInstance.PartitionKey1, instancesRetrieved[0].PartitionKey1);
-            Assert.AreEqual(defaultInstance.PartitionKey2, instancesRetrieved[0].PartitionKey2);
+            Assert.That(1, Is.EqualTo(instancesRetrieved.Count));
+            Assert.That(defaultInstance.PartitionKey1, Is.EqualTo(instancesRetrieved[0].PartitionKey1));
+            Assert.That(defaultInstance.PartitionKey2, Is.EqualTo(instancesRetrieved[0].PartitionKey2));
 
             var err = Assert.Throws<InvalidQueryException>(() => mapper.Fetch<ClassWithTwoPartitionKeys>("SELECT * from \"" + table.Name + "\" where \"PartitionKey1\" = '" + instance.PartitionKey1 + "'"));
             string expectedErrMsg = "Partition key part(s:)? PartitionKey2 must be restricted (since preceding part is|as other parts are)";
@@ -281,9 +282,9 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             _session.Execute(table.Insert(defaultPocoInstance));
             var mapper = new Mapper(_session, mappingConfig);
             List<lowercaseclassnamepklowercase> instancesQueried = mapper.Fetch<lowercaseclassnamepklowercase>("SELECT * from " + table.Name).ToList();
-            Assert.AreEqual(1, instancesQueried.Count);
+            Assert.That(1, Is.EqualTo(instancesQueried.Count));
             lowercaseclassnamepklowercase defaultInstance = new lowercaseclassnamepklowercase();
-            Assert.AreEqual(defaultInstance.somepartitionkey, instancesQueried[0].somepartitionkey);
+            Assert.That(defaultInstance.somepartitionkey, Is.EqualTo(instancesQueried[0].somepartitionkey));
         }
 
         /// <summary>
@@ -311,7 +312,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
         {
             var mappingConfig = new MappingConfiguration().Define(new Map<PrivateClassWithClassNameCamelCase>().PartitionKey(c => c.SomePartitionKey));
             Table<PrivateClassWithClassNameCamelCase> table = new Table<PrivateClassWithClassNameCamelCase>(_session, mappingConfig);
-            Assert.AreNotEqual(table.Name, table.Name.ToLower());
+            Assert.That(table.Name, Is.Not.EqualTo(table.Name.ToLower()));
             table.Create();
 
             var mapper = new Mapper(_session, new MappingConfiguration());
@@ -319,12 +320,12 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             mapper.Insert(privateClassCamelCase);
 
             List<lowercaseclassnamepklowercase> instancesQueried = mapper.Fetch<lowercaseclassnamepklowercase>("SELECT * from " + table.Name).ToList();
-            Assert.AreEqual(1, instancesQueried.Count);
+            Assert.That(1, Is.EqualTo(instancesQueried.Count));
             lowercaseclassnamepklowercase defaultInstance = new lowercaseclassnamepklowercase();
-            Assert.AreEqual(defaultInstance.somepartitionkey, instancesQueried[0].somepartitionkey);
+            Assert.That(defaultInstance.somepartitionkey, Is.EqualTo(instancesQueried[0].somepartitionkey));
 
             Assert.Throws<InvalidQueryException>(() => TestUtils.TableExists(_session, _uniqueKsName, typeof (PrivateClassWithClassNameCamelCase).Name, true));
-            Assert.IsTrue(TestUtils.TableExists(_session, _uniqueKsName, typeof(PrivateClassWithClassNameCamelCase).Name.ToLower(), true));
+            Assert.That(TestUtils.TableExists(_session, _uniqueKsName, typeof(PrivateClassWithClassNameCamelCase).Name.ToLower(), true), Is.True);
         }
 
         /// <summary>
@@ -336,7 +337,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             // Setup
             var mappingConfig = new MappingConfiguration().Define(new Map<lowercaseclassnamepkcamelcase>().PartitionKey(c => c.SomePartitionKey));
             Table<lowercaseclassnamepkcamelcase> table = new Table<lowercaseclassnamepkcamelcase>(_session, mappingConfig);
-            Assert.AreEqual(table.Name, table.Name.ToLower());
+            Assert.That(table.Name, Is.EqualTo(table.Name.ToLower()));
             table.Create();
             var mapper = new Mapper(_session, new MappingConfiguration());
             lowercaseclassnamepkcamelcase privateClassInstance = new lowercaseclassnamepkcamelcase();
@@ -344,9 +345,9 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             // Validate state of table
             mapper.Insert(privateClassInstance);
             List<lowercaseclassnamepkcamelcase> instancesQueried = mapper.Fetch<lowercaseclassnamepkcamelcase>("SELECT * from " + table.Name).ToList();
-            Assert.AreEqual(1, instancesQueried.Count);
+            Assert.That(1, Is.EqualTo(instancesQueried.Count));
             lowercaseclassnamepkcamelcase defaultPocoInstance = new lowercaseclassnamepkcamelcase();
-            Assert.AreEqual(defaultPocoInstance.SomePartitionKey, instancesQueried[0].SomePartitionKey);
+            Assert.That(defaultPocoInstance.SomePartitionKey, Is.EqualTo(instancesQueried[0].SomePartitionKey));
 
             // Attempt to select from Camel Case partition key
             string cqlCamelCasePartitionKey = "SELECT * from " + typeof (lowercaseclassnamepkcamelcase).Name + " where \"SomePartitionKey\" = 'doesntmatter'";
@@ -361,8 +362,8 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             // Validate that select on lower case key does not fail
             string cqlLowerCasePartitionKey = "SELECT * from " + typeof(lowercaseclassnamepkcamelcase).Name + " where \"somepartitionkey\" = '" + defaultPocoInstance.SomePartitionKey + "'";
             List<Row> rows = _session.Execute(cqlLowerCasePartitionKey).GetRows().ToList();
-            Assert.AreEqual(1, rows.Count);
-            Assert.AreEqual(defaultPocoInstance.SomePartitionKey, rows[0].GetValue<string>("somepartitionkey"));
+            Assert.That(1, Is.EqualTo(rows.Count));
+            Assert.That(defaultPocoInstance.SomePartitionKey, Is.EqualTo(rows[0].GetValue<string>("somepartitionkey")));
         }
 
         /// <summary>
@@ -398,14 +399,14 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             var song = new Song {Id = Guid.NewGuid(), Artist = "Led Zeppelin", Title = "Good Times Bad Times"};
             //It is the first song there, it should apply it
             var appliedInfo = mapper.InsertIfNotExists(song);
-            Assert.True(appliedInfo.Applied);
-            Assert.Null(appliedInfo.Existing);
+            Assert.That(appliedInfo.Applied, Is.True);
+            Assert.That(appliedInfo.Existing, Is.Null);
             //Following times, it should not apply the mutation as the partition key is the same
             var nextSong = new Song { Id = song.Id, Title = "Communication Breakdown" };
             appliedInfo = mapper.InsertIfNotExists(nextSong);
-            Assert.False(appliedInfo.Applied);
-            Assert.NotNull(appliedInfo.Existing);
-            Assert.AreEqual(song.Title, appliedInfo.Existing.Title);
+            Assert.That(appliedInfo.Applied, Is.False);
+            Assert.That(appliedInfo.Existing, Is.Not.Null);
+            Assert.That(song.Title, Is.EqualTo(appliedInfo.Existing.Title));
         }
 
         [Test]
@@ -425,20 +426,20 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             };
             mapper.Insert(song);
             var storedSong = mapper.First<Song>("WHERE id = ?", song.Id);
-            Assert.AreEqual(song.Artist, storedSong.Artist);
+            Assert.That(song.Artist, Is.EqualTo(storedSong.Artist));
             //do NOT insert nulls
             mapper.Insert(new Song { Id = song.Id, Artist = null, Title = "Substitute 2", ReleaseDate = DateTimeOffset.UtcNow}, false);
             //it should have the new title but the artist should still be the same (not null)
             storedSong = mapper.First<Song>("WHERE id = ?", song.Id);
-            Assert.NotNull(storedSong.Artist);
-            Assert.AreEqual(song.Artist, storedSong.Artist);
-            Assert.AreEqual("Substitute 2", storedSong.Title);
+            Assert.That(storedSong.Artist, Is.Not.Null);
+            Assert.That(song.Artist, Is.EqualTo(storedSong.Artist));
+            Assert.That("Substitute 2", Is.EqualTo(storedSong.Title));
             //Now insert nulls
             mapper.Insert(new Song { Id = song.Id, Artist = null, Title = "Substitute 3", ReleaseDate = DateTimeOffset.UtcNow }, true);
             //it should have the new title and the artist should be null
             storedSong = mapper.First<Song>("WHERE id = ?", song.Id);
-            Assert.Null(storedSong.Artist);
-            Assert.AreEqual("Substitute 3", storedSong.Title);
+            Assert.That(storedSong.Artist, Is.Null);
+            Assert.That("Substitute 3", Is.EqualTo(storedSong.Title));
         }
 
         [Test]
@@ -458,13 +459,13 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             };
             mapper.Insert(song, true, 5);
             var notExpiredSong = mapper.First<Song>("WHERE id = ?", song.Id);
-            Assert.NotNull(notExpiredSong);
-            Assert.AreEqual(song.Id, notExpiredSong.Id);
-            Assert.AreEqual(song.Artist, notExpiredSong.Artist);
-            Assert.AreEqual(song.Title, notExpiredSong.Title);
+            Assert.That(notExpiredSong, Is.Not.Null);
+            Assert.That(song.Id, Is.EqualTo(notExpiredSong.Id));
+            Assert.That(song.Artist, Is.EqualTo(notExpiredSong.Artist));
+            Assert.That(song.Title, Is.EqualTo(notExpiredSong.Title));
             Thread.Sleep(6000);
             var expiredSong = mapper.FirstOrDefault<Song>("WHERE id = ?", song.Id);
-            Assert.Null(expiredSong);
+            Assert.That(expiredSong, Is.Null);
         }
 
 
@@ -503,12 +504,12 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             //query for timestamp in a column of the record
             var cqlLowerCasePartitionKey = "SELECT WRITETIME (Artist) AS timestamp FROM " + table.Name + " WHERE Id = " + song.Id + ";";
             var rows = _session.Execute(cqlLowerCasePartitionKey).GetRows().ToList();
-            Assert.AreEqual(1, rows.Count);
+            Assert.That(1, Is.EqualTo(rows.Count));
 
             var creationTimestamp = rows[0].GetValue<long>("timestamp");
-            Assert.NotNull(creationTimestamp);
+            Assert.That(creationTimestamp, Is.Not.Null);
             //Timestamp retrieved is in macroseconds. Converting it to milliseconds
-            Assert.AreEqual(TypeSerializer.SinceUnixEpoch(timestamp).Ticks / 10, rows[0].GetValue<object>("timestamp"));
+            Assert.That(TypeSerializer.SinceUnixEpoch(timestamp).Ticks / 10, Is.EqualTo(rows[0].GetValue<object>("timestamp")));
         }
 
 
@@ -534,10 +535,10 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             };
             mapper.Insert(user, true, 5);
             var retrievedUser = mapper.First<PlainUser>("WHERE id = ?", user.UserId);
-            Assert.NotNull(retrievedUser);
-            Assert.AreEqual(user.UserId, retrievedUser.UserId);
-            Assert.AreEqual(user.Name, retrievedUser.Name);
-            Assert.AreEqual(user.FavoriteColor, retrievedUser.FavoriteColor);
+            Assert.That(retrievedUser, Is.Not.Null);
+            Assert.That(user.UserId, Is.EqualTo(retrievedUser.UserId));
+            Assert.That(user.Name, Is.EqualTo(retrievedUser.Name));
+            Assert.That(user.FavoriteColor, Is.EqualTo(retrievedUser.FavoriteColor));
         }
 
         [Test]
@@ -596,10 +597,10 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
                     batch.WithOptions(o => o.SetTimestamp(timestamp));
                 }
                 var ex = Assert.Throws<UnavailableException>(() => mapper.Execute(batch));
-                Assert.AreEqual(ConsistencyLevel.All, ex.Consistency,
+                Assert.That(ConsistencyLevel.All, Is.EqualTo(ex.Consistency),
                             "Consistency level of batch exception should be the same as specified at CqlQueryOptions: ALL");
-                Assert.AreEqual(3, ex.RequiredReplicas);
-                Assert.AreEqual(1, ex.AliveReplicas);
+                Assert.That(3, Is.EqualTo(ex.RequiredReplicas));
+                Assert.That(1, Is.EqualTo(ex.AliveReplicas));
             }
         }
 
@@ -635,16 +636,16 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
 
             var statement = new SimpleStatement("SELECT * FROM tbl_with_enum_collections WHERE id = ?", 1000L);
             var row = Session.Execute(statement).First();
-            Assert.AreEqual(1000L, row.GetValue<long>("id"));
-            Assert.AreEqual(expectedCollection, row.GetValue<IEnumerable<int>>("list1"));
-            Assert.AreEqual(expectedCollection, row.GetValue<IEnumerable<int>>("list2"));
-            Assert.AreEqual(expectedCollection, row.GetValue<IEnumerable<int>>("array1"));
-            Assert.AreEqual(expectedCollection, row.GetValue<IEnumerable<int>>("set1"));
-            Assert.AreEqual(expectedCollection, row.GetValue<IEnumerable<int>>("set2"));
-            Assert.AreEqual(expectedCollection, row.GetValue<IEnumerable<int>>("set3"));
-            Assert.AreEqual(expectedMap, row.GetValue<IDictionary<int, Guid>>("map1"));
-            Assert.AreEqual(expectedMap, row.GetValue<IDictionary<int, Guid>>("map2"));
-            Assert.AreEqual(expectedMap, row.GetValue<IDictionary<int, Guid>>("map3"));
+            Assert.That(1000L, Is.EqualTo(row.GetValue<long>("id")));
+            Assert.That(expectedCollection, Is.EqualTo(row.GetValue<IEnumerable<int>>("list1")));
+            Assert.That(expectedCollection, Is.EqualTo(row.GetValue<IEnumerable<int>>("list2")));
+            Assert.That(expectedCollection, Is.EqualTo(row.GetValue<IEnumerable<int>>("array1")));
+            Assert.That(expectedCollection, Is.EqualTo(row.GetValue<IEnumerable<int>>("set1")));
+            Assert.That(expectedCollection, Is.EqualTo(row.GetValue<IEnumerable<int>>("set2")));
+            Assert.That(expectedCollection, Is.EqualTo(row.GetValue<IEnumerable<int>>("set3")));
+            Assert.That(expectedMap, Is.EqualTo(row.GetValue<IDictionary<int, Guid>>("map1")));
+            Assert.That(expectedMap, Is.EqualTo(row.GetValue<IDictionary<int, Guid>>("map2")));
+            Assert.That(expectedMap, Is.EqualTo(row.GetValue<IDictionary<int, Guid>>("map3")));
             
             // BONUS: Attempt insert with null values
             Assert.DoesNotThrow(() => mapper.Insert(new PocoWithEnumCollections { Id = 1001L }));
@@ -660,10 +661,10 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             table.Insert(new ReservedKeywordPoco { Batch = "123", Id = "1", NotReserved = "n", Select = "select" }).Execute();
 
             var result = table.First(poco => poco.Id == "1").Execute();
-            Assert.AreEqual("1", result.Id);
-            Assert.AreEqual("123", result.Batch);
-            Assert.AreEqual("n", result.NotReserved);
-            Assert.AreEqual("select", result.Select);
+            Assert.That("1", Is.EqualTo(result.Id));
+            Assert.That("123", Is.EqualTo(result.Batch));
+            Assert.That("n", Is.EqualTo(result.NotReserved));
+            Assert.That("select", Is.EqualTo(result.Select));
         }
 
         /////////////////////////////////////////

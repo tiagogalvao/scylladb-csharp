@@ -29,6 +29,7 @@ using Cassandra.Tests.Mapping.Pocos;
 using Moq;
 using NUnit.Framework;
 using Cassandra.Tasks;
+using NUnit.Framework.Legacy;
 
 #pragma warning disable 618
 
@@ -42,76 +43,76 @@ namespace Cassandra.Tests.Mapping.Linq
         {
             var table = SessionExtensions.GetTable<LinqDecoratedEntity>(GetSession((_,__) => {}));
 
-            Assert.AreEqual(
+            Assert.That(
                 (from ent in table select ent).ToString(),
-                @"SELECT ""x_ck1"", ""x_ck2"", ""x_f1"", ""x_pk"" FROM ""x_t"" ALLOW FILTERING");
+                Is.EqualTo(@"SELECT ""x_ck1"", ""x_ck2"", ""x_f1"", ""x_pk"" FROM ""x_t"" ALLOW FILTERING"));
 
-            Assert.AreEqual(
+            Assert.That(
                 (from ent in table select ent.f1).ToString(),
-                @"SELECT ""x_f1"" FROM ""x_t"" ALLOW FILTERING");
+                Is.EqualTo(@"SELECT ""x_f1"" FROM ""x_t"" ALLOW FILTERING"));
 
-            Assert.AreEqual(
+            Assert.That(
                 (from ent in table where ent.pk == "koko" select ent.f1).ToString(),
-                @"SELECT ""x_f1"" FROM ""x_t"" WHERE ""x_pk"" = ? ALLOW FILTERING");
+                Is.EqualTo(@"SELECT ""x_f1"" FROM ""x_t"" WHERE ""x_pk"" = ? ALLOW FILTERING"));
 
-            Assert.AreEqual(
+            Assert.That(
                 (from ent in table where ent.pk == "koko" select new { ent.f1, ent.ck2 }).ToString(),
-                @"SELECT ""x_f1"", ""x_ck2"" FROM ""x_t"" WHERE ""x_pk"" = ? ALLOW FILTERING");
+                Is.EqualTo(@"SELECT ""x_f1"", ""x_ck2"" FROM ""x_t"" WHERE ""x_pk"" = ? ALLOW FILTERING"));
 
-            Assert.AreEqual(
+            Assert.That(
                 (from ent in table where ent.pk == "koko" && ent.ck2 == 10 select new { ent.f1, ent.ck2 }).ToString(),
-                @"SELECT ""x_f1"", ""x_ck2"" FROM ""x_t"" WHERE ""x_pk"" = ? AND ""x_ck2"" = ? ALLOW FILTERING");
+                Is.EqualTo(@"SELECT ""x_f1"", ""x_ck2"" FROM ""x_t"" WHERE ""x_pk"" = ? AND ""x_ck2"" = ? ALLOW FILTERING"));
 
-            Assert.AreEqual(
+            Assert.That(
                 (from ent in table where ent.pk == "koko" && ent.ck2 == 10 select new { ent.f1, ent.ck2 }).Take(10).ToString(),
-                @"SELECT ""x_f1"", ""x_ck2"" FROM ""x_t"" WHERE ""x_pk"" = ? AND ""x_ck2"" = ? LIMIT ? ALLOW FILTERING");
+                Is.EqualTo(@"SELECT ""x_f1"", ""x_ck2"" FROM ""x_t"" WHERE ""x_pk"" = ? AND ""x_ck2"" = ? LIMIT ? ALLOW FILTERING"));
 
-            Assert.AreEqual(
+            Assert.That(
                 (from ent in table where ent.pk == "koko" && ent.ck2 == 10 select new { ent.f1, ent.ck2 }).OrderBy(c => c.ck2).ToString(),
-                @"SELECT ""x_f1"", ""x_ck2"" FROM ""x_t"" WHERE ""x_pk"" = ? AND ""x_ck2"" = ? ORDER BY ""x_ck2"" ALLOW FILTERING");
+                Is.EqualTo(@"SELECT ""x_f1"", ""x_ck2"" FROM ""x_t"" WHERE ""x_pk"" = ? AND ""x_ck2"" = ? ORDER BY ""x_ck2"" ALLOW FILTERING"));
 
-            Assert.AreEqual(
+            Assert.That(
                 (from ent in table where ent.pk == "koko" && ent.ck2 == 10 select new { ent.f1, ent.ck2, ent.ck1 }).OrderBy(c => c.ck2).OrderByDescending(c => c.ck1).ToString(),
-                @"SELECT ""x_f1"", ""x_ck2"", ""x_ck1"" FROM ""x_t"" WHERE ""x_pk"" = ? AND ""x_ck2"" = ? ORDER BY ""x_ck2"", ""x_ck1"" DESC ALLOW FILTERING");
+                Is.EqualTo(@"SELECT ""x_f1"", ""x_ck2"", ""x_ck1"" FROM ""x_t"" WHERE ""x_pk"" = ? AND ""x_ck2"" = ? ORDER BY ""x_ck2"", ""x_ck1"" DESC ALLOW FILTERING"));
 
-            Assert.AreEqual(
+            Assert.That(
                 (from ent in table where ent.pk == "koko" && ent.ck2 == 10 select new { ent.f1, ent.ck2, ent.ck1 }).OrderBy(c => c.ck2).OrderByDescending(c => c.ck1).ToString(),
-                @"SELECT ""x_f1"", ""x_ck2"", ""x_ck1"" FROM ""x_t"" WHERE ""x_pk"" = ? AND ""x_ck2"" = ? ORDER BY ""x_ck2"", ""x_ck1"" DESC ALLOW FILTERING");
+                Is.EqualTo(@"SELECT ""x_f1"", ""x_ck2"", ""x_ck1"" FROM ""x_t"" WHERE ""x_pk"" = ? AND ""x_ck2"" = ? ORDER BY ""x_ck2"", ""x_ck1"" DESC ALLOW FILTERING"));
 
-            Assert.AreEqual(
+            Assert.That(
                 (from ent in table where CqlToken.Create(ent.pk, ent.ck2, ent.ck2) > CqlToken.Create("x", 2) select new { ent.f1, ent.ck2, ent.ck1 }).OrderBy(c => c.ck2).OrderByDescending(c => c.ck1).ToString(),
-                @"SELECT ""x_f1"", ""x_ck2"", ""x_ck1"" FROM ""x_t"" WHERE token(""x_pk"", ""x_ck2"", ""x_ck2"") > token(?, ?) ORDER BY ""x_ck2"", ""x_ck1"" DESC ALLOW FILTERING");
+                Is.EqualTo(@"SELECT ""x_f1"", ""x_ck2"", ""x_ck1"" FROM ""x_t"" WHERE token(""x_pk"", ""x_ck2"", ""x_ck2"") > token(?, ?) ORDER BY ""x_ck2"", ""x_ck1"" DESC ALLOW FILTERING"));
 
-            Assert.AreEqual(
+            Assert.That(
                 (from ent in table select ent).FirstOrDefault().ToString(),
-                @"SELECT ""x_ck1"", ""x_ck2"", ""x_f1"", ""x_pk"" FROM ""x_t"" LIMIT ? ALLOW FILTERING");
+                Is.EqualTo(@"SELECT ""x_ck1"", ""x_ck2"", ""x_f1"", ""x_pk"" FROM ""x_t"" LIMIT ? ALLOW FILTERING"));
 
-            Assert.AreEqual(
+            Assert.That(
                 (from ent in table select ent).First().ToString(),
-                @"SELECT ""x_ck1"", ""x_ck2"", ""x_f1"", ""x_pk"" FROM ""x_t"" LIMIT ? ALLOW FILTERING");
+                Is.EqualTo(@"SELECT ""x_ck1"", ""x_ck2"", ""x_f1"", ""x_pk"" FROM ""x_t"" LIMIT ? ALLOW FILTERING"));
 
-            Assert.AreEqual(
+            Assert.That(
                 (from ent in table select ent).Where(e => e.pk.CompareTo("a") > 0).First().ToString(),
-                @"SELECT ""x_ck1"", ""x_ck2"", ""x_f1"", ""x_pk"" FROM ""x_t"" WHERE ""x_pk"" > ? LIMIT ? ALLOW FILTERING");
+                Is.EqualTo(@"SELECT ""x_ck1"", ""x_ck2"", ""x_f1"", ""x_pk"" FROM ""x_t"" WHERE ""x_pk"" > ? LIMIT ? ALLOW FILTERING"));
 
             Assert.Throws<CqlLinqNotSupportedException>(() =>
                 (from ent in table where ent.pk == "x" || ent.ck2 == 1 select ent).ToString());
 
-            Assert.AreEqual(
+            Assert.That(
                 (from ent in table where new[] {10, 30, 40}.Contains(ent.ck2) select ent).ToString(),
-                @"SELECT ""x_ck1"", ""x_ck2"", ""x_f1"", ""x_pk"" FROM ""x_t"" WHERE ""x_ck2"" IN ? ALLOW FILTERING");
+                Is.EqualTo(@"SELECT ""x_ck1"", ""x_ck2"", ""x_f1"", ""x_pk"" FROM ""x_t"" WHERE ""x_ck2"" IN ? ALLOW FILTERING"));
 
-            Assert.AreEqual(
+            Assert.That(
                 @"SELECT ""x_ck1"", ""x_ck2"", ""x_f1"", ""x_pk"" FROM ""x_t"" WHERE ""x_ck2"" IN ? ALLOW FILTERING",
-                (from ent in table where new int[] {}.Contains(ent.ck2) select ent).ToString());
+                Is.EqualTo((from ent in table where new int[] {}.Contains(ent.ck2) select ent).ToString()));
 
-            Assert.AreEqual(
+            Assert.That(
                (from ent in table where new int[] { 10, 30, 40 }.Contains(ent.ck2) select ent).Delete().ToString(),
-               @"DELETE FROM ""x_t"" WHERE ""x_ck2"" IN ?");
+               Is.EqualTo(@"DELETE FROM ""x_t"" WHERE ""x_ck2"" IN ?"));
 
-            Assert.AreEqual(
+            Assert.That(
                 @"INSERT INTO ""x_t"" (""x_ck1"", ""x_ck2"", ""x_f1"", ""x_pk"") VALUES (?, ?, ?, ?)",
-                (table.Insert(new LinqDecoratedEntity() { ck1 = 1, ck2 = 2, f1 = 3, pk = "x" })).ToString());
+                Is.EqualTo((table.Insert(new LinqDecoratedEntity() { ck1 = 1, ck2 = 2, f1 = 3, pk = "x" })).ToString()));
 
             Assert.Throws<CqlLinqNotSupportedException>(() => 
                 (from ent in table where new int[] {10, 30, 40}.Contains(ent.ck2) select new {x = ent.pk, e = ent}).ToString());
@@ -127,7 +128,7 @@ namespace Cassandra.Tests.Mapping.Linq
             var queryCql = visitor.GetSelect(query.Expression, out object[] parameters);
 
             Assert.That(parameters, Is.EquivalentTo(new[] { "a", "foo", "foo" + Encoding.UTF8.GetString(new byte[] { 0xF4, 0x8F, 0xBF, 0xBF }), "bar" }));
-            Assert.AreEqual(@"SELECT ""x_ck1"", ""x_f1"", ""x_pk"" FROM ""x_ts"" WHERE ""x_pk"" = ? AND ""x_ck1"" >= ? AND ""x_ck1"" < ? AND ""x_pk"" = ?", queryCql);
+            Assert.That(@"SELECT ""x_ck1"", ""x_f1"", ""x_pk"" FROM ""x_ts"" WHERE ""x_pk"" = ? AND ""x_ck1"" >= ? AND ""x_ck1"" < ? AND ""x_pk"" = ?", Is.EqualTo(queryCql));
         }
 
         private class TestObject
@@ -156,7 +157,7 @@ namespace Cassandra.Tests.Mapping.Linq
             var queryCql = visitor.GetSelect(query.Expression, out object[] parameters);
 
             Assert.That(parameters, Is.EquivalentTo(new[] { "a", "b" }));
-            Assert.AreEqual(@"SELECT ""x_ck1"", ""x_f1"", ""x_pk"" FROM ""x_ts"" WHERE ""x_pk"" = ? AND ""x_ck1"" = ?", queryCql);
+            Assert.That(@"SELECT ""x_ck1"", ""x_f1"", ""x_pk"" FROM ""x_ts"" WHERE ""x_pk"" = ? AND ""x_ck1"" = ?", Is.EqualTo(queryCql));
         }
 
         [Test]
@@ -177,7 +178,7 @@ namespace Cassandra.Tests.Mapping.Linq
             var queryCql = visitor.GetSelect(query.Expression, out object[] parameters);
 
             Assert.That(parameters, Is.EquivalentTo(new[] { "a", "b" }));
-            Assert.AreEqual(@"SELECT ""x_ck1"", ""x_f1"", ""x_pk"" FROM ""x_ts"" WHERE ""x_pk"" = ? AND ""x_ck1"" = ?", queryCql);
+            Assert.That(@"SELECT ""x_ck1"", ""x_f1"", ""x_pk"" FROM ""x_ts"" WHERE ""x_pk"" = ? AND ""x_ck1"" = ?", Is.EqualTo(queryCql));
         }
 
         [Test]
@@ -201,7 +202,7 @@ namespace Cassandra.Tests.Mapping.Linq
             var queryCql = visitor.GetSelect(query.Expression, out object[] parameters);
 
             Assert.That(parameters, Is.EquivalentTo(new[] { "a", "b" }));
-            Assert.AreEqual(@"SELECT ""x_ck1"", ""x_f1"", ""x_pk"" FROM ""x_ts"" WHERE ""x_pk"" = ? AND ""x_ck1"" = ?", queryCql);
+            Assert.That(@"SELECT ""x_ck1"", ""x_f1"", ""x_pk"" FROM ""x_ts"" WHERE ""x_pk"" = ? AND ""x_ck1"" = ?", Is.EqualTo(queryCql));
         }
 
 
@@ -213,12 +214,12 @@ namespace Cassandra.Tests.Mapping.Linq
             batch.Append(table.Insert(new LinqDecoratedEntity() { ck1 = 1, ck2 = 2, f1 = 3, pk = "x" }));
             batch.Append(table.Where(ent => new int[] { 10, 30, 40 }.Contains(ent.ck2)).Select(ent => new { f1 = 1223 }).Update());
             batch.Append(table.Where(ent => new int[] { 10, 30, 40 }.Contains(ent.ck2)).Delete());
-            Assert.AreEqual(batch.ToString().Replace("\r", ""),
-                @"BEGIN UNLOGGED BATCH
+            Assert.That(batch.ToString().Replace("\r", ""),
+                Is.EqualTo(@"BEGIN UNLOGGED BATCH
 INSERT INTO ""x_t"" (""x_ck1"", ""x_ck2"", ""x_f1"", ""x_pk"") VALUES (?, ?, ?, ?);
 UPDATE ""x_t"" SET ""x_f1"" = ? WHERE ""x_ck2"" IN ?;
 DELETE FROM ""x_t"" WHERE ""x_ck2"" IN ?;
-APPLY BATCH".Replace("\r", ""));
+APPLY BATCH".Replace("\r", "")));
         }
 
         [Test]
@@ -229,12 +230,12 @@ APPLY BATCH".Replace("\r", ""));
             batch.Append(table.Insert(new LinqDecoratedEntity() { ck1 = 1, ck2 = 2, f1 = 3, pk = "x" }));
             batch.Append(table.Where(ent => new int[] { 10, 30, 40 }.Contains(ent.ck2)).Select(ent => new { f1 = 1223 }).Update());
             batch.Append(table.Where(ent => new int[] { 10, 30, 40 }.Contains(ent.ck2)).Delete());
-            Assert.AreEqual(batch.ToString().Replace("\r", ""),
-                @"BEGIN BATCH
+            Assert.That(batch.ToString().Replace("\r", ""),
+                Is.EqualTo(@"BEGIN BATCH
 INSERT INTO ""x_t"" (""x_ck1"", ""x_ck2"", ""x_f1"", ""x_pk"") VALUES (?, ?, ?, ?);
 UPDATE ""x_t"" SET ""x_f1"" = ? WHERE ""x_ck2"" IN ?;
 DELETE FROM ""x_t"" WHERE ""x_ck2"" IN ?;
-APPLY BATCH".Replace("\r", ""));
+APPLY BATCH".Replace("\r", "")));
         }
 
         [Test]
@@ -245,11 +246,11 @@ APPLY BATCH".Replace("\r", ""));
             var batch = SessionExtensions.CreateBatch(GetSession((_,__) => {}), BatchType.Counter);
             batch.Append(table.Where(ent => ent.RowKey1 == 1 && ent.RowKey2 == 2).Select(_ => new CounterTestTable1 { Value = 1 }).Update());
             batch.Append(table.Where(ent => ent.RowKey1 == 3 && ent.RowKey2 == 4).Select(_ => new CounterTestTable1 { Value = 1 }).Update());
-            Assert.AreEqual(batch.ToString().Replace("\r", ""),
-                @"BEGIN COUNTER BATCH
+            Assert.That(batch.ToString().Replace("\r", ""),
+                Is.EqualTo(@"BEGIN COUNTER BATCH
 UPDATE ""CounterTestTable1"" SET ""Value"" = ""Value"" + ? WHERE ""RowKey1"" = ? AND ""RowKey2"" = ?;
 UPDATE ""CounterTestTable1"" SET ""Value"" = ""Value"" + ? WHERE ""RowKey1"" = ? AND ""RowKey2"" = ?;
-APPLY BATCH".Replace("\r", ""));
+APPLY BATCH".Replace("\r", "")));
         }
 
         [Test]
@@ -265,7 +266,7 @@ APPLY BATCH".Replace("\r", ""));
                 .Update()
                 .ToString();
             expectedQuery = "UPDATE \"AllTypesEntity\" SET \"IntValue\" = ? WHERE \"StringValue\" = ?";
-            Assert.AreEqual(expectedQuery, query);
+            Assert.That(expectedQuery, Is.EqualTo(query));
 
             Assert.Throws<CqlArgumentException>(() =>
             {
@@ -283,18 +284,18 @@ APPLY BATCH".Replace("\r", ""));
         {
             var table = SessionExtensions.GetTable<LinqDecoratedEntity>(GetSession((_,__) => {}));
 
-            Assert.AreEqual(
+            Assert.That(
                (table.Insert(new LinqDecoratedEntity { ck1 = 1, ck2 = 2, f1 = 3, pk = "x" })).IfNotExists().ToString(),
-               @"INSERT INTO ""x_t"" (""x_ck1"", ""x_ck2"", ""x_f1"", ""x_pk"") VALUES (?, ?, ?, ?) IF NOT EXISTS");
+               Is.EqualTo(@"INSERT INTO ""x_t"" (""x_ck1"", ""x_ck2"", ""x_f1"", ""x_pk"") VALUES (?, ?, ?, ?) IF NOT EXISTS"));
 
-            Assert.AreEqual((from ent in table where new int[] { 10, 30, 40 }.Contains(ent.ck2) select new { f1 = 1223 }).UpdateIf((a) => a.f1 == 123).ToString(),
-                    @"UPDATE ""x_t"" SET ""x_f1"" = ? WHERE ""x_ck2"" IN ? IF ""x_f1"" = ?");
+            Assert.That((from ent in table where new int[] { 10, 30, 40 }.Contains(ent.ck2) select new { f1 = 1223 }).UpdateIf((a) => a.f1 == 123).ToString(),
+                Is.EqualTo(@"UPDATE ""x_t"" SET ""x_f1"" = ? WHERE ""x_ck2"" IN ? IF ""x_f1"" = ?"));
 
-            Assert.AreEqual((from ent in table where new int[] { 10, 30, 40 }.Contains(ent.ck2) select ent).DeleteIf((a) => a.f1 == 123).ToString(),
-                @"DELETE FROM ""x_t"" WHERE ""x_ck2"" IN ? IF ""x_f1"" = ?");
+            Assert.That((from ent in table where new int[] { 10, 30, 40 }.Contains(ent.ck2) select ent).DeleteIf((a) => a.f1 == 123).ToString(),
+                Is.EqualTo(@"DELETE FROM ""x_t"" WHERE ""x_ck2"" IN ? IF ""x_f1"" = ?"));
 
-            Assert.AreEqual((from ent in table where new int[] { 10, 30, 40 }.Contains(ent.ck2) select ent).Delete().IfExists().ToString(),
-                @"DELETE FROM ""x_t"" WHERE ""x_ck2"" IN ? IF EXISTS");
+            Assert.That((from ent in table where new int[] { 10, 30, 40 }.Contains(ent.ck2) select ent).Delete().IfExists().ToString(),
+                Is.EqualTo(@"DELETE FROM ""x_t"" WHERE ""x_ck2"" IN ? IF EXISTS"));
         }
 
         [Test]
@@ -302,25 +303,25 @@ APPLY BATCH".Replace("\r", ""));
         {
             var table = SessionExtensions.GetTable<LinqDecoratedEntity>(GetSession((_,__) => {}));
 
-            Assert.AreEqual(
+            Assert.That(
                 @"INSERT INTO ""x_t"" (""x_ck1"", ""x_ck2"", ""x_f1"", ""x_pk"") VALUES (?, ?, ?, ?)",
-                (table.Insert(new LinqDecoratedEntity() { ck1 = null, ck2 = 2, f1 = 3, pk = "x" })).ToString());
+                Is.EqualTo((table.Insert(new LinqDecoratedEntity() { ck1 = null, ck2 = 2, f1 = 3, pk = "x" })).ToString()));
 
-            Assert.AreEqual(
+            Assert.That(
                 @"UPDATE ""x_t"" SET ""x_f1"" = ? WHERE ""x_ck1"" IN ?",
-                (from ent in table where new int?[] { 10, 30, 40 }.Contains(ent.ck1) select new { f1 = 1223 }).Update().ToString());
+                Is.EqualTo((from ent in table where new int?[] { 10, 30, 40 }.Contains(ent.ck1) select new { f1 = 1223 }).Update().ToString()));
 
-            Assert.AreEqual(
+            Assert.That(
                 @"UPDATE ""x_t"" SET ""x_f1"" = ?, ""x_ck1"" = ? WHERE ""x_ck1"" IN ?",
-                (from ent in table where new int?[] { 10, 30, 40 }.Contains(ent.ck1) select new LinqDecoratedEntity() { f1 = 1223, ck1 = null }).Update().ToString());
+                Is.EqualTo((from ent in table where new int?[] { 10, 30, 40 }.Contains(ent.ck1) select new LinqDecoratedEntity() { f1 = 1223, ck1 = null }).Update().ToString()));
 
-            Assert.AreEqual(
+            Assert.That(
                 @"UPDATE ""x_t"" SET ""x_f1"" = ?, ""x_ck1"" = ? WHERE ""x_ck1"" = ?",
-                (from ent in table where ent.ck1 == 1 select new LinqDecoratedEntity() { f1 = 1223, ck1 = null }).Update().ToString());
+                Is.EqualTo((from ent in table where ent.ck1 == 1 select new LinqDecoratedEntity() { f1 = 1223, ck1 = null }).Update().ToString()));
 
-            Assert.AreEqual(
+            Assert.That(
                 @"UPDATE ""x_t"" SET ""x_f1"" = ?, ""x_ck1"" = ? WHERE ""x_ck1"" IN ? IF ""x_f1"" = ?",
-                (from ent in table where new int?[] { 10, 30, 40 }.Contains(ent.ck1) select new { f1 = 1223, ck1 = (int?)null }).UpdateIf((a) => a.f1 == 123).ToString());
+                Is.EqualTo((from ent in table where new int?[] { 10, 30, 40 }.Contains(ent.ck1) select new { f1 = 1223, ck1 = (int?)null }).UpdateIf((a) => a.f1 == 123).ToString()));
         }
 
         /// <summary>
@@ -377,13 +378,13 @@ APPLY BATCH".Replace("\r", ""));
             }
             sessionMock.Verify();
 
-            Assert.AreEqual(expectedCqlQueries.Count, actualCqlQueries.Count);
+            Assert.That(expectedCqlQueries.Count, Is.EqualTo(actualCqlQueries.Count));
             //Check that all expected queries and actual queries are equal
             for (var i = 0; i < expectedCqlQueries.Count; i++)
             {
-                Assert.AreEqual(
+                Assert.That(
                     expectedCqlQueries[i],
-                    actualCqlQueries[i],
+                    Is.EqualTo(actualCqlQueries[i]),
                     "Expected Cql query and generated CQL query by Linq do not match.");
             }
         }
@@ -472,9 +473,9 @@ APPLY BATCH".Replace("\r", ""));
             table2.CreateIfNotExists();
 
             sessionMock.Verify();
-            Assert.Greater(actualCqlQueries.Count, 0);
-            Assert.AreEqual("CREATE TABLE \"CounterTestTable1\" (\"RowKey1\" int, \"RowKey2\" int, \"Value\" counter, PRIMARY KEY (\"RowKey1\", \"RowKey2\"))", actualCqlQueries[0]);
-            Assert.AreEqual("CREATE TABLE \"CounterTestTable2\" (\"CKey1\" int, \"RowKey1\" int, \"RowKey2\" int, \"Value\" counter, PRIMARY KEY ((\"RowKey1\", \"RowKey2\"), \"CKey1\"))", actualCqlQueries[1]);
+            Assert.That(actualCqlQueries.Count, Is.GreaterThan(0));
+            Assert.That("CREATE TABLE \"CounterTestTable1\" (\"RowKey1\" int, \"RowKey2\" int, \"Value\" counter, PRIMARY KEY (\"RowKey1\", \"RowKey2\"))", Is.EqualTo(actualCqlQueries[0]));
+            Assert.That("CREATE TABLE \"CounterTestTable2\" (\"CKey1\" int, \"RowKey1\" int, \"RowKey2\" int, \"Value\" counter, PRIMARY KEY ((\"RowKey1\", \"RowKey2\"), \"CKey1\"))", Is.EqualTo(actualCqlQueries[1]));
         }
 
         [Test]
@@ -482,9 +483,9 @@ APPLY BATCH".Replace("\r", ""));
         {
             var table = SessionExtensions.GetTable<InheritedEntity>(GetSession((_,__) => {}));
             var query1 = table.Where(e => e.Id == 10);
-            Assert.AreEqual("SELECT \"Description\", \"Id\", \"Name\" FROM \"InheritedEntity\" WHERE \"Id\" = ?", query1.ToString());
+            Assert.That("SELECT \"Description\", \"Id\", \"Name\" FROM \"InheritedEntity\" WHERE \"Id\" = ?", Is.EqualTo(query1.ToString()));
             var query2 = (from e in table where e.Id == 1 && e.Name == "MyName" select new { e.Id, e.Name, e.Description });
-            Assert.AreEqual("SELECT \"Id\", \"Name\", \"Description\" FROM \"InheritedEntity\" WHERE \"Id\" = ? AND \"Name\" = ?", query2.ToString());
+            Assert.That("SELECT \"Id\", \"Name\", \"Description\" FROM \"InheritedEntity\" WHERE \"Id\" = ? AND \"Name\" = ?", Is.EqualTo(query2.ToString()));
             var sessionMock = new Mock<ISession>(MockBehavior.Strict);
             var config = new Configuration();
             var metadata = new Metadata(config);
@@ -503,7 +504,7 @@ APPLY BATCH".Replace("\r", ""));
                 .Verifiable();
             var table2 = SessionExtensions.GetTable<InheritedEntity>(sessionMock.Object);
             table2.CreateIfNotExists();
-            Assert.AreEqual("CREATE TABLE \"InheritedEntity\" (\"Description\" text, \"Id\" int, \"Name\" text, PRIMARY KEY (\"Id\"))", createQuery);
+            Assert.That("CREATE TABLE \"InheritedEntity\" (\"Description\" text, \"Id\" int, \"Name\" text, PRIMARY KEY (\"Id\"))", Is.EqualTo(createQuery));
         }
 
         [Test]
@@ -515,14 +516,14 @@ APPLY BATCH".Replace("\r", ""));
                 .Select(r => new CounterTestTable1() { Value = 2 })
                 .Update()
                 .ToString();
-            Assert.AreEqual("UPDATE \"CounterTestTable1\" SET \"Value\" = \"Value\" + ? WHERE \"RowKey1\" = ? AND \"RowKey2\" = ?", query);
+            Assert.That("UPDATE \"CounterTestTable1\" SET \"Value\" = \"Value\" + ? WHERE \"RowKey1\" = ? AND \"RowKey2\" = ?", Is.EqualTo(query));
             int x = 4;
             query = table
                 .Where(r => r.RowKey1 == 5 && r.RowKey2 == 6)
                 .Select(r => new CounterTestTable1() { Value = x })
                 .Update()
                 .ToString();
-            Assert.AreEqual("UPDATE \"CounterTestTable1\" SET \"Value\" = \"Value\" + ? WHERE \"RowKey1\" = ? AND \"RowKey2\" = ?", query);
+            Assert.That("UPDATE \"CounterTestTable1\" SET \"Value\" = \"Value\" + ? WHERE \"RowKey1\" = ? AND \"RowKey2\" = ?", Is.EqualTo(query));
         }
 
         [Test]
@@ -532,7 +533,7 @@ APPLY BATCH".Replace("\r", ""));
             var keys = Array.Empty<string>();
             var query = table.Where(item => keys.Contains(item.pk));
 
-            Assert.True(query.ToString().Contains("\"x_pk\" IN ?"), "The query must contain an empty IN statement");
+            Assert.That(query.ToString().Contains("\"x_pk\" IN ?"), Is.True, "The query must contain an empty IN statement");
         }
 
         private class BaseEntity
@@ -559,16 +560,16 @@ APPLY BATCH".Replace("\r", ""));
         {
             var table = SessionExtensions.GetTable<LinqDecoratedEntity>(GetSession((_,__) => {}));
             var query = table.Select(t => new LinqDecoratedEntity { f1 = t.f1, pk = t.pk });
-            Assert.AreEqual(@"SELECT ""x_f1"", ""x_pk"" FROM ""x_t"" ALLOW FILTERING", query.ToString());
+            Assert.That(@"SELECT ""x_f1"", ""x_pk"" FROM ""x_t"" ALLOW FILTERING", Is.EqualTo(query.ToString()));
         }
 
         [Test]
         public void Select_Count()
         {
             var table = SessionExtensions.GetTable<LinqDecoratedEntity>(GetSession((_,__) => {}));
-            Assert.AreEqual(
+            Assert.That(
                 (from ent in table select ent).Count().ToString(),
-                @"SELECT count(*) FROM ""x_t"" ALLOW FILTERING");
+                Is.EqualTo(@"SELECT count(*) FROM ""x_t"" ALLOW FILTERING"));
         }
 
         [Test]
@@ -576,7 +577,7 @@ APPLY BATCH".Replace("\r", ""));
         {
             var table = SessionExtensions.GetTable<LinqDecoratedEntity>(GetSession((_,__) => {}));
             var query = table.Select(t => t.f1);
-            Assert.AreEqual(@"SELECT ""x_f1"" FROM ""x_t"" ALLOW FILTERING", query.ToString());
+            Assert.That(@"SELECT ""x_f1"" FROM ""x_t"" ALLOW FILTERING", Is.EqualTo(query.ToString()));
         }
 
         [Test]
@@ -584,7 +585,7 @@ APPLY BATCH".Replace("\r", ""));
         {
             var table = SessionExtensions.GetTable<AllTypesEntity>(GetSession((_,__) => {}));
             var query = table.OrderBy(t => t.UuidValue).OrderByDescending(t => t.DateTimeValue);
-            Assert.AreEqual(@"SELECT ""BooleanValue"", ""DateTimeValue"", ""DecimalValue"", ""DoubleValue"", ""Int64Value"", ""IntValue"", ""StringValue"", ""UuidValue"" FROM ""AllTypesEntity"" ORDER BY ""UuidValue"", ""DateTimeValue"" DESC", query.ToString());
+            Assert.That(@"SELECT ""BooleanValue"", ""DateTimeValue"", ""DecimalValue"", ""DoubleValue"", ""Int64Value"", ""IntValue"", ""StringValue"", ""UuidValue"" FROM ""AllTypesEntity"" ORDER BY ""UuidValue"", ""DateTimeValue"" DESC", Is.EqualTo(query.ToString()));
         }
 
         [Test]
@@ -593,11 +594,11 @@ APPLY BATCH".Replace("\r", ""));
             var table = SessionExtensions.GetTable<AllTypesDecorated>(GetSession((_,__) => {}));
             var ids = new []{ 1, 2, 3};
             var query = table.Where(t => ids.Contains(t.IntValue) && t.Int64Value == 10);
-            Assert.AreEqual(
+            Assert.That(
                 "SELECT \"boolean_VALUE\", \"datetime_VALUE\", \"decimal_VALUE\", \"double_VALUE\", \"int64_VALUE\"," +
                 " \"int_VALUE\", \"string_VALUE\", \"timeuuid_VALUE\", \"uuid_VALUE\" FROM \"atd\" WHERE" +
                 " \"int_VALUE\" IN ? AND \"int64_VALUE\" = ?",
-                query.ToString());
+                Is.EqualTo(query.ToString()));
         }
 
         [Test]
@@ -607,9 +608,9 @@ APPLY BATCH".Replace("\r", ""));
             var query = table
                 .Where(t => t.Int64Value == 1)
                 .DeleteIf(t => t.StringValue == "conditional!");
-            Assert.AreEqual(
+            Assert.That(
                 @"DELETE FROM ""atd"" WHERE ""int64_VALUE"" = ? IF ""string_VALUE"" = ?",
-                query.ToString());
+                Is.EqualTo(query.ToString()));
             Trace.TraceInformation(query.ToString());
         }
     }

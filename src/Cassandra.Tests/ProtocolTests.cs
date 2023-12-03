@@ -36,7 +36,7 @@ namespace Cassandra.Tests
         public void GetLowerSupported_Should_NotSkipBetaVersions_When_AllowBetaProtocolVersionsTrue(
             ProtocolVersion version, ProtocolVersion initialVersion)
         {
-            Assert.AreEqual(version, initialVersion.GetLowerSupported(_configBeta));
+            Assert.That(version, Is.EqualTo(initialVersion.GetLowerSupported(_configBeta)));
         }
         
         [TestCase(ProtocolVersion.V4, ProtocolVersion.V5)]
@@ -50,7 +50,7 @@ namespace Cassandra.Tests
         public void GetLowerSupported_Should_SkipBetaVersions_When_AllowBetaProtocolVersionsFalse(
             ProtocolVersion version, ProtocolVersion initialVersion)
         {
-            Assert.AreEqual(version, initialVersion.GetLowerSupported(_config));
+            Assert.That(version, Is.EqualTo(initialVersion.GetLowerSupported(_config)));
         }
 
         [TestCase(ProtocolVersion.V4, "4.0.0", "1.2.19")]
@@ -65,7 +65,7 @@ namespace Cassandra.Tests
         public void GetHighestCommon_Should_Downgrade_To_Protocol_VX_With_Hosts(ProtocolVersion version,
                                                                                 params string[] cassandraVersions)
         {
-            Assert.AreEqual(version, ProtocolVersion.MaxSupported.GetHighestCommon(_config, cassandraVersions.Select(GetHost)));
+            Assert.That(version, Is.EqualTo(ProtocolVersion.MaxSupported.GetHighestCommon(_config, cassandraVersions.Select(GetHost))));
         }
         
 
@@ -81,7 +81,7 @@ namespace Cassandra.Tests
         public void GetHighestCommon_Should_NotSkipBeta_When_AllowBetaVersionIsTrue(ProtocolVersion version,
                                                                                 params string[] cassandraVersions)
         {
-            Assert.AreEqual(version, ProtocolVersion.MaxSupported.GetHighestCommon(_configBeta, cassandraVersions.Select(GetHost)));
+            Assert.That(version, Is.EqualTo(ProtocolVersion.MaxSupported.GetHighestCommon(_configBeta, cassandraVersions.Select(GetHost))));
         }
 
         [TestCase(ProtocolVersion.V3, "6.0/3.10.2", "4.8.1/2.1.17", "5.1/3.0.13")]
@@ -89,7 +89,7 @@ namespace Cassandra.Tests
         public void GetHighestCommon_Should_Downgrade_To_Protocol_VX_With_Dse_Hosts(ProtocolVersion version,
                                                                                     params string[] cassandraVersions)
         {
-            Assert.AreEqual(version, ProtocolVersion.MaxSupported.GetHighestCommon(_config, cassandraVersions.Select(GetHost)));
+            Assert.That(version, Is.EqualTo(ProtocolVersion.MaxSupported.GetHighestCommon(_config, cassandraVersions.Select(GetHost))));
         }
         
         [TestCase(ProtocolVersion.V4, "4.0.0")]
@@ -102,7 +102,7 @@ namespace Cassandra.Tests
         public void GetHighestCommon_Should_Not_Downgrade_Protocol_With_Hosts(ProtocolVersion version,
                                                                               params string[] cassandraVersions)
         {
-            Assert.AreEqual(version, version.GetHighestCommon(_config, cassandraVersions.Select(GetHost)));
+            Assert.That(version, Is.EqualTo(version.GetHighestCommon(_config, cassandraVersions.Select(GetHost))));
         }
         
         [TestCase(ProtocolVersion.V5, "4.0.0")]
@@ -115,7 +115,7 @@ namespace Cassandra.Tests
         public void GetHighestCommon_Should_Not_Downgrade_Protocol_With_Hosts_When_AllowBetaVersionIsTrue(ProtocolVersion version,
                                                                               params string[] cassandraVersions)
         {
-            Assert.AreEqual(version, version.GetHighestCommon(_configBeta, cassandraVersions.Select(GetHost)));
+            Assert.That(version, Is.EqualTo(version.GetHighestCommon(_configBeta, cassandraVersions.Select(GetHost))));
         }
 
         [TestCase(ProtocolVersion.V4, "5.1.7/3.0.13", "5.0.13/3.0.11", "2.2.9")]
@@ -125,7 +125,7 @@ namespace Cassandra.Tests
         public void GetHighestCommon_Should_Not_Downgrade_Protocol_With_Dse_Hosts(ProtocolVersion version,
                                                                                   params string[] cassandraVersions)
         {
-            Assert.AreEqual(version, version.GetHighestCommon(_config, cassandraVersions.Select(GetHost)));
+            Assert.That(version, Is.EqualTo(version.GetHighestCommon(_config, cassandraVersions.Select(GetHost))));
         }
 
         private static Host GetHost(string cassandraVersion, int index)

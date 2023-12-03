@@ -22,6 +22,7 @@ using Cassandra.IntegrationTests.TestBase;
 using Cassandra.Mapping;
 using Cassandra.Tests;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Mapping.Tests
 {
@@ -60,15 +61,15 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             // Get records using mapped object, validate that the value from Cassandra was ignored in favor of the default val
             string cqlSelect = "SELECT * from \"" + typeof(ClassWithCamelCaseName).Name + "\"";
             List<ClassWithCamelCaseName> records = cqlClient.Fetch<ClassWithCamelCaseName>(cqlSelect).ToList();
-            Assert.AreEqual(1, records.Count);
-            Assert.AreEqual(classWithCamelCaseName.SomePartitionKey, records[0].SomePartitionKey);
+            Assert.That(1, Is.EqualTo(records.Count));
+            Assert.That(classWithCamelCaseName.SomePartitionKey, Is.EqualTo(records[0].SomePartitionKey));
             ClassWithCamelCaseName defaultInstance = new ClassWithCamelCaseName();
-            Assert.AreEqual(defaultInstance.IgnoredStringAttribute, records[0].IgnoredStringAttribute);
+            Assert.That(defaultInstance.IgnoredStringAttribute, Is.EqualTo(records[0].IgnoredStringAttribute));
 
             // Query for the column that the Linq table create created, verify no value was uploaded to it
             List<Row> rows = Session.Execute(cqlSelect).GetRows().ToList();
-            Assert.AreEqual(1, rows.Count);
-            Assert.AreEqual(classWithCamelCaseName.SomePartitionKey, rows[0].GetValue<string>("SomePartitionKey"));
+            Assert.That(1, Is.EqualTo(rows.Count));
+            Assert.That(classWithCamelCaseName.SomePartitionKey, Is.EqualTo(rows[0].GetValue<string>("SomePartitionKey")));
             var ex = Assert.Throws<ArgumentException>(() => rows[0].GetValue<string>("IgnoredStringAttribute"));
             StringAssert.Contains("Column IgnoredStringAttribute not found", ex.Message);
         }
@@ -96,15 +97,15 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             // Get records using mapped object, validate that the value from Cassandra was ignored in favor of the default val
             string cqlSelect = "SELECT * from \"" + typeof(ClassWithCamelCaseName).Name + "\"";
             List<ClassWithCamelCaseName> records = cqlClient.Fetch<ClassWithCamelCaseName>(cqlSelect).ToList();
-            Assert.AreEqual(1, records.Count);
-            Assert.AreEqual(classWithCamelCaseName.SomePartitionKey, records[0].SomePartitionKey);
+            Assert.That(1, Is.EqualTo(records.Count));
+            Assert.That(classWithCamelCaseName.SomePartitionKey, Is.EqualTo(records[0].SomePartitionKey));
             ClassWithCamelCaseName defaultInstance = new ClassWithCamelCaseName();
-            Assert.AreEqual(defaultInstance.IgnoredStringAttribute, records[0].IgnoredStringAttribute);
+            Assert.That(defaultInstance.IgnoredStringAttribute, Is.EqualTo(records[0].IgnoredStringAttribute));
 
             // Query for the column that the Linq table create created, verify no value was uploaded to it
             List<Row> rows = Session.Execute(cqlSelect).GetRows().ToList();
-            Assert.AreEqual(1, rows.Count);
-            Assert.AreEqual(classWithCamelCaseName.SomePartitionKey, rows[0].GetValue<string>("SomePartitionKey"));
+            Assert.That(1, Is.EqualTo(rows.Count));
+            Assert.That(classWithCamelCaseName.SomePartitionKey, Is.EqualTo(rows[0].GetValue<string>("SomePartitionKey")));
             var ex = Assert.Throws<ArgumentException>(() => rows[0].GetValue<string>("IgnoredStringAttribute"));
             StringAssert.Contains("Column IgnoredStringAttribute not found", ex.Message);
         }

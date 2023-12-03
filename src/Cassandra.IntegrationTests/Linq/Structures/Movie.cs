@@ -69,17 +69,17 @@ namespace Cassandra.IntegrationTests.Linq.Structures
 
         public static void AssertEquals(Movie expectedMovie, Movie actualMovie)
         {
-            Assert.AreEqual(expectedMovie.MainActor, actualMovie.MainActor);
-            Assert.AreEqual(expectedMovie.MovieMaker, actualMovie.MovieMaker);
-            Assert.AreEqual(expectedMovie.Title, actualMovie.Title);
-            Assert.AreEqual(expectedMovie.ExampleSet, actualMovie.ExampleSet);
-            Assert.AreEqual(expectedMovie.Director, actualMovie.Director);
-            Assert.AreEqual(expectedMovie.Year, actualMovie.Year);
+            Assert.That(expectedMovie.MainActor, Is.EqualTo(actualMovie.MainActor));
+            Assert.That(expectedMovie.MovieMaker, Is.EqualTo(actualMovie.MovieMaker));
+            Assert.That(expectedMovie.Title, Is.EqualTo(actualMovie.Title));
+            Assert.That(expectedMovie.ExampleSet, Is.EqualTo(actualMovie.ExampleSet));
+            Assert.That(expectedMovie.Director, Is.EqualTo(actualMovie.Director));
+            Assert.That(expectedMovie.Year, Is.EqualTo(actualMovie.Year));
         }
 
         public static void AssertListContains(List<Movie> expectedMovies, Movie actualMovie)
         {
-            Assert.IsTrue(ListContains(expectedMovies, actualMovie));
+            Assert.That(ListContains(expectedMovies, actualMovie), Is.True);
         }
 
         public static bool ListContains(List<Movie> expectedMovies, Movie actualMovie)

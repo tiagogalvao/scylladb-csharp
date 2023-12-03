@@ -43,7 +43,7 @@ namespace Cassandra.Tests
             foreach (var v in Values)
             {
                 var time = GetLocalTime(v);
-                Assert.AreEqual(v.Item5, time.TotalNanoseconds, "For time: " + v.Item6);
+                Assert.That(v.Item5, Is.EqualTo(time.TotalNanoseconds), "For time: " + v.Item6);
             }
         }
 
@@ -53,10 +53,10 @@ namespace Cassandra.Tests
             foreach (var v in Values)
             {
                 var time = new LocalTime(v.Item5);
-                Assert.AreEqual(v.Item1, time.Hour, "For time: " + v.Item6);
-                Assert.AreEqual(v.Item2, time.Minute, "For time: " + v.Item6);
-                Assert.AreEqual(v.Item3, time.Second, "For time: " + v.Item6);
-                Assert.AreEqual(v.Item4, time.Nanoseconds, "For time: " + v.Item6);
+                Assert.That(v.Item1, Is.EqualTo(time.Hour), "For time: " + v.Item6);
+                Assert.That(v.Item2, Is.EqualTo(time.Minute), "For time: " + v.Item6);
+                Assert.That(v.Item3, Is.EqualTo(time.Second), "For time: " + v.Item6);
+                Assert.That(v.Item4, Is.EqualTo(time.Nanoseconds), "For time: " + v.Item6);
             }
         }
 
@@ -65,7 +65,7 @@ namespace Cassandra.Tests
         {
             // ReSharper disable once SuggestVarOrType_Elsewhere
             Dictionary<LocalTime, string> dictionary = Values.ToDictionary(GetLocalTime, v => v.Item6);
-            Assert.AreEqual(Values.Length, dictionary.Count);
+            Assert.That(Values.Length, Is.EqualTo(dictionary.Count));
         }
 
         [Test]
@@ -96,7 +96,7 @@ namespace Cassandra.Tests
             foreach (var v in Values)
             {
                 var time = GetLocalTime(v);
-                Assert.AreEqual(v.Item6, time.ToString(), "For time: " + v.Item6);
+                Assert.That(v.Item6, Is.EqualTo(time.ToString()), "For time: " + v.Item6);
             }
         }
 
@@ -104,12 +104,12 @@ namespace Cassandra.Tests
         public void Should_Support_Operators()
         {
             LocalTime value1 = null;
-            Assert.True(value1 == null);
-            Assert.False(value1 != null);
+            Assert.That(value1 == null, Is.True);
+            Assert.That(value1 != null, Is.False);
             value1 = new LocalTime(10, 3, 15, 0);
-            Assert.False(value1 == null);
-            Assert.True(value1 != null);
-            Assert.AreEqual(value1, new LocalTime(10, 3, 15, 0));
+            Assert.That(value1 == null, Is.False);
+            Assert.That(value1 != null, Is.True);
+            Assert.That(value1, Is.EqualTo(new LocalTime(10, 3, 15, 0)));
         }
 
         [Test]
@@ -134,7 +134,7 @@ namespace Cassandra.Tests
             foreach (var v in Values)
             {
                 var time = LocalTime.Parse(v.Item6);
-                Assert.AreEqual(new LocalTime(v.Item5), time);
+                Assert.That(new LocalTime(v.Item5), Is.EqualTo(time));
             }
         }
         
@@ -148,7 +148,7 @@ namespace Cassandra.Tests
             var localTime = new LocalTime(15, 21, 50, 1);
             var localTimeStr = localTime.ToString();
             var act = LocalTime.Parse(localTimeStr);
-            Assert.AreEqual(localTime, act);
+            Assert.That(localTime, Is.EqualTo(act));
         }
 
         private static LocalTime GetLocalTime(Tuple<int, int, int, int, long, string> v)

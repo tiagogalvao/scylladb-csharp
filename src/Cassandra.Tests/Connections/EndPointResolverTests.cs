@@ -37,11 +37,11 @@ namespace Cassandra.Tests.Connections
 
             var resolved = await target.GetConnectionEndPointAsync(host, false).ConfigureAwait(false);
 
-            Assert.AreEqual(endpoint, resolved.GetHostIpEndPointWithFallback());
-            Assert.AreEqual(endpoint, resolved.SocketIpEndPoint);
-            Assert.AreEqual(endpoint, resolved.GetHostIpEndPointWithFallback());
-            Assert.AreEqual(endpoint.ToString(), resolved.EndpointFriendlyName);
-            Assert.AreEqual("140.20.10.10", await resolved.GetServerNameAsync().ConfigureAwait(false));
+            Assert.That(endpoint, Is.EqualTo(resolved.GetHostIpEndPointWithFallback()));
+            Assert.That(endpoint, Is.EqualTo(resolved.SocketIpEndPoint));
+            Assert.That(endpoint, Is.EqualTo(resolved.GetHostIpEndPointWithFallback()));
+            Assert.That(endpoint.ToString(), Is.EqualTo(resolved.EndpointFriendlyName));
+            Assert.That("140.20.10.10", Is.EqualTo(await resolved.GetServerNameAsync().ConfigureAwait(false)));
         }
 
         private IEndPointResolver Create()

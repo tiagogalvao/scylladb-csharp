@@ -26,6 +26,7 @@ using Cassandra.Tests;
 using Cassandra.Tests.Mapping.FluentMappings;
 using Cassandra.Tests.Mapping.Pocos;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using HairColor = Cassandra.Tests.Mapping.Pocos.HairColor;
 
 namespace Cassandra.IntegrationTests.Mapping.Tests
@@ -69,7 +70,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
 
             mapper.Insert(expectedAuthor);
             List<Author> authors = mapper.Fetch<Author>("SELECT * from " + table.Name).ToList();
-            Assert.AreEqual(1, authors.Count);
+            Assert.That(1, Is.EqualTo(authors.Count));
             expectedAuthor.AssertEquals(authors[0]);
         }
 
@@ -93,7 +94,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             {
                 authors = t.Result.ToList();
             }).Wait();
-            Assert.AreEqual(2, authors.Count);;
+            Assert.That(2, Is.EqualTo(authors.Count));;
             CollectionAssert.AreEquivalent(ids, authors.Select(a => a.AuthorId));
         }
 
@@ -114,7 +115,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
 
             Cql cql = new Cql("SELECT * from " + table.Name);
             List<Author> actualAuthors = mapper.Fetch<Author>(cql).ToList();
-            Assert.AreEqual(totalInserts, actualAuthors.Count);
+            Assert.That(totalInserts, Is.EqualTo(actualAuthors.Count));
             Author.AssertListsContainTheSame(expectedAuthors, actualAuthors);
         }
 
@@ -146,7 +147,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             {
                 Cql cql = new Cql("SELECT * from " + table.Name).WithOptions(c => c.SetConsistencyLevel(consistencyLevel));
                 List<Author> actualAuthors = mapper.Fetch<Author>(cql).ToList();
-                Assert.AreEqual(totalInserts, actualAuthors.Count);
+                Assert.That(totalInserts, Is.EqualTo(actualAuthors.Count));
                 Author.AssertListsContainTheSame(expectedAuthors, actualAuthors);
             }
         }
@@ -169,13 +170,13 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
 
             Cql cql = new Cql("SELECT * from " + table.Name).WithOptions(c => c.SetConsistencyLevel(ConsistencyLevel.Any));
             var err = Assert.Throws<InvalidQueryException>(() => mapper.Fetch<Author>(cql).ToList());
-            Assert.AreEqual("ANY ConsistencyLevel is only supported for writes", err.Message);
+            Assert.That("ANY ConsistencyLevel is only supported for writes", Is.EqualTo(err.Message));
 
             if (TestClusterManager.CheckCassandraVersion(false, Version.Parse("3.0"), Comparison.LessThan))
             {
                 cql = new Cql("SELECT * from " + table.Name).WithOptions(c => c.SetConsistencyLevel(ConsistencyLevel.EachQuorum));
                 err = Assert.Throws<InvalidQueryException>(() => mapper.Fetch<Author>(cql).ToList());
-                Assert.AreEqual("EACH_QUORUM ConsistencyLevel is only supported for writes", err.Message);
+                Assert.That("EACH_QUORUM ConsistencyLevel is only supported for writes", Is.EqualTo(err.Message));
             }
         }
 
@@ -198,11 +199,11 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
 
             Cql cql = new Cql("SELECT * from " + table.Name).WithOptions(c => c.SetConsistencyLevel(ConsistencyLevel.Two));
             var err = Assert.Throws<UnavailableException>(() => mapper.Fetch<Author>(cql));
-            Assert.AreEqual("Not enough replicas available for query at consistency Two (2 required but only 1 alive)", err.Message);
+            Assert.That("Not enough replicas available for query at consistency Two (2 required but only 1 alive)", Is.EqualTo(err.Message));
 
             cql = new Cql("SELECT * from " + table.Name).WithOptions(c => c.SetConsistencyLevel(ConsistencyLevel.Three));
             err = Assert.Throws<UnavailableException>(() => mapper.Fetch<Author>(cql));
-            Assert.AreEqual("Not enough replicas available for query at consistency Three (3 required but only 1 alive)", err.Message);
+            Assert.That("Not enough replicas available for query at consistency Three (3 required but only 1 alive)", Is.EqualTo(err.Message));
         }
 
         /// <summary>
@@ -227,7 +228,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
 
             Cql cql = new Cql("SELECT * from " + table.Name);
             List<Author> actualAuthors = mapper.Fetch<Author>(cql).ToList();
-            Assert.AreEqual(1, actualAuthors.Count);
+            Assert.That(1, Is.EqualTo(actualAuthors.Count));
             expectedAuthorFromQuery.AssertEquals(actualAuthors[0]);
         }
 
@@ -252,7 +253,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             DateTime futureDateTime = DateTime.Now.AddSeconds(10);
             while (authors.Count < expectedAuthors.Count && DateTime.Now < futureDateTime)
                 authors = mapper.Fetch<Author>("SELECT * from " + table.Name).ToList();
-            Assert.AreEqual(expectedAuthors.Count, authors.Count, "Setup FAIL: Less than expected number of authors uploaded");
+            ClassicAssert.AreEqual(expectedAuthors.Count, authors.Count, "Setup FAIL: Less than expected number of authors uploaded");
 
             Cql cql = new Cql("SELECT * from " + table.Name).WithOptions(o => o.SetConsistencyLevel(ConsistencyLevel.Quorum));
             List<Author> authorsFetchedAndSaved = new List<Author>();
@@ -260,7 +261,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             while (authorsFetched.MoveNext())
                 authorsFetchedAndSaved.Add(authorsFetched.Current);
 
-            Assert.AreEqual(expectedAuthors.Count, authorsFetchedAndSaved.Count);
+            Assert.That(expectedAuthors.Count, Is.EqualTo(authorsFetchedAndSaved.Count));
             foreach (var authorFetched in authorsFetchedAndSaved)
             {
                 Author.AssertListContains(expectedAuthors, authorFetched);
@@ -299,7 +300,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
                 pagingState = authors.PagingState;
             } while (pagingState != null && safeCounter++ < 100);
 
-            Assert.AreEqual(totalLength, ids.Count);
+            Assert.That(totalLength, Is.EqualTo(ids.Count));
         }
 
         /// <summary>
@@ -333,11 +334,11 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
                 {
                     ids.Add(a.AuthorId);
                 }
-                Assert.LessOrEqual(authors.Count, pageSize);
+                Assert.That(authors.Count, Is.LessThanOrEqualTo(pageSize));
                 pagingState = authors.PagingState;
             } while (pagingState != null && safeCounter++ < 100);
 
-            Assert.AreEqual(totalLength, ids.Count);
+            Assert.That(totalLength, Is.EqualTo(ids.Count));
         }
 
         [Test, TestCassandraVersion(2, 1, 0)]
@@ -349,13 +350,13 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             _session.UserDefinedTypes.Define(UdtMap.For<Song2>("song"));
             _session.Execute("INSERT INTO albums (id, name, songs) VALUES (uuid(), 'Legend', [{id: uuid(), title: 'Africa Unite', artist: 'Bob Marley'}])");
             var result = mapper.Fetch<Album>("SELECT * from albums LIMIT 1").ToList();
-            Assert.AreEqual(1, result.Count);
+            Assert.That(1, Is.EqualTo(result.Count));
             var album = result[0];
-            Assert.AreEqual("Legend", album.Name);
-            Assert.AreEqual(1, album.Songs.Count);
+            Assert.That("Legend", Is.EqualTo(album.Name));
+            Assert.That(1, Is.EqualTo(album.Songs.Count));
             var song = album.Songs[0];
-            Assert.AreEqual("Bob Marley", song.Artist);
-            Assert.AreEqual("Africa Unite", song.Title);
+            Assert.That("Bob Marley", Is.EqualTo(song.Artist));
+            Assert.That("Africa Unite", Is.EqualTo(song.Title));
         }
 
         [Test]
@@ -373,10 +374,10 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             var mapper = new Mapper(_session, new MappingConfiguration().Define(map));
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             var row = mapper.Fetch<AllTypesEntity>("SELECT * FROM tbl_with_structs WHERE id = ?", id).First();
-            Assert.NotNull(row);
-            Assert.AreEqual(row.UuidValue, id);
-            Assert.AreEqual(row.BooleanValue, default(bool));
-            Assert.AreEqual(row.DateTimeValue, default(DateTime));
+            Assert.That(row, Is.Not.Null);
+            Assert.That(row.UuidValue, Is.EqualTo(id));
+            Assert.That(row.BooleanValue, Is.EqualTo(default(bool)));
+            Assert.That(row.DateTimeValue, Is.EqualTo(default(DateTime)));
         }
 
         [Test]
@@ -538,20 +539,20 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             var mapper = new Mapper(_session, config);
             
             var result = mapper.Fetch<PocoWithEnumCollections>("WHERE id = ?", 2000L);
-            Assert.NotNull(result);
+            Assert.That(result, Is.Not.Null);
             var rows = result.ToArray();
-            Assert.AreEqual(1, rows.Length);
+            Assert.That(1, Is.EqualTo(rows.Length));
             var poco = rows[0];
-            Assert.AreEqual(2000L, poco.Id);
-            Assert.AreEqual(expectedCollection, poco.List1);
-            Assert.AreEqual(expectedCollection, poco.List2);
-            Assert.AreEqual(expectedCollection, poco.Array1);
-            Assert.AreEqual(expectedCollection, poco.Set1);
-            Assert.AreEqual(expectedCollection, poco.Set2);
-            Assert.AreEqual(expectedCollection, poco.Set3);
-            Assert.AreEqual(expectedMap, poco.Dictionary1);
-            Assert.AreEqual(expectedMap, poco.Dictionary2);
-            Assert.AreEqual(expectedMap, poco.Dictionary3);
+            Assert.That(2000L, Is.EqualTo(poco.Id));
+            Assert.That(expectedCollection, Is.EqualTo(poco.List1));
+            Assert.That(expectedCollection, Is.EqualTo(poco.List2));
+            Assert.That(expectedCollection, Is.EqualTo(poco.Array1));
+            Assert.That(expectedCollection, Is.EqualTo(poco.Set1));
+            Assert.That(expectedCollection, Is.EqualTo(poco.Set2));
+            Assert.That(expectedCollection, Is.EqualTo(poco.Set3));
+            Assert.That(expectedMap, Is.EqualTo(poco.Dictionary1));
+            Assert.That(expectedMap, Is.EqualTo(poco.Dictionary2));
+            Assert.That(expectedMap, Is.EqualTo(poco.Dictionary3));
         }
     }
 }

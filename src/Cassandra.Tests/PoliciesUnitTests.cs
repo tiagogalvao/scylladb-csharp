@@ -22,6 +22,7 @@ using NUnit.Framework;
 using Moq;
 using System.Threading.Tasks;
 using System.Threading;
+using NUnit.Framework.Legacy;
 
 #pragma warning disable 618
 
@@ -49,11 +50,11 @@ namespace Cassandra.Tests
 
             //Take a list of hosts of 4, it should get 1 of every one in a cyclic order.
             var firstRound = balancedHosts.ToList();
-            Assert.AreEqual(hostLength, firstRound.Count);
+            Assert.That(hostLength, Is.EqualTo(firstRound.Count));
             foreach (var host in hostList)
             {
                 //Check that each host appears only once
-                Assert.AreEqual(1, firstRound.Where(h => h.Equals(host)).Count());
+                Assert.That(1, Is.EqualTo(firstRound.Where(h => h.Equals(host)).Count()));
             }
 
             //test the same but in the following times
@@ -63,14 +64,14 @@ namespace Cassandra.Tests
                 followingRounds.AddRange(policy.NewQueryPlan(null, new SimpleStatement()));
             }
 
-            Assert.AreEqual(10 * hostLength, followingRounds.Count);
+            Assert.That(10 * hostLength, Is.EqualTo(followingRounds.Count));
 
             //Check that the cyclic order is correct
             for (var i = 1; i < followingRounds.Count - 2; i++)
             {
-                Assert.AreNotSame(followingRounds[i - 1], followingRounds[i]);
-                Assert.AreNotSame(followingRounds[i + 1], followingRounds[i]);
-                Assert.AreNotSame(followingRounds[i + 2], followingRounds[i]);
+                Assert.That(followingRounds[i - 1], Is.Not.SameAs(followingRounds[i]));
+                Assert.That(followingRounds[i + 1], Is.Not.SameAs(followingRounds[i]));
+                Assert.That(followingRounds[i + 2], Is.Not.SameAs(followingRounds[i]));
             }
 
             clusterMock.Verify();
@@ -103,8 +104,8 @@ namespace Cassandra.Tests
                     resultingHosts.Add(h);
                 }
 
-                Assert.AreEqual(hostLength, resultingHosts.Count);
-                Assert.AreEqual(hostLength, resultingHosts.Distinct().Count());
+                Assert.That(hostLength, Is.EqualTo(resultingHosts.Count));
+                Assert.That(hostLength, Is.EqualTo(resultingHosts.Distinct().Count()));
             };
 
             var actions = new List<Action>();
@@ -146,8 +147,8 @@ namespace Cassandra.Tests
             var firstRound = balancedHosts.ToList();
 
             //Returns only local hosts
-            Assert.AreEqual(hostLength - 2, firstRound.Count(h => h.Datacenter == "local"));
-            Assert.AreEqual(0, firstRound.Count(h => h.Datacenter != "local"));
+            Assert.That(hostLength - 2, Is.EqualTo(firstRound.Count(h => h.Datacenter == "local")));
+            Assert.That(0, Is.EqualTo(firstRound.Count(h => h.Datacenter != "local")));
 
             //following rounds: test it multiple times
             var followingRounds = new List<Host>();
@@ -156,10 +157,10 @@ namespace Cassandra.Tests
                 followingRounds.AddRange(policy.NewQueryPlan(null, new SimpleStatement()).ToList());
             }
 
-            Assert.AreEqual(10 * (hostLength - 2), followingRounds.Count);
+            Assert.That(10 * (hostLength - 2), Is.EqualTo(followingRounds.Count));
 
             //Check that there aren't remote nodes.
-            Assert.AreEqual(0, followingRounds.Count(h => h.Datacenter != "local"));
+            Assert.That(0, Is.EqualTo(followingRounds.Count(h => h.Datacenter != "local")));
         }
 
         [Test]
@@ -198,11 +199,11 @@ namespace Cassandra.Tests
                     var h = hosts[i];
                     if (i < localHostsLength)
                     {
-                        Assert.AreEqual(localDc, h.Datacenter);
+                        Assert.That(localDc, Is.EqualTo(h.Datacenter));
                     }
                     else
                     {
-                        Assert.AreNotEqual(localDc, h.Datacenter);
+                        Assert.That(localDc, Is.Not.EqualTo(h.Datacenter));
                     }
                 }
             };
@@ -224,8 +225,8 @@ namespace Cassandra.Tests
                 .Returns(hostList);
             var policy = new DCAwareRoundRobinPolicy();
             policy.Initialize(clusterMock.Object);
-            Assert.AreEqual(HostDistance.Local, policy.Distance(hostList[1]));
-            Assert.AreNotEqual(HostDistance.Local, policy.Distance(hostList[2]));
+            Assert.That(HostDistance.Local, Is.EqualTo(policy.Distance(hostList[1])));
+            Assert.That(HostDistance.Local, Is.Not.EqualTo(policy.Distance(hostList[2])));
         }
 
         [Test]
@@ -278,10 +279,10 @@ namespace Cassandra.Tests
             {
                 var hosts = policy.NewQueryPlan(null, null).ToList();
                 //Check that the value is not repeated
-                Assert.AreEqual(0, hosts.GroupBy(x => x)
-                                        .Where(g => g.Count() > 1)
-                                        .Select(y => y.Key)
-                                        .Count());
+                Assert.That(0, Is.EqualTo(hosts.GroupBy(x => x)
+                                               .Where(g => g.Count() > 1)
+                                               .Select(y => y.Key)
+                                               .Count()));
                 firstHosts.Add(hosts[0]);
                 //Add to the general list
                 foreach (var h in hosts)
@@ -304,11 +305,11 @@ namespace Cassandra.Tests
             {
                 if (h.Datacenter == localDc)
                 {
-                    Assert.AreEqual(times / localHostsLength, firstHosts.Count(hc => hc == h));
+                    Assert.That(times / localHostsLength, Is.EqualTo(firstHosts.Count(hc => hc == h)));
                 }
                 else
                 {
-                    Assert.AreEqual(0, firstHosts.Count(hc => hc == h));
+                    Assert.That(0, Is.EqualTo(firstHosts.Count(hc => hc == h)));
                 }
             }
 
@@ -345,7 +346,7 @@ namespace Cassandra.Tests
             var instances = new ConcurrentBag<object>();
             Action action = () => instances.Add(policy.GetHosts());
             TestHelper.ParallelInvoke(action, 100);
-            Assert.AreEqual(1, instances.GroupBy(i => i.GetHashCode()).Count());
+            Assert.That(1, Is.EqualTo(instances.GroupBy(i => i.GetHashCode()).Count()));
         }
 
         [Test]
@@ -380,7 +381,7 @@ namespace Cassandra.Tests
 
             //Invoke without nodes changing
             TestHelper.ParallelInvoke(action, 100);
-            Assert.True(hostYielded.Any(hl => hl.Any(h => h == hostToRemove)));
+            Assert.That(hostYielded.Any(hl => hl.Any(h => h == hostToRemove)), Is.True);
 
             var actionList = new List<Action>(Enumerable.Repeat<Action>(action, 1000));
 
@@ -414,8 +415,8 @@ namespace Cassandra.Tests
             //Invoke it a some of times more in parallel
             TestHelper.ParallelInvoke(action, 100);
             //The removed node should not be returned
-            Assert.False(hostList.Any(h => h == hostToRemove));
-            Assert.False(hostYielded.Any(hl => hl.Any(h => h == hostToRemove)));
+            Assert.That(hostList.Any(h => h == hostToRemove), Is.False);
+            Assert.That(hostYielded.Any(hl => hl.Any(h => h == hostToRemove)), Is.False);
         }
 
         [Test]
@@ -434,7 +435,7 @@ namespace Cassandra.Tests
             //The last delay will be used for the rest.
             //Add the n times the last delay (1000)
             var expectedDelays = delays.Concat(Enumerable.Repeat<long>(1000, times - delays.Length));
-            Assert.AreEqual(expectedDelays, actualDelays);
+            Assert.That(expectedDelays, Is.EqualTo(actualDelays));
         }
 
         [Test]
@@ -480,22 +481,22 @@ namespace Cassandra.Tests
             var k = new RoutingKey { RawRoutingKey = new byte[] { 1 } };
             var hosts = policy.NewQueryPlan(null, new SimpleStatement().SetRoutingKey(k)).ToList();
             //5 local hosts + 2 remote hosts
-            Assert.AreEqual(7, hosts.Count);
+            Assert.That(7, Is.EqualTo(hosts.Count));
             //local replica first
-            Assert.AreEqual(1, TestHelper.GetLastAddressByte(hosts[0]));
+            Assert.That(1, Is.EqualTo(TestHelper.GetLastAddressByte(hosts[0])));
             clusterMock.Verify();
 
             //key for host :::2 and :::5
             k = new RoutingKey { RawRoutingKey = new byte[] { 2 } };
             n = 3;
             hosts = policy.NewQueryPlan(null, new SimpleStatement().SetRoutingKey(k)).ToList();
-            Assert.AreEqual(7, hosts.Count);
+            Assert.That(7, Is.EqualTo(hosts.Count));
             //local replicas first
             CollectionAssert.AreEquivalent(new[] { 2, 5 }, hosts.Take(2).Select(TestHelper.GetLastAddressByte));
             //next should be local nodes
-            Assert.AreEqual("dc1", hosts[2].Datacenter);
-            Assert.AreEqual("dc1", hosts[3].Datacenter);
-            Assert.AreEqual("dc1", hosts[4].Datacenter);
+            Assert.That("dc1", Is.EqualTo(hosts[2].Datacenter));
+            Assert.That("dc1", Is.EqualTo(hosts[3].Datacenter));
+            Assert.That("dc1", Is.EqualTo(hosts[4].Datacenter));
             clusterMock.Verify();
         }
 
@@ -547,10 +548,10 @@ namespace Cassandra.Tests
                 firstHosts.Add(h);
             };
             TestHelper.ParallelInvoke(action, times);
-            Assert.AreEqual(times, firstHosts.Count);
+            Assert.That(times, Is.EqualTo(firstHosts.Count));
             double queryPlansWithHost1AsFirst = firstHosts.Count(h => TestHelper.GetLastAddressByte(h) == 1);
             double queryPlansWithHost2AsFirst = firstHosts.Count(h => TestHelper.GetLastAddressByte(h) == 2);
-            Assert.AreEqual(times, queryPlansWithHost1AsFirst + queryPlansWithHost2AsFirst);
+            Assert.That(times, Is.EqualTo(queryPlansWithHost1AsFirst + queryPlansWithHost2AsFirst));
             // Around half will to one and half to the other
             Assert.That(queryPlansWithHost1AsFirst / times, Is.GreaterThan(0.45).And.LessThan(0.55));
             Assert.That(queryPlansWithHost2AsFirst / times, Is.GreaterThan(0.45).And.LessThan(0.55));
@@ -578,16 +579,16 @@ namespace Cassandra.Tests
             //No routing key
             var hosts = policy.NewQueryPlan(null, new SimpleStatement()).ToList();
             //2 localhosts
-            Assert.AreEqual(2, hosts.Count(h => policy.Distance(h) == HostDistance.Local));
-            Assert.AreEqual("dc1", hosts[0].Datacenter);
-            Assert.AreEqual("dc1", hosts[1].Datacenter);
+            Assert.That(2, Is.EqualTo(hosts.Count(h => policy.Distance(h) == HostDistance.Local)));
+            Assert.That("dc1", Is.EqualTo(hosts[0].Datacenter));
+            Assert.That("dc1", Is.EqualTo(hosts[1].Datacenter));
             clusterMock.Verify();
             //No statement
             hosts = policy.NewQueryPlan(null, null).ToList();
             //2 localhosts
-            Assert.AreEqual(2, hosts.Count(h => policy.Distance(h) == HostDistance.Local));
-            Assert.AreEqual("dc1", hosts[0].Datacenter);
-            Assert.AreEqual("dc1", hosts[1].Datacenter);
+            Assert.That(2, Is.EqualTo(hosts.Count(h => policy.Distance(h) == HostDistance.Local)));
+            Assert.That("dc1", Is.EqualTo(hosts[0].Datacenter));
+            Assert.That("dc1", Is.EqualTo(hosts[1].Datacenter));
             clusterMock.Verify();
         }
 
@@ -597,10 +598,10 @@ namespace Cassandra.Tests
             var testPolicy = new TestRetryPolicy();
             var policy = new IdempotenceAwareRetryPolicy(testPolicy);
             var decision = policy.OnReadTimeout(new SimpleStatement("Q"), ConsistencyLevel.All, 0, 0, true, 1);
-            Assert.AreEqual(decision.DecisionType, RetryDecision.RetryDecisionType.Ignore);
-            Assert.AreEqual(1, testPolicy.ReadTimeoutCounter);
-            Assert.AreEqual(0, testPolicy.WriteTimeoutCounter);
-            Assert.AreEqual(0, testPolicy.UnavailableCounter);
+            Assert.That(decision.DecisionType, Is.EqualTo(RetryDecision.RetryDecisionType.Ignore));
+            Assert.That(1, Is.EqualTo(testPolicy.ReadTimeoutCounter));
+            Assert.That(0, Is.EqualTo(testPolicy.WriteTimeoutCounter));
+            Assert.That(0, Is.EqualTo(testPolicy.UnavailableCounter));
         }
 
         [Test]
@@ -609,10 +610,10 @@ namespace Cassandra.Tests
             var testPolicy = new TestRetryPolicy();
             var policy = new IdempotenceAwareRetryPolicy(testPolicy);
             var decision = policy.OnUnavailable(new SimpleStatement("Q"), ConsistencyLevel.All, 0, 0, 1);
-            Assert.AreEqual(decision.DecisionType, RetryDecision.RetryDecisionType.Ignore);
-            Assert.AreEqual(0, testPolicy.ReadTimeoutCounter);
-            Assert.AreEqual(0, testPolicy.WriteTimeoutCounter);
-            Assert.AreEqual(1, testPolicy.UnavailableCounter);
+            Assert.That(decision.DecisionType, Is.EqualTo(RetryDecision.RetryDecisionType.Ignore));
+            Assert.That(0, Is.EqualTo(testPolicy.ReadTimeoutCounter));
+            Assert.That(0, Is.EqualTo(testPolicy.WriteTimeoutCounter));
+            Assert.That(1, Is.EqualTo(testPolicy.UnavailableCounter));
         }
 
         [Test]
@@ -621,10 +622,10 @@ namespace Cassandra.Tests
             var testPolicy = new TestRetryPolicy();
             var policy = new IdempotenceAwareRetryPolicy(testPolicy);
             var decision = policy.OnWriteTimeout(new SimpleStatement("Q").SetIdempotence(true), ConsistencyLevel.All, "BATCH", 0, 0, 1);
-            Assert.AreEqual(decision.DecisionType, RetryDecision.RetryDecisionType.Ignore);
-            Assert.AreEqual(0, testPolicy.ReadTimeoutCounter);
-            Assert.AreEqual(1, testPolicy.WriteTimeoutCounter);
-            Assert.AreEqual(0, testPolicy.UnavailableCounter);
+            Assert.That(decision.DecisionType, Is.EqualTo(RetryDecision.RetryDecisionType.Ignore));
+            Assert.That(0, Is.EqualTo(testPolicy.ReadTimeoutCounter));
+            Assert.That(1, Is.EqualTo(testPolicy.WriteTimeoutCounter));
+            Assert.That(0, Is.EqualTo(testPolicy.UnavailableCounter));
         }
 
         [Test]
@@ -633,10 +634,10 @@ namespace Cassandra.Tests
             var testPolicy = new TestRetryPolicy();
             var policy = new IdempotenceAwareRetryPolicy(testPolicy);
             var decision = policy.OnWriteTimeout(new SimpleStatement("Q").SetIdempotence(false), ConsistencyLevel.All, "BATCH", 0, 0, 1);
-            Assert.AreEqual(decision.DecisionType, RetryDecision.RetryDecisionType.Rethrow);
-            Assert.AreEqual(0, testPolicy.ReadTimeoutCounter);
-            Assert.AreEqual(0, testPolicy.WriteTimeoutCounter);
-            Assert.AreEqual(0, testPolicy.UnavailableCounter);
+            Assert.That(decision.DecisionType, Is.EqualTo(RetryDecision.RetryDecisionType.Rethrow));
+            Assert.That(0, Is.EqualTo(testPolicy.ReadTimeoutCounter));
+            Assert.That(0, Is.EqualTo(testPolicy.WriteTimeoutCounter));
+            Assert.That(0, Is.EqualTo(testPolicy.UnavailableCounter));
         }
 
         /// <summary>

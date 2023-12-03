@@ -25,6 +25,7 @@ using Cassandra.IntegrationTests.TestClusterManagement.Simulacron;
 using Cassandra.Tests;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -75,15 +76,15 @@ namespace Cassandra.IntegrationTests.Core
                 var session = cluster.Connect();
                 simulacronCluster.Prime(QueryPrime());
                 var ps = session.Prepare(Query);
-                Assert.NotNull(ps);
-                Assert.AreEqual(Query, ps.Cql);
+                Assert.That(ps, Is.Not.Null);
+                Assert.That(Query, Is.EqualTo(ps.Cql));
                 var firstRow = session.Execute(ps.Bind()).FirstOrDefault();
-                Assert.NotNull(firstRow);
+                Assert.That(firstRow, Is.Not.Null);
                 var node = simulacronCluster.GetNode(cluster.AllHosts().First().Address);
                 // Executed on first node
-                Assert.AreEqual(1, node.GetQueries(Query, QueryType.Prepare).Count);
+                Assert.That(1, Is.EqualTo(node.GetQueries(Query, QueryType.Prepare).Count));
                 // Only executed on the first node
-                Assert.AreEqual(1, simulacronCluster.GetQueries(Query, QueryType.Prepare).Count);
+                Assert.That(1, Is.EqualTo(simulacronCluster.GetQueries(Query, QueryType.Prepare).Count));
             }
         }
 
@@ -98,14 +99,14 @@ namespace Cassandra.IntegrationTests.Core
                 var session = cluster.Connect();
                 simulacronCluster.Prime(QueryPrime());
                 var ps = session.Prepare(Query);
-                Assert.NotNull(ps);
+                Assert.That(ps, Is.Not.Null);
                 // Executed on each node
                 foreach (var node in simulacronCluster.DataCenters[0].Nodes)
                 {
-                    Assert.AreEqual(1, node.GetQueries(Query, QueryType.Prepare).Count);
+                    Assert.That(1, Is.EqualTo(node.GetQueries(Query, QueryType.Prepare).Count));
                 }
                 // Executed on all nodes
-                Assert.AreEqual(3, simulacronCluster.GetQueries(Query, QueryType.Prepare).Count);
+                Assert.That(3, Is.EqualTo(simulacronCluster.GetQueries(Query, QueryType.Prepare).Count));
             }
         }
 
@@ -118,9 +119,9 @@ namespace Cassandra.IntegrationTests.Core
                 var session = cluster.Connect();
                 simulacronCluster.Prime(QueryPrime());
                 var ps = session.Prepare(Query);
-                Assert.NotNull(ps);
-                Assert.AreSame(ps, session.Prepare(Query));
-                Assert.AreNotSame(ps, session.Prepare("SELECT * FROM system.local"));
+                Assert.That(ps, Is.Not.Null);
+                Assert.That(ps, Is.SameAs(session.Prepare(Query)));
+                Assert.That(ps, Is.Not.SameAs(session.Prepare("SELECT * FROM system.local")));
             }
         }
 
@@ -141,9 +142,9 @@ namespace Cassandra.IntegrationTests.Core
                     node.Prime(h == firstHost ? PrepareSimulatorTests.IsBootstrappingPrime : QueryPrime());
                 }
                 var ps = session.Prepare(Query);
-                Assert.NotNull(ps);
+                Assert.That(ps, Is.Not.Null);
                 // Should have been executed in the first node (failed) and in the second one (succeeded)
-                Assert.AreEqual(2, simulacronCluster.GetQueries(Query, QueryType.Prepare).Count);
+                Assert.That(2, Is.EqualTo(simulacronCluster.GetQueries(Query, QueryType.Prepare).Count));
             }
         }
 
@@ -163,8 +164,8 @@ namespace Cassandra.IntegrationTests.Core
                     node.Prime(h == secondHost ? PrepareSimulatorTests.IsBootstrappingPrime : QueryPrime());
                 }
                 var ps = session.Prepare(Query);
-                Assert.NotNull(ps);
-                Assert.AreEqual(3, simulacronCluster.GetQueries(Query, QueryType.Prepare).Count);
+                Assert.That(ps, Is.Not.Null);
+                Assert.That(3, Is.EqualTo(simulacronCluster.GetQueries(Query, QueryType.Prepare).Count));
             }
         }
 
@@ -186,9 +187,9 @@ namespace Cassandra.IntegrationTests.Core
                     node.Prime(QueryPrime(h == firstHost ? 10000 : 0));
                 }
                 var ps = session.Prepare(Query);
-                Assert.NotNull(ps);
+                Assert.That(ps, Is.Not.Null);
                 // Should have been executed in the first node (timed out) and in the second one (succeeded)
-                Assert.AreEqual(2, simulacronCluster.GetQueries(Query, QueryType.Prepare).Count);
+                Assert.That(2, Is.EqualTo(simulacronCluster.GetQueries(Query, QueryType.Prepare).Count));
             }
         }
 
@@ -204,20 +205,20 @@ namespace Cassandra.IntegrationTests.Core
                 var session = cluster.Connect();
                 simulacronCluster.Prime(QueryPrime());
                 var ps = await session.PrepareAsync(Query).ConfigureAwait(false);
-                Assert.NotNull(ps);
-                Assert.AreEqual(3, simulacronCluster.GetQueries(Query, QueryType.Prepare).Count);
+                Assert.That(ps, Is.Not.Null);
+                Assert.That(3, Is.EqualTo(simulacronCluster.GetQueries(Query, QueryType.Prepare).Count));
                 var node = simulacronCluster.GetNodes().Skip(1).First();
                 // It should have been prepared once on the node we are about to stop
-                Assert.AreEqual(1, node.GetQueries(Query, QueryType.Prepare).Count);
+                Assert.That(1, Is.EqualTo(node.GetQueries(Query, QueryType.Prepare).Count));
                 await node.Stop().ConfigureAwait(false);
                 await TestHelper.WaitUntilAsync(() => cluster.AllHosts().Any(h => !h.IsUp)).ConfigureAwait(false);
-                Assert.AreEqual(1, cluster.AllHosts().Count(h => !h.IsUp));
+                Assert.That(1, Is.EqualTo(cluster.AllHosts().Count(h => !h.IsUp)));
                 await node.Start().ConfigureAwait(false);
                 await TestHelper.WaitUntilAsync(() => cluster.AllHosts().All(h => h.IsUp)).ConfigureAwait(false);
-                Assert.AreEqual(0, cluster.AllHosts().Count(h => !h.IsUp));
+                Assert.That(0, Is.EqualTo(cluster.AllHosts().Count(h => !h.IsUp)));
                 TestHelper.WaitUntil(() => node.GetQueries(Query, QueryType.Prepare).Count == 2);
                 // It should be prepared 2 times
-                Assert.AreEqual(2, node.GetQueries(Query, QueryType.Prepare).Count);
+                Assert.That(2, Is.EqualTo(node.GetQueries(Query, QueryType.Prepare).Count));
             }
         }
         
@@ -234,33 +235,33 @@ namespace Cassandra.IntegrationTests.Core
 
                 simulacronCluster.Prime(PrepareSimulatorTests.QueryWithoutKeyspacePrime());
                 var ps = await session.PrepareAsync(PrepareSimulatorTests.QueryWithoutKeyspace).ConfigureAwait(false);
-                Assert.NotNull(ps);
+                Assert.That(ps, Is.Not.Null);
                 ps = await session.PrepareAsync(PrepareSimulatorTests.Query).ConfigureAwait(false);
-                Assert.NotNull(ps);
+                Assert.That(ps, Is.Not.Null);
 
                 foreach (var simNode in simulacronCluster.DataCenters.First().Nodes)
                 {
-                    Assert.AreEqual(1, simNode.GetQueries($"USE \"{PrepareSimulatorTests.Keyspace}\"").Count);
-                    Assert.AreEqual(1, simNode.GetQueries(PrepareSimulatorTests.QueryWithoutKeyspace, QueryType.Prepare).Count);
-                    Assert.AreEqual(1, simNode.GetQueries(PrepareSimulatorTests.Query, QueryType.Prepare).Count);
+                    Assert.That(1, Is.EqualTo(simNode.GetQueries($"USE \"{PrepareSimulatorTests.Keyspace}\"").Count));
+                    Assert.That(1, Is.EqualTo(simNode.GetQueries(PrepareSimulatorTests.QueryWithoutKeyspace, QueryType.Prepare).Count));
+                    Assert.That(1, Is.EqualTo(simNode.GetQueries(PrepareSimulatorTests.Query, QueryType.Prepare).Count));
                 }
 
                 var node = simulacronCluster.GetNodes().Skip(1).First();
                 await node.Stop().ConfigureAwait(false);
                 await TestHelper.WaitUntilAsync(() => cluster.AllHosts().Any(h => !h.IsUp)).ConfigureAwait(false);
-                Assert.AreEqual(1, cluster.AllHosts().Count(h => !h.IsUp));
+                Assert.That(1, Is.EqualTo(cluster.AllHosts().Count(h => !h.IsUp)));
                 
                 // still only 1 USE and Prepare requests
-                Assert.AreEqual(1, node.GetQueries($"USE \"{PrepareSimulatorTests.Keyspace}\"").Count);
-                Assert.AreEqual(1, node.GetQueries(PrepareSimulatorTests.QueryWithoutKeyspace, QueryType.Prepare).Count);
-                Assert.AreEqual(1, node.GetQueries(PrepareSimulatorTests.QueryWithoutKeyspace, QueryType.Prepare).Count);
+                Assert.That(1, Is.EqualTo(node.GetQueries($"USE \"{PrepareSimulatorTests.Keyspace}\"").Count));
+                Assert.That(1, Is.EqualTo(node.GetQueries(PrepareSimulatorTests.QueryWithoutKeyspace, QueryType.Prepare).Count));
+                Assert.That(1, Is.EqualTo(node.GetQueries(PrepareSimulatorTests.QueryWithoutKeyspace, QueryType.Prepare).Count));
 
                 // restart node
                 await node.Start().ConfigureAwait(false);
 
                 // wait until node is up
                 await TestHelper.WaitUntilAsync(() => cluster.AllHosts().All(h => h.IsUp)).ConfigureAwait(false);
-                Assert.AreEqual(0, cluster.AllHosts().Count(h => !h.IsUp));
+                Assert.That(0, Is.EqualTo(cluster.AllHosts().Count(h => !h.IsUp)));
 
                 // wait until driver reprepares the statement
                 TestHelper.WaitUntil(() => 
@@ -268,20 +269,20 @@ namespace Cassandra.IntegrationTests.Core
                     && node.GetQueries(PrepareSimulatorTests.Query, QueryType.Prepare).Count == 2);
                 
                 // It should be prepared 2 times
-                Assert.AreEqual(2, node.GetQueries(PrepareSimulatorTests.QueryWithoutKeyspace, QueryType.Prepare).Count);
-                Assert.AreEqual(2, node.GetQueries(PrepareSimulatorTests.Query, QueryType.Prepare).Count);
-                Assert.AreEqual(2, node.GetQueries($"USE \"{PrepareSimulatorTests.Keyspace}\"").Count);
+                Assert.That(2, Is.EqualTo(node.GetQueries(PrepareSimulatorTests.QueryWithoutKeyspace, QueryType.Prepare).Count));
+                Assert.That(2, Is.EqualTo(node.GetQueries(PrepareSimulatorTests.Query, QueryType.Prepare).Count));
+                Assert.That(2, Is.EqualTo(node.GetQueries($"USE \"{PrepareSimulatorTests.Keyspace}\"").Count));
 
                 // Assert that USE requests are sent **before** PREPARE requests
                 var relevantQueries = node.GetQueries(null, null).Where(log =>
                     (log.Query == $"USE \"{PrepareSimulatorTests.Keyspace}\"" && log.Type == QueryType.Query)
                     || (log.Query == PrepareSimulatorTests.QueryWithoutKeyspace && log.Type == QueryType.Prepare)
                     || (log.Query == PrepareSimulatorTests.Query && log.Type == QueryType.Prepare)).ToList();
-                Assert.AreEqual(6, relevantQueries.Count);
-                Assert.AreEqual($"USE \"{PrepareSimulatorTests.Keyspace}\"", relevantQueries[0].Query);
-                Assert.AreEqual(PrepareSimulatorTests.QueryWithoutKeyspace, relevantQueries[1].Query);
-                Assert.AreEqual(PrepareSimulatorTests.Query, relevantQueries[2].Query);
-                Assert.AreEqual($"USE \"{PrepareSimulatorTests.Keyspace}\"", relevantQueries[3].Query);
+                Assert.That(6, Is.EqualTo(relevantQueries.Count));
+                Assert.That($"USE \"{PrepareSimulatorTests.Keyspace}\"", Is.EqualTo(relevantQueries[0].Query));
+                Assert.That(PrepareSimulatorTests.QueryWithoutKeyspace, Is.EqualTo(relevantQueries[1].Query));
+                Assert.That(PrepareSimulatorTests.Query, Is.EqualTo(relevantQueries[2].Query));
+                Assert.That($"USE \"{PrepareSimulatorTests.Keyspace}\"", Is.EqualTo(relevantQueries[3].Query));
                 CollectionAssert.AreEquivalent(
                     new []
                     {

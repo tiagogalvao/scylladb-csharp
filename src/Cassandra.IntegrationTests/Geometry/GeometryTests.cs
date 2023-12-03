@@ -21,6 +21,7 @@ using System.Linq;
 using Cassandra.IntegrationTests.TestBase;
 using Cassandra.Tests;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Geometry
 {
@@ -75,8 +76,8 @@ namespace Cassandra.IntegrationTests.Geometry
                     (IStatement)selectPs.Bind(id) :
                     new SimpleStatement(SelectGeoQuery, id);
                 var row = Session.Execute(statement).FirstOrDefault();
-                Assert.NotNull(row, "Row with id '{0}' not found", id);
-                Assert.AreEqual(value, row.GetValue<object>("value"));
+                ClassicAssert.NotNull(row, "Row with id '{0}' not found", id);
+                Assert.That(value, Is.EqualTo(row.GetValue<object>("value")));
             }
         }
 
@@ -98,10 +99,10 @@ namespace Cassandra.IntegrationTests.Geometry
             var ps = Session.Prepare(SelectKeyedQuery);
             var statement = ps.Bind(Values[0]);
             var row = Session.Execute(statement).FirstOrDefault();
-            Assert.NotNull(row);
-            Assert.AreEqual("hello", row.GetValue<string>("value"));
-            Assert.NotNull(statement.RoutingKey);
-            Assert.NotNull(statement.RoutingKey.RawRoutingKey);
+            Assert.That(row, Is.Not.Null);
+            Assert.That("hello", Is.EqualTo(row.GetValue<string>("value")));
+            Assert.That(statement.RoutingKey, Is.Not.Null);
+            Assert.That(statement.RoutingKey.RawRoutingKey, Is.Not.Null);
         }
 
         [TestCase(true)]
@@ -156,14 +157,14 @@ namespace Cassandra.IntegrationTests.Geometry
                 (IStatement)selectPs.Bind(id) :
                 new SimpleStatement(selectQuery, id);
             var row = Session.Execute(statement).FirstOrDefault();
-            Assert.NotNull(row, "Row for value {0} not found", value);
+            ClassicAssert.NotNull(row, "Row for value {0} not found", value);
             if (value is IEnumerable)
             {
                 CollectionAssert.AreEqual((IEnumerable)value, (IEnumerable)row.GetValue<object>("value"));
             }
             else
             {
-                Assert.AreEqual(value, row.GetValue<object>("value"));
+                Assert.That(value, Is.EqualTo(row.GetValue<object>("value")));
             }
         }
     }

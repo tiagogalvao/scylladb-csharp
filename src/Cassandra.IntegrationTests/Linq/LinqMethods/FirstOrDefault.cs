@@ -58,8 +58,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                 _movieTable.FirstOrDefault(
                     m => m.Director == expectedMovie.Director && m.Title == expectedMovie.Title && m.MovieMaker == expectedMovie.MovieMaker);
             var first = async ? firstQuery.ExecuteAsync().Result : firstQuery.Execute();
-            Assert.IsNotNull(first);
-            Assert.AreEqual(expectedMovie.MovieMaker, first.MovieMaker);
+            Assert.That(first, Is.Not.Null);
+            Assert.That(expectedMovie.MovieMaker, Is.EqualTo(first.MovieMaker));
         }
         
         [TestCase(true)]
@@ -77,7 +77,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
 
             var firstQuery = _movieTable.FirstOrDefault(m => m.Director == "non_existant_" + randomStr.Get());
             var first = async ? firstQuery.ExecuteAsync().Result : firstQuery.Execute();
-            Assert.IsNull(first);
+            Assert.That(first, Is.Null);
         }
     }
 }

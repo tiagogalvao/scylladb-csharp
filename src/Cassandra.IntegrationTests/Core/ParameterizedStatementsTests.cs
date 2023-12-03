@@ -23,6 +23,7 @@ using System.Numerics;
 using Cassandra.IntegrationTests.TestBase;
 using Cassandra.Serialization;
 using Cassandra.Tests;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -236,7 +237,7 @@ namespace Cassandra.IntegrationTests.Core
                 string.Format("SELECT * FROM {0} WHERE id = ?", tableName),
                 id);
             var row = Session.Execute(selectStatement).First();
-            Assert.AreEqual(value, row.GetValue<T>(columnName));
+            Assert.That(value, Is.EqualTo(row.GetValue<T>(columnName)));
         }
 
         [Test]
@@ -248,8 +249,8 @@ namespace Cassandra.IntegrationTests.Core
             var insertStatement = new SimpleStatement(string.Format("INSERT INTO {0} (id, text_sample) VALUES (?, ?)", AllTypesTableName), id, "sample text");
             Session.Execute(insertStatement.SetTimestamp(timestamp));
             var row = Session.Execute(new SimpleStatement(string.Format("SELECT id, text_sample, writetime(text_sample) FROM {0} WHERE id = ?", AllTypesTableName), id)).First();
-            Assert.NotNull(row.GetValue<string>("text_sample"));
-            Assert.AreEqual(TypeSerializer.SinceUnixEpoch(timestamp).Ticks / 10, row.GetValue<object>("writetime(text_sample)"));
+            Assert.That(row.GetValue<string>("text_sample"), Is.Not.Null);
+            Assert.That(TypeSerializer.SinceUnixEpoch(timestamp).Ticks / 10, Is.EqualTo(row.GetValue<object>("writetime(text_sample)")));
         }
 
         [Test]
@@ -263,9 +264,9 @@ namespace Cassandra.IntegrationTests.Core
 
             var row = Session.Execute(string.Format("SELECT int_sample, bigint_sample, text_sample FROM {0} WHERE id = {1:D}", AllTypesTableName, id)).First();
 
-            Assert.AreEqual(100, row.GetValue<int>("int_sample"));
-            Assert.AreEqual(-500L, row.GetValue<long>("bigint_sample"));
-            Assert.AreEqual("named params ftw again!", row.GetValue<string>("text_sample"));
+            Assert.That(100, Is.EqualTo(row.GetValue<int>("int_sample")));
+            Assert.That(-500L, Is.EqualTo(row.GetValue<long>("bigint_sample")));
+            Assert.That("named params ftw again!", Is.EqualTo(row.GetValue<string>("text_sample")));
         }
 
         [Test]
@@ -281,9 +282,9 @@ namespace Cassandra.IntegrationTests.Core
 
             var row = Session.Execute(string.Format("SELECT int_sample, bigint_sample, text_sample FROM {0} WHERE id = {1:D}", AllTypesTableName, id)).First();
 
-            Assert.AreEqual(100, row.GetValue<int>("int_sample"));
-            Assert.AreEqual(-500L, row.GetValue<long>("bigint_sample"));
-            Assert.AreEqual("named params ftw again!", row.GetValue<string>("text_sample"));
+            Assert.That(100, Is.EqualTo(row.GetValue<int>("int_sample")));
+            Assert.That(-500L, Is.EqualTo(row.GetValue<long>("bigint_sample")));
+            Assert.That("named params ftw again!", Is.EqualTo(row.GetValue<string>("text_sample")));
         }
 
         [Test]
@@ -298,8 +299,8 @@ namespace Cassandra.IntegrationTests.Core
                     new { my_INt = 1, my_TEXT = "WAT1", my_id = id}));
 
             var row = Session.Execute(string.Format("SELECT * FROM {0} WHERE id = {1:D}", AllTypesTableName, id)).First();
-            Assert.AreEqual(1, row.GetValue<int>("int_sample"));
-            Assert.AreEqual("WAT1", row.GetValue<string>("text_sample"));
+            Assert.That(1, Is.EqualTo(row.GetValue<int>("int_sample")));
+            Assert.That("WAT1", Is.EqualTo(row.GetValue<string>("text_sample")));
         }
 
         [Test]
@@ -326,9 +327,9 @@ namespace Cassandra.IntegrationTests.Core
                 var select = new SimpleStatement("SELECT * FROM tbl_smallint_param WHERE id = ?", Convert.ToInt32(v));
                 Session.Execute(insert);
                 var rs = Session.Execute(select).ToList();
-                Assert.AreEqual(1, rs.Count);
-                Assert.AreEqual(v, rs[0].GetValue<short>("v"));
-                Assert.AreEqual(v.ToString(), rs[0].GetValue<SortedDictionary<short, string>>("m")[v]);
+                Assert.That(1, Is.EqualTo(rs.Count));
+                Assert.That(v, Is.EqualTo(rs[0].GetValue<short>("v")));
+                Assert.That(v.ToString(), Is.EqualTo(rs[0].GetValue<SortedDictionary<short, string>>("m")[v]));
             }
         }
 
@@ -345,9 +346,9 @@ namespace Cassandra.IntegrationTests.Core
                 var select = new SimpleStatement("SELECT * FROM tbl_tinyint_param WHERE id = ?", Convert.ToInt32(v));
                 Session.Execute(insert);
                 var rs = Session.Execute(select).ToList();
-                Assert.AreEqual(1, rs.Count);
-                Assert.AreEqual(v, rs[0].GetValue<sbyte>("v"));
-                Assert.AreEqual(v.ToString(), rs[0].GetValue<SortedDictionary<sbyte, string>>("m")[v]);
+                Assert.That(1, Is.EqualTo(rs.Count));
+                Assert.That(v, Is.EqualTo(rs[0].GetValue<sbyte>("v")));
+                Assert.That(v.ToString(), Is.EqualTo(rs[0].GetValue<SortedDictionary<sbyte, string>>("m")[v]));
             }
         }
 
@@ -374,9 +375,9 @@ namespace Cassandra.IntegrationTests.Core
                 var select = new SimpleStatement("SELECT * FROM tbl_date_param WHERE id = ?", i);
                 Session.Execute(insert);
                 var rs = Session.Execute(select).ToList();
-                Assert.AreEqual(1, rs.Count);
-                Assert.AreEqual(v, rs[0].GetValue<LocalDate>("v"));
-                Assert.AreEqual(v.ToString(), rs[0].GetValue<SortedDictionary<LocalDate, string>>("m")[v]);
+                Assert.That(1, Is.EqualTo(rs.Count));
+                Assert.That(v, Is.EqualTo(rs[0].GetValue<LocalDate>("v")));
+                Assert.That(v.ToString(), Is.EqualTo(rs[0].GetValue<SortedDictionary<LocalDate, string>>("m")[v]));
             }
         }
 
@@ -403,9 +404,9 @@ namespace Cassandra.IntegrationTests.Core
                 var select = new SimpleStatement("SELECT * FROM tbl_time_param WHERE id = ?", i);
                 Session.Execute(insert);
                 var rs = Session.Execute(select).ToList();
-                Assert.AreEqual(1, rs.Count);
-                Assert.AreEqual(v, rs[0].GetValue<LocalTime>("v"));
-                Assert.AreEqual(v.ToString(), rs[0].GetValue<SortedDictionary<LocalTime, string>>("m")[v]);
+                Assert.That(1, Is.EqualTo(rs.Count));
+                Assert.That(v, Is.EqualTo(rs[0].GetValue<LocalTime>("v")));
+                Assert.That(v.ToString(), Is.EqualTo(rs[0].GetValue<SortedDictionary<LocalTime, string>>("m")[v]));
             }
         }
 
@@ -432,8 +433,8 @@ namespace Cassandra.IntegrationTests.Core
             Session.Execute(new SimpleStatement(values, insertQuery));
 
             var row = Session.Execute(string.Format("SELECT * FROM {0} WHERE id = {1:D}", AllTypesTableName, id)).First();
-            Assert.AreEqual(values["my_INT"], row.GetValue<int>("int_sample"));
-            Assert.AreEqual(values["MY_text"], row.GetValue<string>("text_sample"));
+            Assert.That(values["my_INT"], Is.EqualTo(row.GetValue<int>("int_sample")));
+            Assert.That(values["MY_text"], Is.EqualTo(row.GetValue<string>("text_sample")));
         }
 
         /// <summary>
@@ -461,8 +462,8 @@ namespace Cassandra.IntegrationTests.Core
             Session.Execute(new SimpleStatement(values, insertQuery));
 
             var row = Session.Execute(string.Format("SELECT * FROM {0} WHERE id = {1:D}", AllTypesTableName, id)).First();
-            Assert.AreEqual(values["MY_INT"], row.GetValue<int>("int_sample"));
-            Assert.AreEqual(values["MY_text"], row.GetValue<string>("text_sample"));
+            Assert.That(values["MY_INT"], Is.EqualTo(row.GetValue<int>("int_sample")));
+            Assert.That(values["MY_text"], Is.EqualTo(row.GetValue<string>("text_sample")));
         }
 
         /// <summary>
@@ -512,8 +513,8 @@ namespace Cassandra.IntegrationTests.Core
             Session.Execute(new SimpleStatement(values, insertQuery));
 
             var row = Session.Execute(string.Format("SELECT * FROM {0} WHERE id = {1:D}", AllTypesTableName, id)).First();
-            Assert.AreEqual(values["my_INT"], row.GetValue<int>("int_sample"));
-            Assert.AreEqual(values["MY_text"], row.GetValue<string>("text_sample"));
+            Assert.That(values["my_INT"], Is.EqualTo(row.GetValue<int>("int_sample")));
+            Assert.That(values["MY_text"], Is.EqualTo(row.GetValue<string>("text_sample")));
         }
 
         [Test]
@@ -527,11 +528,11 @@ namespace Cassandra.IntegrationTests.Core
             }
 
             // It defaults to null
-            Assert.Null(new SimpleStatement("SELECT key FROM system.local").Keyspace);
+            Assert.That(new SimpleStatement("SELECT key FROM system.local").Keyspace, Is.Null);
 
             var statement = new SimpleStatement("SELECT key FROM local").SetKeyspace("system");
-            Assert.AreEqual("system", statement.Keyspace);
-            Assert.AreEqual(1, Session.Execute(statement).Count());
+            Assert.That("system", Is.EqualTo(statement.Keyspace));
+            Assert.That(1, Is.EqualTo(Session.Execute(statement).Count()));
         }
 
         [Test]
@@ -558,9 +559,9 @@ namespace Cassandra.IntegrationTests.Core
             {
                 var session = cluster.Connect(KeyspaceName);
                 var rs = session.Execute($"SELECT * FROM {TableCompactStorage} LIMIT 1");
-                Assert.AreEqual(5, rs.Columns.Length);
-                Assert.NotNull(rs.Columns.FirstOrDefault(c => c.Name == "column1"));
-                Assert.NotNull(rs.Columns.FirstOrDefault(c => c.Name == "value"));
+                Assert.That(5, Is.EqualTo(rs.Columns.Length));
+                Assert.That(rs.Columns.FirstOrDefault(c => c.Name == "column1"), Is.Not.Null);
+                Assert.That(rs.Columns.FirstOrDefault(c => c.Name == "value"), Is.Not.Null);
             }
         }
 
@@ -579,9 +580,9 @@ namespace Cassandra.IntegrationTests.Core
             {
                 var session = cluster.Connect(KeyspaceName);
                 var rs = session.Execute($"SELECT * FROM {TableCompactStorage} LIMIT 1");
-                Assert.AreEqual(3, rs.Columns.Length);
-                Assert.Null(rs.Columns.FirstOrDefault(c => c.Name == "column1"));
-                Assert.Null(rs.Columns.FirstOrDefault(c => c.Name == "value"));
+                Assert.That(3, Is.EqualTo(rs.Columns.Length));
+                Assert.That(rs.Columns.FirstOrDefault(c => c.Name == "column1"), Is.Null);
+                Assert.That(rs.Columns.FirstOrDefault(c => c.Name == "value"), Is.Null);
             }
         }
 
@@ -748,7 +749,7 @@ namespace Cassandra.IntegrationTests.Core
                     var current = rowEnum.Current;
                     if (objArr[y].GetType() == typeof(byte[]))
                     {
-                        Assert.AreEqual((byte[])objArr[y], (byte[])current);
+                        Assert.That((byte[])objArr[y], Is.EqualTo((byte[])current));
                     }
                     else if (current.GetType() == typeof(DateTimeOffset))
                     {
@@ -756,21 +757,21 @@ namespace Cassandra.IntegrationTests.Core
                         {
                             if ((long)objArr[y] == 0)
                             {
-                                Assert.AreEqual(((DateTimeOffset)current).Ticks, DateTimeOffset.Parse("1/1/1970 12:00:00 AM +00:00").Ticks);
+                                Assert.That(((DateTimeOffset)current).Ticks, Is.EqualTo(DateTimeOffset.Parse("1/1/1970 12:00:00 AM +00:00").Ticks));
                             }
                             else
                             {
-                                Assert.AreEqual(FromUnixTime((long)objArr[y]), (DateTimeOffset)current, string.Format("Found difference between expected and actual row {0} != {1}", objArr[y].ToString(), current.ToString()));
+                                Assert.That(FromUnixTime((long)objArr[y]), Is.EqualTo((DateTimeOffset)current), string.Format("Found difference between expected and actual row {0} != {1}", objArr[y].ToString(), current.ToString()));
                             }
                         }
                         else
                         {
-                            Assert.AreEqual((DateTimeOffset)objArr[y], ((DateTimeOffset)current), string.Format("Found difference between expected and actual row {0} != {1}", objArr[y].ToString(), current.ToString()));
+                            Assert.That((DateTimeOffset)objArr[y], Is.EqualTo(((DateTimeOffset)current)), string.Format("Found difference between expected and actual row {0} != {1}", objArr[y].ToString(), current.ToString()));
                         }
                     }
                     else
                     {
-                        Assert.True(objArr[y].Equals(current), string.Format("Found difference between expected and actual row {0} != {1}", objArr[y].ToString(), current.ToString()));
+                        ClassicAssert.True(objArr[y].Equals(current), string.Format("Found difference between expected and actual row {0} != {1}", objArr[y].ToString(), current.ToString()), Is.True);
                     }
                     y++;
                 }

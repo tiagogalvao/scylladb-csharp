@@ -74,8 +74,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqTable
 
             var listOfAllDataTypesObjects =
                 (from x in table where x.StringType.Equals(uniqueKey) select x).Execute().ToList();
-            Assert.NotNull(listOfAllDataTypesObjects);
-            Assert.AreEqual(1, listOfAllDataTypesObjects.Count);
+            Assert.That(listOfAllDataTypesObjects, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(listOfAllDataTypesObjects.Count));
             var actualDataTypesEntityRow = listOfAllDataTypesObjects.First();
             expectedDataTypesEntityRow.AssertEquals(actualDataTypesEntityRow);
         }
@@ -100,8 +100,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqTable
             // select record
             var listOfAllDataTypesObjects =
                 (from x in table where x.StringType.Equals(uniqueKey) select x).Execute().ToList();
-            Assert.NotNull(listOfAllDataTypesObjects);
-            Assert.AreEqual(1, listOfAllDataTypesObjects.Count);
+            Assert.That(listOfAllDataTypesObjects, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(listOfAllDataTypesObjects.Count));
             var actualDataTypesEntityRow = listOfAllDataTypesObjects.First();
 
             expectedDataTypesEntityRow.AssertEquals(actualDataTypesEntityRow);

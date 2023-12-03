@@ -44,13 +44,13 @@ namespace Cassandra.Tests.ExecutionProfiles
 
             var profile = new ExecutionProfile(baseProfile, new ExecutionProfileBuilder().Build());
 
-            Assert.AreSame(lbp, profile.LoadBalancingPolicy);
-            Assert.AreSame(sep, profile.SpeculativeExecutionPolicy);
-            Assert.AreSame(rp, profile.RetryPolicy);
-            Assert.AreEqual(3000, profile.ReadTimeoutMillis);
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, profile.SerialConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.Quorum, profile.ConsistencyLevel);
-            Assert.AreEqual(go, profile.GraphOptions);
+            Assert.That(lbp, Is.SameAs(profile.LoadBalancingPolicy));
+            Assert.That(sep, Is.SameAs(profile.SpeculativeExecutionPolicy));
+            Assert.That(rp, Is.SameAs(profile.RetryPolicy));
+            Assert.That(3000, Is.EqualTo(profile.ReadTimeoutMillis));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(profile.SerialConsistencyLevel));
+            Assert.That(ConsistencyLevel.Quorum, Is.EqualTo(profile.ConsistencyLevel));
+            Assert.That(go, Is.EqualTo(profile.GraphOptions));
         }
         
         [Test]
@@ -90,13 +90,13 @@ namespace Cassandra.Tests.ExecutionProfiles
             
             var profile = new ExecutionProfile(baseProfile, derivedProfile);
 
-            Assert.AreSame(lbpProfile, profile.LoadBalancingPolicy);
-            Assert.AreSame(sepProfile, profile.SpeculativeExecutionPolicy);
-            Assert.AreSame(rpProfile, profile.RetryPolicy);
-            Assert.AreEqual(5000, profile.ReadTimeoutMillis);
-            Assert.AreEqual(ConsistencyLevel.Serial, profile.SerialConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.LocalQuorum, profile.ConsistencyLevel);
-            Assert.AreSame(goProfile, profile.GraphOptions);
+            Assert.That(lbpProfile, Is.SameAs(profile.LoadBalancingPolicy));
+            Assert.That(sepProfile, Is.SameAs(profile.SpeculativeExecutionPolicy));
+            Assert.That(rpProfile, Is.SameAs(profile.RetryPolicy));
+            Assert.That(5000, Is.EqualTo(profile.ReadTimeoutMillis));
+            Assert.That(ConsistencyLevel.Serial, Is.EqualTo(profile.SerialConsistencyLevel));
+            Assert.That(ConsistencyLevel.LocalQuorum, Is.EqualTo(profile.ConsistencyLevel));
+            Assert.That(goProfile, Is.SameAs(profile.GraphOptions));
         }
     }
 }

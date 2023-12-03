@@ -20,6 +20,7 @@ using Cassandra.Data.Linq;
 using Cassandra.Mapping;
 using Cassandra.Tests.Mapping.Pocos;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.Mapping.Linq
 {
@@ -51,7 +52,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 .Update()
                 .SetTTL(60 * 60)
                 .Execute();
-            Assert.AreEqual("UPDATE tbl1 USING TTL ? SET string_val = ?, val2 = ? WHERE id = ?", query);
+            Assert.That("UPDATE tbl1 USING TTL ? SET string_val = ?, val2 = ? WHERE id = ?", Is.EqualTo(query));
             CollectionAssert.AreEqual(new object[] { 60 * 60, "Billy the Vision", 10M, id }, parameters);
         }
 
@@ -381,7 +382,7 @@ namespace Cassandra.Tests.Mapping.Linq
             table.Where(x => x.Id == id)
                  .Select(x => new CollectionTypesEntity { Favs = x.Favs.SubstractAssign("a", "b", "c")})
                  .Update().Execute();
-            Assert.AreEqual("UPDATE tbl1 SET favs = favs - ? WHERE id = ?", query);
+            Assert.That("UPDATE tbl1 SET favs = favs - ? WHERE id = ?", Is.EqualTo(query));
             CollectionAssert.AreEquivalent(new object[]{ new [] { "a", "b", "c" }, id }, parameters);
         }
 
@@ -409,16 +410,16 @@ namespace Cassandra.Tests.Mapping.Linq
             table.Where(t => t.UuidValue == id && list.Contains(Tuple.Create(t.StringValue, t.IntValue)))
                  .Select(t => new AllTypesEntity { Int64Value = value })
                  .Update().Execute();
-            Assert.NotNull(statement);
+            Assert.That(statement, Is.Not.Null);
             CollectionAssert.AreEquivalent(new object[] {value, id, list }, statement.QueryValues);
-            Assert.AreEqual(expectedQuery, statement.PreparedStatement.Cql);
+            Assert.That(expectedQuery, Is.EqualTo(statement.PreparedStatement.Cql));
             // Using constructor
             table.Where(t => t.UuidValue == id && list.Contains(new Tuple<string, int>(t.StringValue, t.IntValue)))
                  .Select(t => new AllTypesEntity { Int64Value = value })
                  .Update().Execute();
-            Assert.NotNull(statement);
+            Assert.That(statement, Is.Not.Null);
             CollectionAssert.AreEquivalent(new object[] {value, id, list}, statement.QueryValues);
-            Assert.AreEqual(expectedQuery, statement.PreparedStatement.Cql);
+            Assert.That(expectedQuery, Is.EqualTo(statement.PreparedStatement.Cql));
         }
         
         private class TestObjectStaticProperty
@@ -438,7 +439,7 @@ namespace Cassandra.Tests.Mapping.Linq
             }).Update().GetCql(out var parameters);
 
             Assert.That(parameters, Is.EquivalentTo(new[] { "static", "static" }));
-            Assert.AreEqual(@"UPDATE ""x_ts"" SET ""x_pk"" = ?, ""x_ck1"" = ?", cql);
+            Assert.That(@"UPDATE ""x_ts"" SET ""x_pk"" = ?, ""x_ck1"" = ?", Is.EqualTo(cql));
         }
     }
 }

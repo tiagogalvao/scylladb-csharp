@@ -25,7 +25,7 @@ namespace Cassandra.Tests
         public void Should_Allow_Bind_With_Empty_Query() 
         { 
             var ps = new PreparedStatement();
-            Assert.NotNull(ps.Bind());
+            Assert.That(ps.Bind(), Is.Not.Null);
         }
 
         [Test] 
@@ -36,18 +36,18 @@ namespace Cassandra.Tests
             ps.SetConsistencyLevel(ConsistencyLevel.LocalQuorum);
             ps.SetIdempotence(true);
             var statement = ps.Bind();
-            Assert.AreEqual(ConsistencyLevel.LocalQuorum, statement.ConsistencyLevel);
-            Assert.AreSame(ps.RoutingKey, statement.RoutingKey);
-            Assert.True(statement.IsIdempotent);
+            Assert.That(ConsistencyLevel.LocalQuorum, Is.EqualTo(statement.ConsistencyLevel));
+            Assert.That(ps.RoutingKey, Is.SameAs(statement.RoutingKey));
+            Assert.That(statement.IsIdempotent, Is.True);
         }
 
         [Test] 
         public void Bind_Should_Create_BoundStatement_With_Default_Values() 
         {
             var statement = new PreparedStatement().Bind();
-            Assert.Null(statement.ConsistencyLevel);
-            Assert.Null(statement.RoutingKey);
-            Assert.Null(statement.IsIdempotent);
+            Assert.That(statement.ConsistencyLevel, Is.Null);
+            Assert.That(statement.RoutingKey, Is.Null);
+            Assert.That(statement.IsIdempotent, Is.Null);
         }
     }
 }

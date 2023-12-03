@@ -26,6 +26,7 @@ using Cassandra.IntegrationTests.TestClusterManagement;
 using Cassandra.Serialization;
 using Cassandra.Tests;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Policies.Tests
 {
@@ -49,9 +50,9 @@ namespace Cassandra.IntegrationTests.Policies.Tests
             {
                 var session1 = (Session) cluster1.Connect();
                 var session2 = (Session) cluster2.Connect();
-                Assert.AreNotSame(session1.Policies.LoadBalancingPolicy, session2.Policies.LoadBalancingPolicy, "Load balancing policy instances should be different");
-                Assert.AreNotSame(session1.Policies.ReconnectionPolicy, session2.Policies.ReconnectionPolicy, "Reconnection policy instances should be different");
-                Assert.AreNotSame(session1.Policies.RetryPolicy, session2.Policies.RetryPolicy, "Retry policy instances should be different");
+                Assert.That(session1.Policies.LoadBalancingPolicy, Is.Not.SameAs(session2.Policies.LoadBalancingPolicy), "Load balancing policy instances should be different");
+                Assert.That(session1.Policies.ReconnectionPolicy, Is.Not.SameAs(session2.Policies.ReconnectionPolicy), "Reconnection policy instances should be different");
+                Assert.That(session1.Policies.RetryPolicy, Is.Not.SameAs(session2.Policies.RetryPolicy), "Retry policy instances should be different");
             }
         }
         /// <summary>
@@ -84,7 +85,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
             foreach (var t in traces)
             {
                 //The coordinator must be the only one executing the query
-                Assert.True(t.Events.All(e => e.Source.ToString() == t.Coordinator.ToString()), "There were trace events from another host for coordinator " + t.Coordinator);
+                Assert.That(t.Events.All(e => e.Source.ToString() == t.Coordinator.ToString()), Is.True, "There were trace events from another host for coordinator " + t.Coordinator);
             }
         }
 
@@ -121,7 +122,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
             foreach (var t in traces)
             {
                 //The coordinator must be the only one executing the query
-                Assert.True(t.Events.All(e => e.Source.ToString() == t.Coordinator.ToString()), "There were trace events from another host for coordinator " + t.Coordinator);
+                Assert.That(t.Events.All(e => e.Source.ToString() == t.Coordinator.ToString()), Is.True, "There were trace events from another host for coordinator " + t.Coordinator);
             }
         }
 
@@ -159,7 +160,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
             foreach (var t in traces)
             {
                 //The coordinator must be the only one executing the query
-                Assert.True(t.Events.All(e => e.Source.ToString() == t.Coordinator.ToString()), "There were trace events from another host for coordinator " + t.Coordinator);
+                Assert.That(t.Events.All(e => e.Source.ToString() == t.Coordinator.ToString()), Is.True, "There were trace events from another host for coordinator " + t.Coordinator);
             }
         }
 
@@ -187,7 +188,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
             {
                 var statement = ps.Bind(i.ToString(), i, i).EnableTracing();
                 //Routing key is calculated by the driver
-                Assert.NotNull(statement.RoutingKey);
+                Assert.That(statement.RoutingKey, Is.Not.Null);
                 var rs = session.Execute(statement);
                 traces.Add(rs.Info.QueryTrace);
             }
@@ -195,7 +196,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
             foreach (var t in traces)
             {
                 //The coordinator must be the only one executing the query
-                Assert.True(t.Events.All(e => e.Source.ToString() == t.Coordinator.ToString()), "There were trace events from another host for coordinator " + t.Coordinator);
+                Assert.That(t.Events.All(e => e.Source.ToString() == t.Coordinator.ToString()), Is.True, "There were trace events from another host for coordinator " + t.Coordinator);
             }
         }
 
@@ -235,7 +236,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
             foreach (var t in traces)
             {
                 //The coordinator must be the only one executing the query
-                Assert.True(t.Events.All(e => e.Source.ToString() == t.Coordinator.ToString()), "There were trace events from another host for coordinator " + t.Coordinator);
+                Assert.That(t.Events.All(e => e.Source.ToString() == t.Coordinator.ToString()), Is.True, "There were trace events from another host for coordinator " + t.Coordinator);
             }
         }
 
@@ -272,7 +273,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
             foreach (var t in traces)
             {
                 //The coordinator must be the only one executing the query
-                Assert.True(t.Events.All(e => e.Source.ToString() == t.Coordinator.ToString()), "There were trace events from another host for coordinator " + t.Coordinator);
+                Assert.That(t.Events.All(e => e.Source.ToString() == t.Coordinator.ToString()), Is.True, "There were trace events from another host for coordinator " + t.Coordinator);
             }
         }
 
@@ -305,7 +306,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
             }
             //Check that there were hops
             var hopsPerQuery = traces.Select(t => t.Events.Any(e => e.Source.ToString() == t.Coordinator.ToString()));
-            Assert.True(hopsPerQuery.Any(v => v));
+            Assert.That(hopsPerQuery.Any(v => v), Is.True);
         }
 
         /// <summary>
@@ -321,7 +322,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
             try
             {
                 var session = cluster.Connect();
-                Assert.AreEqual(256, cluster.AllHosts().First().Tokens.Count());
+                Assert.That(256, Is.EqualTo(cluster.AllHosts().First().Tokens.Count()));
                 var ks = TestUtils.GetUniqueKeyspaceName();
                 session.Execute($"CREATE KEYSPACE \"{ks}\" WITH replication = {{'class': 'SimpleStrategy', 'replication_factor' : 1}}");
                 session.ChangeKeyspace(ks);
@@ -342,7 +343,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                 foreach (var t in traces)
                 {
                     //The coordinator must be the only one executing the query
-                    Assert.True(t.Events.All(e => e.Source.ToString() == t.Coordinator.ToString()), "There were trace events from another host for coordinator " + t.Coordinator);
+                    Assert.That(t.Events.All(e => e.Source.ToString() == t.Coordinator.ToString()), Is.True, "There were trace events from another host for coordinator " + t.Coordinator);
                 }
             }
             finally
@@ -375,13 +376,13 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                     coordinators.Add(rs.Info.QueriedHost);
                 }
                 // There should be exactly 2 different coordinators for a given token
-                Assert.AreEqual(metadataSync ? 2 : 1, coordinators.Count);
+                Assert.That(metadataSync ? 2 : 1, Is.EqualTo(coordinators.Count));
 
                 // Manually calculate the routing key
                 var routingKey = SerializerManager.Default.GetCurrentSerializer().Serialize(id);
                 // Get the replicas
                 var replicas = cluster.GetReplicas(ks, routingKey);
-                Assert.AreEqual(metadataSync ? 2 : 1, replicas.Count);
+                Assert.That(metadataSync ? 2 : 1, Is.EqualTo(replicas.Count));
                 CollectionAssert.AreEquivalent(replicas.Select(h => h.Address), coordinators);
             }
             finally

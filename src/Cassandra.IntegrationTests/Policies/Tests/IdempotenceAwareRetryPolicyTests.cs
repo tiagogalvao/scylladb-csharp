@@ -56,7 +56,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                         .SetConsistencyLevel(ConsistencyLevel.All)
                         .SetRetryPolicy(policy)));
 
-                Assert.AreEqual(1L, Interlocked.Read(ref testPolicy.WriteTimeoutCounter));
+                Assert.That(1L, Is.EqualTo(Interlocked.Read(ref testPolicy.WriteTimeoutCounter)));
 
                 Interlocked.Exchange(ref testPolicy.WriteTimeoutCounter, 0);
 
@@ -66,7 +66,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                         .SetConsistencyLevel(ConsistencyLevel.All)
                         .SetRetryPolicy(policy)));
 
-                Assert.AreEqual(0L, Interlocked.Read(ref testPolicy.WriteTimeoutCounter));
+                Assert.That(0L, Is.EqualTo(Interlocked.Read(ref testPolicy.WriteTimeoutCounter)));
             }
         }
 

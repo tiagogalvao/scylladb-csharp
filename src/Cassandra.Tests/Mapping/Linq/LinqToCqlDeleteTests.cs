@@ -18,6 +18,7 @@ using Cassandra.Data.Linq;
 using Cassandra.Mapping;
 using Cassandra.Tests.Mapping.Pocos;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.Mapping.Linq
 {
@@ -42,10 +43,10 @@ namespace Cassandra.Tests.Mapping.Linq
                 .TableName("tbl1");
             var table = GetTable<AllTypesEntity>(session, map);
             var appliedInfo = table.Where(t => t.IntValue == 100).DeleteIf(t => t.StringValue == "some value").Execute();
-            Assert.AreEqual("DELETE FROM tbl1 WHERE id = ? IF val2 = ?", query);
+            Assert.That("DELETE FROM tbl1 WHERE id = ? IF val2 = ?", Is.EqualTo(query));
             CollectionAssert.AreEqual(parameters, new object[] { 100, "some value" });
             //By default applied info will say it was applied
-            Assert.True(appliedInfo.Applied);
+            Assert.That(appliedInfo.Applied, Is.True);
         }
 
         [Test]
@@ -62,7 +63,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 .TableName("tbl1");
             var table = GetTable<AllTypesEntity>(session, map);
             table.Where(t => t.IntValue == 100).Delete().Execute();
-            Assert.AreEqual("DELETE FROM ks1.tbl1 WHERE id = ?", query);
+            Assert.That("DELETE FROM ks1.tbl1 WHERE id = ?", Is.EqualTo(query));
         }
 
         [Test]

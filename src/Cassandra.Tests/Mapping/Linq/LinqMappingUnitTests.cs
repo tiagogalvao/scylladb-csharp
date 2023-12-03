@@ -27,6 +27,7 @@ using Cassandra.Tests.Mapping.TestData;
 using Moq;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.Mapping.Linq
 {
@@ -58,7 +59,7 @@ namespace Cassandra.Tests.Mapping.Linq
         {
             var table = GetSession(new RowSet()).GetTable<PlainUser>();
             var entities = table.Where(a => a.UserId == Guid.Empty).Execute();
-            Assert.AreEqual(0, entities.Count());
+            Assert.That(0, Is.EqualTo(entities.Count()));
         }
 
         [Test]
@@ -83,8 +84,8 @@ namespace Cassandra.Tests.Mapping.Linq
         {
             var table = GetSession(TestDataHelper.CreateMultipleValuesRowSet(new[] { "IntValue", "Int64Value" }, new[] { 25, 1000 })).GetTable<AllTypesEntity>();
             var result = (from e in table select new { user_age = e.IntValue, identifier = e.Int64Value }).Execute().ToList();
-            Assert.AreEqual(1000L, result[0].identifier);
-            Assert.AreEqual(25, result[0].user_age);
+            Assert.That(1000L, Is.EqualTo(result[0].identifier));
+            Assert.That(25, Is.EqualTo(result[0].user_age));
         }
 
         [Test]
@@ -93,7 +94,7 @@ namespace Cassandra.Tests.Mapping.Linq
             //It does not have much sense to use an anonymous type with a single value but here it goes!
             var table = GetSession(TestDataHelper.CreateMultipleValuesRowSet(new[] { "intvalue" }, new[] { 25 })).GetTable<AllTypesEntity>();
             var result = (from e in table select new { user_age = e.IntValue }).Execute().ToList();
-            Assert.AreEqual(25, result[0].user_age);
+            Assert.That(25, Is.EqualTo(result[0].user_age));
         }
 
         [Test]
@@ -101,8 +102,8 @@ namespace Cassandra.Tests.Mapping.Linq
         {
             var table = GetSession(TestDataHelper.CreateMultipleValuesRowSet(new[] { "intvalue", "int64value" }, new[] { 25, 1000 })).GetTable<AllTypesEntity>();
             var result = (from e in table select new Tuple<int, long>(e.IntValue, e.Int64Value)).Execute().ToList();
-            Assert.AreEqual(25, result[0].Item1);
-            Assert.AreEqual(1000L, result[0].Item2);
+            Assert.That(25, Is.EqualTo(result[0].Item1));
+            Assert.That(1000L, Is.EqualTo(result[0].Item2));
         }
 
         [Test]
@@ -115,8 +116,8 @@ namespace Cassandra.Tests.Mapping.Linq
             var table = new Table<PlainUser>(GetSession(rs));
             IPage<PlainUser> users = table.ExecutePaged();
             //It was executed without paging state
-            Assert.Null(users.CurrentPagingState);
-            Assert.NotNull(users.PagingState);
+            Assert.That(users.CurrentPagingState, Is.Null);
+            Assert.That(users.PagingState, Is.Not.Null);
             CollectionAssert.AreEqual(rs.PagingState, users.PagingState);
             CollectionAssert.AreEqual(usersExpected, users, new TestHelper.PropertyComparer());
         }
@@ -171,10 +172,10 @@ namespace Cassandra.Tests.Mapping.Linq
             }, int.MaxValue, Mock.Of<IMetricsManager>());
             var table = new Table<int>(sessionMock.Object);
             IEnumerable<int> results = table.Execute();
-            Assert.True(stmt.AutoPage);
-            Assert.AreEqual(0, counter);
-            Assert.AreEqual(pageLength * 3, results.Count());
-            Assert.AreEqual(2, counter);
+            Assert.That(stmt.AutoPage, Is.True);
+            Assert.That(0, Is.EqualTo(counter));
+            Assert.That(pageLength * 3, Is.EqualTo(results.Count()));
+            Assert.That(2, Is.EqualTo(counter));
         }
     }
 }

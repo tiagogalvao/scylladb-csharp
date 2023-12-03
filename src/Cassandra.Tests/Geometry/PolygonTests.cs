@@ -46,9 +46,9 @@ namespace Cassandra.Tests.Geometry
                         "[" + string.Join(",", r.Select(p => "[" + p.X.ToString(CultureInfo.InvariantCulture) + "," + p.Y.ToString(CultureInfo.InvariantCulture) + "]")) + "]")));
                 // Default serialization to Json is GeoJson
                 var json = JsonConvert.SerializeObject(polygon);
-                Assert.AreEqual(expected, json);
-                Assert.AreEqual(expected, polygon.ToGeoJson());
-                Assert.AreEqual(expected, JsonConvert.DeserializeObject<Polygon>(json).ToGeoJson());
+                Assert.That(expected, Is.EqualTo(json));
+                Assert.That(expected, Is.EqualTo(polygon.ToGeoJson()));
+                Assert.That(expected, Is.EqualTo(JsonConvert.DeserializeObject<Polygon>(json).ToGeoJson()));
             }
         }
 
@@ -59,7 +59,7 @@ namespace Cassandra.Tests.Geometry
             {
                 var json = JsonConvert.SerializeObject(polygon, GraphSON1ContractResolver.Settings);
                 var expected = string.Format("\"{0}\"", polygon);
-                Assert.AreEqual(expected, json);
+                Assert.That(expected, Is.EqualTo(json));
             }
         }
 
@@ -71,11 +71,11 @@ namespace Cassandra.Tests.Geometry
             {
                 var serialized = typeSerializer.Serialize(1, item);
                 var deserialized = typeSerializer.Deserialize(1, serialized, 0, serialized.Length, null);
-                Assert.AreEqual(item, deserialized);
+                Assert.That(item, Is.EqualTo(deserialized));
                 //starting from offset
                 serialized = new byte[] { 1, 2, 3 }.Concat(serialized).ToArray();
                 deserialized = typeSerializer.Deserialize(1, serialized, 3, serialized.Length - 3, null);
-                Assert.AreEqual(item, deserialized);
+                Assert.That(item, Is.EqualTo(deserialized));
             }
         }
 
@@ -91,10 +91,10 @@ namespace Cassandra.Tests.Geometry
         [Test]
         public void ToString_Should_Retrieve_Wkt_Representation()
         {
-            Assert.AreEqual("POLYGON EMPTY", new Polygon().ToString());
-            Assert.AreEqual(
+            Assert.That("POLYGON EMPTY", Is.EqualTo(new Polygon().ToString()));
+            Assert.That(
                 "POLYGON ((1 3.1, 3 1, 3 6, 1 3))", 
-                new Polygon(new Point(1, 3.1), new Point(3, 1), new Point(3, 6), new Point(1, 3)).ToString());
+                Is.EqualTo(new Polygon(new Point(1, 3.1), new Point(3, 1), new Point(3, 6), new Point(1, 3)).ToString()));
         }
     }
 }

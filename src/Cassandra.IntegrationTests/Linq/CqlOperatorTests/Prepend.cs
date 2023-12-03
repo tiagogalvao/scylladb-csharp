@@ -237,7 +237,7 @@ namespace Cassandra.IntegrationTests.Linq.CqlOperatorTests
                                DictionaryType = CqlOperator.Prepend(dictToAdd)
                            })
                            .Update().Execute());
-            Assert.AreEqual(expectedErrMsg, err.Message);
+            Assert.That(expectedErrMsg, Is.EqualTo(err.Message));
         }
     }
 }

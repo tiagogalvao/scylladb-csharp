@@ -39,7 +39,7 @@ namespace Cassandra.Tests
                 host.BringUpIfDown();
             }, 100);
             //Should fire event only once
-            Assert.AreEqual(1, counter);
+            Assert.That(1, Is.EqualTo(counter));
         }
         
         [Test]
@@ -49,7 +49,7 @@ namespace Cassandra.Tests
             var host = new Host(hostAddress, contactPoint: null);
             var row = BuildRow(null);
             host.SetInfo(row);
-            Assert.AreEqual(Guid.Empty, host.HostId);
+            Assert.That(Guid.Empty, Is.EqualTo(host.HostId));
         }
         
         private IRow BuildRow(Guid? hostId)

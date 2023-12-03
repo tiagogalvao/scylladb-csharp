@@ -17,6 +17,7 @@
 using System.Text;
 using Cassandra.DataStax.Graph;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.DataStax.Graph
 {
@@ -30,7 +31,7 @@ namespace Cassandra.Tests.DataStax.Graph
             CollectionAssert.AreEqual(Encoding.UTF8.GetBytes("gremlin-groovy"), payload1["graph-language"]);
             CollectionAssert.AreEqual(Encoding.UTF8.GetBytes("g"), payload1["graph-source"]);
             var payload2 = options.BuildPayload(new SimpleGraphStatement("g.V()"));
-            Assert.AreSame(payload1, payload2);
+            Assert.That(payload1, Is.SameAs(payload2));
         }
 
         [Test]
@@ -47,7 +48,7 @@ namespace Cassandra.Tests.DataStax.Graph
             CollectionAssert.AreEqual(Encoding.UTF8.GetBytes("graph1"), payload1["graph-name"]);
             CollectionAssert.AreEqual(Encoding.UTF8.GetBytes("graphson-2.0"), payload1["graph-results"]);
             var payload2 = options.BuildPayload(new SimpleGraphStatement("g.V()"));
-            Assert.AreSame(payload1, payload2);
+            Assert.That(payload1, Is.SameAs(payload2));
         }
 
         [Test]
@@ -66,7 +67,7 @@ namespace Cassandra.Tests.DataStax.Graph
             var payload2 = new GraphOptions(options, GraphProtocol.GraphSON2)
                 .BuildPayload(new SimpleGraphStatement("g.V()")
                 .SetGraphName("graph2"));
-            Assert.AreNotSame(payload1, payload2);
+            Assert.That(payload1, Is.Not.SameAs(payload2));
         }
 
         [Test]
@@ -79,11 +80,11 @@ namespace Cassandra.Tests.DataStax.Graph
             CollectionAssert.AreEqual(Encoding.UTF8.GetBytes("gremlin-groovy"), payload1["graph-language"]);
             CollectionAssert.AreEqual(Encoding.UTF8.GetBytes("g"), payload1["graph-source"]);
             CollectionAssert.AreEqual(Encoding.UTF8.GetBytes("graphson-1.0"), payload1["graph-results"]);
-            Assert.False(payload1.ContainsKey("graph-name"));
+            Assert.That(payload1.ContainsKey("graph-name"), Is.False);
             var payload2 = options.BuildPayload(new SimpleGraphStatement("g.V()").SetSystemQuery());
             var payload3 = options.BuildPayload(new SimpleGraphStatement("g.V()"));
-            Assert.AreNotSame(payload1, payload2);
-            Assert.AreNotSame(payload2, payload3);
+            Assert.That(payload1, Is.Not.SameAs(payload2));
+            Assert.That(payload2, Is.Not.SameAs(payload3));
         }
 
         [Test]
@@ -97,9 +98,9 @@ namespace Cassandra.Tests.DataStax.Graph
             CollectionAssert.AreEqual(Encoding.UTF8.GetBytes("g"), payload1["graph-source"]);
             CollectionAssert.AreEqual(Encoding.UTF8.GetBytes("graphson-1.0"), payload1["graph-results"]);
             var payload2 = options.BuildPayload(new SimpleGraphStatement("g.V()").SetGraphName("abc"));
-            Assert.AreNotSame(payload1, payload2);
-            Assert.AreSame(payload1["graph-language"], payload2["graph-language"]);
-            Assert.AreSame(payload1["graph-source"], payload2["graph-source"]);
+            Assert.That(payload1, Is.Not.SameAs(payload2));
+            Assert.That(payload1["graph-language"], Is.SameAs(payload2["graph-language"]));
+            Assert.That(payload1["graph-source"], Is.SameAs(payload2["graph-source"]));
         }
 
         [Test]
@@ -113,12 +114,12 @@ namespace Cassandra.Tests.DataStax.Graph
                 .SetGraphReadConsistencyLevel(ConsistencyLevel.Two)
                 .SetGraphWriteConsistencyLevel(ConsistencyLevel.Three)
                 .SetGraphProtocolVersion(GraphProtocol.GraphSON2);
-            Assert.AreEqual("source1", statement.GraphSource);
-            Assert.AreEqual("lang1", statement.GraphLanguage);
-            Assert.AreEqual("name1", statement.GraphName);
-            Assert.AreEqual(ConsistencyLevel.Two, statement.GraphReadConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.Three, statement.GraphWriteConsistencyLevel);
-            Assert.AreEqual(GraphProtocol.GraphSON2, statement.GraphProtocolVersion);
+            Assert.That("source1", Is.EqualTo(statement.GraphSource));
+            Assert.That("lang1", Is.EqualTo(statement.GraphLanguage));
+            Assert.That("name1", Is.EqualTo(statement.GraphName));
+            Assert.That(ConsistencyLevel.Two, Is.EqualTo(statement.GraphReadConsistencyLevel));
+            Assert.That(ConsistencyLevel.Three, Is.EqualTo(statement.GraphWriteConsistencyLevel));
+            Assert.That(GraphProtocol.GraphSON2, Is.EqualTo(statement.GraphProtocolVersion));
         }
     }
 }

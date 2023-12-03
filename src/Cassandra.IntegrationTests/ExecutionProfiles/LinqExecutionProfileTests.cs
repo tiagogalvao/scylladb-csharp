@@ -93,8 +93,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
             }
 
             var newQueries = _simulacronCluster.GetQueries(cql, QueryType.Execute);
-            Assert.AreEqual(queries.Count + 1, newQueries.Count);
-            Assert.IsTrue(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two));
+            Assert.That(queries.Count + 1, Is.EqualTo(newQueries.Count));
+            Assert.That(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two), Is.True);
         }
 
         [Test]
@@ -117,8 +117,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
             }
 
             var newQueries = _simulacronCluster.GetQueries(cql, QueryType.Execute);
-            Assert.AreEqual(queries.Count + 1, newQueries.Count);
-            Assert.IsTrue(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two));
+            Assert.That(queries.Count + 1, Is.EqualTo(newQueries.Count));
+            Assert.That(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two), Is.True);
         }
 
         [Test]
@@ -144,8 +144,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
             }
 
             var newQueries = _simulacronCluster.GetQueries(cql, QueryType.Execute);
-            Assert.AreEqual(queries.Count + 1, newQueries.Count);
-            Assert.IsTrue(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two));
+            Assert.That(queries.Count + 1, Is.EqualTo(newQueries.Count));
+            Assert.That(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two), Is.True);
         }
 
         [Test]
@@ -171,8 +171,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
             }
 
             var newQueries = _simulacronCluster.GetQueries(cql, QueryType.Execute);
-            Assert.AreEqual(queries.Count + 1, newQueries.Count);
-            Assert.IsTrue(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two));
+            Assert.That(queries.Count + 1, Is.EqualTo(newQueries.Count));
+            Assert.That(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two), Is.True);
         }
 
         [Test]
@@ -198,8 +198,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
             }
 
             var newQueries = _simulacronCluster.GetQueries(cql, QueryType.Execute);
-            Assert.AreEqual(queries.Count + 1, newQueries.Count);
-            Assert.IsTrue(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two));
+            Assert.That(queries.Count + 1, Is.EqualTo(newQueries.Count));
+            Assert.That(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two), Is.True);
         }
         
         private object[] CreatePrimeObject(AllDataTypesEntity allData)
@@ -241,13 +241,13 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
                 : selectQuery.Execute("testProfile").ToList();
 
             var newQueries = _simulacronCluster.GetQueries(cql, QueryType.Execute);
-            Assert.AreEqual(queries.Count + 1, newQueries.Count);
-            Assert.IsTrue(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two));
+            Assert.That(queries.Count + 1, Is.EqualTo(newQueries.Count));
+            Assert.That(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two), Is.True);
             for (var i = 0; i < _entityList.Count; i++)
             {
-                Assert.AreEqual(_entityList[i].StringType, result[i].StringType);
-                Assert.AreEqual(_entityList[i].GuidType, result[i].GuidType);
-                Assert.AreEqual(_entityList[i].IntType, result[i].IntType);
+                Assert.That(_entityList[i].StringType, Is.EqualTo(result[i].StringType));
+                Assert.That(_entityList[i].GuidType, Is.EqualTo(result[i].GuidType));
+                Assert.That(_entityList[i].IntType, Is.EqualTo(result[i].IntType));
             }
         }
 
@@ -266,13 +266,13 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
                 : selectQuery.ExecutePaged("testProfile").ToList();
 
             var newQueries = _simulacronCluster.GetQueries(cql, QueryType.Execute);
-            Assert.AreEqual(queries.Count + 1, newQueries.Count);
-            Assert.IsTrue(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two));
+            Assert.That(queries.Count + 1, Is.EqualTo(newQueries.Count));
+            Assert.That(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two), Is.True);
             for (var i = 0; i < _entityList.Count; i++)
             {
-                Assert.AreEqual(_entityList[i].StringType, result[i].StringType);
-                Assert.AreEqual(_entityList[i].GuidType, result[i].GuidType);
-                Assert.AreEqual(_entityList[i].IntType, result[i].IntType);
+                Assert.That(_entityList[i].StringType, Is.EqualTo(result[i].StringType));
+                Assert.That(_entityList[i].GuidType, Is.EqualTo(result[i].GuidType));
+                Assert.That(_entityList[i].IntType, Is.EqualTo(result[i].IntType));
             }
         }
         
@@ -299,8 +299,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
             }
 
             var newQueries = _simulacronCluster.GetQueries(cql, QueryType.Execute);
-            Assert.AreEqual(queries.Count + 1, newQueries.Count);
-            Assert.IsTrue(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two));
+            Assert.That(queries.Count + 1, Is.EqualTo(newQueries.Count));
+            Assert.That(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two), Is.True);
         }
         
         [Test]
@@ -326,11 +326,11 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
             }
 
             var newQueries = _simulacronCluster.GetQueries(cql, QueryType.Execute);
-            Assert.AreEqual(queries.Count + 1, newQueries.Count);
-            Assert.IsTrue(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two));
-            Assert.AreEqual(_entityList.First().StringType, result.StringType);
-            Assert.AreEqual(_entityList.First().GuidType, result.GuidType);
-            Assert.AreEqual(_entityList.First().IntType, result.IntType);
+            Assert.That(queries.Count + 1, Is.EqualTo(newQueries.Count));
+            Assert.That(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two), Is.True);
+            Assert.That(_entityList.First().StringType, Is.EqualTo(result.StringType));
+            Assert.That(_entityList.First().GuidType, Is.EqualTo(result.GuidType));
+            Assert.That(_entityList.First().IntType, Is.EqualTo(result.IntType));
         }
     }
 }

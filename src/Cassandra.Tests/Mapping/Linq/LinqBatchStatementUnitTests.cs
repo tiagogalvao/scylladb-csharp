@@ -51,17 +51,17 @@ namespace Cassandra.Tests.Mapping.Linq
 
             batch.Execute();
             
-            Assert.NotNull(statement);
-            Assert.AreEqual(batchType ?? BatchType.Logged, statement.BatchType);
-            Assert.AreEqual(deleteGuids.Count, statement.Queries.Count);
+            Assert.That(statement, Is.Not.Null);
+            Assert.That(batchType ?? BatchType.Logged, Is.EqualTo(statement.BatchType));
+            Assert.That(deleteGuids.Count, Is.EqualTo(statement.Queries.Count));
 
             foreach (var deleteGuid in deleteGuids)
             {
                 var deleteStatement = statement.Queries.First(_ => _.QueryValues?.First() as Guid? == deleteGuid) as SimpleStatement;
-                Assert.IsNotNull(deleteStatement);
-                Assert.IsNotNull(deleteStatement.QueryValues);
-                Assert.AreEqual(1, deleteStatement.QueryValues.Length);
-                Assert.AreEqual("DELETE FROM tbl1 WHERE id = ?", deleteStatement.QueryString);
+                Assert.That(deleteStatement, Is.Not.Null);
+                Assert.That(deleteStatement.QueryValues, Is.Not.Null);
+                Assert.That(1, Is.EqualTo(deleteStatement.QueryValues.Length));
+                Assert.That("DELETE FROM tbl1 WHERE id = ?", Is.EqualTo(deleteStatement.QueryString));
             }
         }
 
@@ -93,18 +93,18 @@ namespace Cassandra.Tests.Mapping.Linq
 
             batch.Execute();
 
-            Assert.NotNull(statement);
-            Assert.AreEqual(batchType ?? BatchType.Logged, statement.BatchType);
-            Assert.AreEqual(updateGuids.Count, statement.Queries.Count);
+            Assert.That(statement, Is.Not.Null);
+            Assert.That(batchType ?? BatchType.Logged, Is.EqualTo(statement.BatchType));
+            Assert.That(updateGuids.Count, Is.EqualTo(statement.Queries.Count));
 
             foreach (var updateGuid in updateGuids)
             {
                 var updateStatement = statement.Queries.First(_ => _.QueryValues.Length == 2 && _.QueryValues[1] as Guid? == updateGuid) as SimpleStatement;
-                Assert.IsNotNull(updateStatement);
-                Assert.IsNotNull(updateStatement.QueryValues);
-                Assert.AreEqual(2, updateStatement.QueryValues.Length);
-                Assert.AreEqual("newStringFor" + updateGuid, updateStatement.QueryValues[0]);
-                Assert.AreEqual("UPDATE tbl1 SET val = ? WHERE id = ?", updateStatement.QueryString);
+                Assert.That(updateStatement, Is.Not.Null);
+                Assert.That(updateStatement.QueryValues, Is.Not.Null);
+                Assert.That(2, Is.EqualTo(updateStatement.QueryValues.Length));
+                Assert.That("newStringFor" + updateGuid, Is.EqualTo(updateStatement.QueryValues[0]));
+                Assert.That("UPDATE tbl1 SET val = ? WHERE id = ?", Is.EqualTo(updateStatement.QueryString));
             }
         }
     }

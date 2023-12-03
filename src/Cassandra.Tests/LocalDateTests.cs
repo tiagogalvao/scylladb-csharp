@@ -66,7 +66,7 @@ namespace Cassandra.Tests
         {
             foreach (var v in Values)
             {
-                Assert.AreEqual(v.Item2, v.Item1.DaysSinceEpochCentered, "For Date " + v.Item1);
+                Assert.That(v.Item2, Is.EqualTo(v.Item1.DaysSinceEpochCentered), "For Date " + v.Item1);
             }
         }
 
@@ -80,9 +80,9 @@ namespace Cassandra.Tests
                     continue;
                 }
                 var calculated = new LocalDate(v.Item2);
-                Assert.AreEqual(v.Item1.Year, calculated.Year, "Year for Date " + v.Item1);
-                Assert.AreEqual(v.Item1.Month, calculated.Month, "Month for Date " + v.Item1);
-                Assert.AreEqual(v.Item1.Day, calculated.Day, "Day for Date " + v.Item1);
+                Assert.That(v.Item1.Year, Is.EqualTo(calculated.Year), "Year for Date " + v.Item1);
+                Assert.That(v.Item1.Month, Is.EqualTo(calculated.Month), "Month for Date " + v.Item1);
+                Assert.That(v.Item1.Day, Is.EqualTo(calculated.Day), "Day for Date " + v.Item1);
             }
         }
 
@@ -96,9 +96,9 @@ namespace Cassandra.Tests
                     continue;
                 }
                 var calculated = new LocalDate(v.Item2);
-                Assert.AreEqual(v.Item1.Year, calculated.Year, "Year for Date " + v.Item1);
-                Assert.AreEqual(v.Item1.Month, calculated.Month, "Month for Date " + v.Item1);
-                Assert.AreEqual(v.Item1.Day, calculated.Day, "Day for Date " + v.Item1);
+                Assert.That(v.Item1.Year, Is.EqualTo(calculated.Year), "Year for Date " + v.Item1);
+                Assert.That(v.Item1.Month, Is.EqualTo(calculated.Month), "Month for Date " + v.Item1);
+                Assert.That(v.Item1.Day, Is.EqualTo(calculated.Day), "Day for Date " + v.Item1);
             }
         }
 
@@ -106,19 +106,19 @@ namespace Cassandra.Tests
         public void Can_Be_Used_As_Dictionary_Key()
         {
             var dictionary = Values.ToDictionary(v => v.Item1, v => v.Item1.ToString());
-            Assert.AreEqual(Values.Length, dictionary.Count);
+            Assert.That(Values.Length, Is.EqualTo(dictionary.Count));
         }
 
         [Test]
         public void Should_Support_Operators()
         {
             LocalDate value1 = null;
-            Assert.True(value1 == null);
-            Assert.False(value1 != null);
+            Assert.That(value1 == null, Is.True);
+            Assert.That(value1 != null, Is.False);
             value1 = new LocalDate(2010, 3, 15);
-            Assert.False(value1 == null);
-            Assert.True(value1 != null);
-            Assert.AreEqual(value1, new LocalDate(2010, 3, 15));
+            Assert.That(value1 == null, Is.False);
+            Assert.That(value1 != null, Is.True);
+            Assert.That(value1, Is.EqualTo(new LocalDate(2010, 3, 15)));
         }
 
         [Test]
@@ -134,7 +134,7 @@ namespace Cassandra.Tests
             };
             foreach (var v in values)
             {
-                Assert.AreEqual(v.Item4, new LocalDate(v.Item1, v.Item2, v.Item3).ToString());
+                Assert.That(v.Item4, Is.EqualTo(new LocalDate(v.Item1, v.Item2, v.Item3).ToString()));
             }
         }
 
@@ -167,7 +167,7 @@ namespace Cassandra.Tests
             foreach (var v in values)
             {
                 var expected = new DateTimeOffset(v.Item1, v.Item2, v.Item3, 0, 0, 0, TimeSpan.Zero);
-                Assert.AreEqual(expected, new LocalDate(v.Item1, v.Item2, v.Item3).ToDateTimeOffset());
+                Assert.That(expected, Is.EqualTo(new LocalDate(v.Item1, v.Item2, v.Item3).ToDateTimeOffset()));
             }
         }
 
@@ -197,7 +197,7 @@ namespace Cassandra.Tests
             };
             foreach (var v in values)
             {
-                Assert.AreEqual(v.Item2, LocalDate.Parse(v.Item1));
+                Assert.That(v.Item2, Is.EqualTo(LocalDate.Parse(v.Item1)));
             }
         }
 
@@ -212,7 +212,7 @@ namespace Cassandra.Tests
             };
             foreach (var v in values)
             {
-                Assert.AreEqual(v.Item2, LocalDate.Parse(v.Item1));
+                Assert.That(v.Item2, Is.EqualTo(LocalDate.Parse(v.Item1)));
             }
         }
 

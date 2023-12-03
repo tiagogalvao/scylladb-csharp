@@ -75,15 +75,15 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                 })
                 .Where(t => t.Id == "sensor1" && t.Bucket == "bucket1");
             var results = linqQuery.Execute().ToArray();
-            Assert.AreEqual(1, results.Length);
+            Assert.That(1, Is.EqualTo(results.Length));
             var aggregation = results[0];
-            Assert.AreEqual("sensor1", aggregation.Id);
-            Assert.AreEqual("bucket1", aggregation.Bucket);
-            Assert.AreEqual(2, aggregation.Avg);
-            Assert.AreEqual(3, aggregation.Count);
-            Assert.AreEqual(6, aggregation.Sum);
-            Assert.AreEqual(1.5, aggregation.Min);
-            Assert.AreEqual(2.5, aggregation.Max);
+            Assert.That("sensor1", Is.EqualTo(aggregation.Id));
+            Assert.That("bucket1", Is.EqualTo(aggregation.Bucket));
+            Assert.That(2, Is.EqualTo(aggregation.Avg));
+            Assert.That(3, Is.EqualTo(aggregation.Count));
+            Assert.That(6, Is.EqualTo(aggregation.Sum));
+            Assert.That(1.5, Is.EqualTo(aggregation.Min));
+            Assert.That(2.5, Is.EqualTo(aggregation.Max));
         }
 
         [Test]
@@ -97,9 +97,9 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           rows => rows.WithRow(2.5D).WithRow(3D)));
             var linqQuery = table.GroupBy(t => new { t.Id, t.Bucket }).Select(g => g.Max(i => i.Value));
             var results = linqQuery.Execute().ToArray();
-            Assert.AreEqual(2, results.Length);
-            Assert.AreEqual(2.5, results[0]);
-            Assert.AreEqual(3, results[1]);
+            Assert.That(2, Is.EqualTo(results.Length));
+            Assert.That(2.5, Is.EqualTo(results[0]));
+            Assert.That(3, Is.EqualTo(results[1]));
         }
 
         [Test]
@@ -118,9 +118,9 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                 .GroupBy(t => new { t.Id, t.Bucket })
                 .Select(g => g.Min(i => i.Value));
             var results = linqQuery.Execute().ToArray();
-            Assert.AreEqual(1, results.Length);
+            Assert.That(1, Is.EqualTo(results.Length));
             var min = results[0];
-            Assert.AreEqual(1.5, min);
+            Assert.That(1.5, Is.EqualTo(min));
         }
 
         [Test]
@@ -140,7 +140,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                 .GroupBy(t => new { t.Timestamp })
                 .Select(g => g.Min(i => i.Value));
             var results = linqQuery.Execute().ToArray();
-            Assert.AreEqual(3, results.Length);
+            Assert.That(3, Is.EqualTo(results.Length));
         }
 
         [Test]

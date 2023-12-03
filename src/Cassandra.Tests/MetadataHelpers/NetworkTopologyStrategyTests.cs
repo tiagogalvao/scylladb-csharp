@@ -43,7 +43,7 @@ namespace Cassandra.Tests.MetadataHelpers
                 {"dc1", new DatacenterInfo { HostLength = 10 } },
                 {"dc2", new DatacenterInfo { HostLength = 10 } }
             };
-            Assert.True(NetworkTopologyStrategy.AreReplicationFactorsSatisfied(ksReplicationFactor, replicasByDc, datacenters));
+            Assert.That(NetworkTopologyStrategy.AreReplicationFactorsSatisfied(ksReplicationFactor, replicasByDc, datacenters), Is.True);
         }
 
         [Test]
@@ -66,7 +66,7 @@ namespace Cassandra.Tests.MetadataHelpers
                 {"dc1", new DatacenterInfo { HostLength = 10 } },
                 {"dc2", new DatacenterInfo { HostLength = 10 } }
             };
-            Assert.False(NetworkTopologyStrategy.AreReplicationFactorsSatisfied(ksReplicationFactor, replicasByDc, datacenters));
+            Assert.That(NetworkTopologyStrategy.AreReplicationFactorsSatisfied(ksReplicationFactor, replicasByDc, datacenters), Is.False);
         }
         
         [Test]
@@ -91,7 +91,7 @@ namespace Cassandra.Tests.MetadataHelpers
                 {"dc2", new DatacenterInfo { HostLength = 10 } },
                 {"dc3", new DatacenterInfo { HostLength = 10 } }
             };
-            Assert.True(NetworkTopologyStrategy.AreReplicationFactorsSatisfied(ksReplicationFactor, replicasByDc, datacenters));
+            Assert.That(NetworkTopologyStrategy.AreReplicationFactorsSatisfied(ksReplicationFactor, replicasByDc, datacenters), Is.True);
         }
         
         [Test]
@@ -116,7 +116,7 @@ namespace Cassandra.Tests.MetadataHelpers
                 {"dc2", new DatacenterInfo { HostLength = 10 } },
                 {"dc3", new DatacenterInfo { HostLength = 10 } }
             };
-            Assert.False(NetworkTopologyStrategy.AreReplicationFactorsSatisfied(ksReplicationFactor, replicasByDc, datacenters));
+            Assert.That(NetworkTopologyStrategy.AreReplicationFactorsSatisfied(ksReplicationFactor, replicasByDc, datacenters), Is.False);
         }
         
         [Test]
@@ -135,12 +135,12 @@ namespace Cassandra.Tests.MetadataHelpers
                 testData.Ring, testData.PrimaryReplicas, testData.NumberOfHostsWithTokens, testData.Datacenters);
             
             // 3 dcs, 3 hosts per rack, 3 racks per dc, 10 tokens per host
-            Assert.AreEqual(10 * 3 * 3 * 3, result.Count);
+            Assert.That(10 * 3 * 3 * 3, Is.EqualTo(result.Count));
 
             foreach (var token in result)
             {
                 // 2 for dc1, 2 for dc2, 1 for dc3
-                Assert.AreEqual(2 + 2 + 1, token.Value.Count);
+                Assert.That(2 + 2 + 1, Is.EqualTo(token.Value.Count));
             }
         }
         
@@ -162,10 +162,10 @@ namespace Cassandra.Tests.MetadataHelpers
                     { "dc2", ReplicationFactor.Parse("3/1") }
                 });
 
-            Assert.AreEqual(target1.GetHashCode(), target2.GetHashCode());
-            Assert.IsTrue(target1.Equals(target2));
-            Assert.IsTrue(target2.Equals(target1));
-            Assert.AreEqual(target1, target2);
+            Assert.That(target1.GetHashCode(), Is.EqualTo(target2.GetHashCode()));
+            Assert.That(target1.Equals(target2), Is.True);
+            Assert.That(target2.Equals(target1), Is.True);
+            Assert.That(target1, Is.EqualTo(target2));
         }
         
         [Test]
@@ -186,10 +186,10 @@ namespace Cassandra.Tests.MetadataHelpers
                     { "dc2", ReplicationFactor.Parse("3/2") }
                 });
             
-            Assert.AreNotEqual(target1.GetHashCode(), target2.GetHashCode());
-            Assert.IsFalse(target1.Equals(target2));
-            Assert.IsFalse(target2.Equals(target1));
-            Assert.AreNotEqual(target1, target2);
+            Assert.That(target1.GetHashCode(), Is.Not.EqualTo(target2.GetHashCode()));
+            Assert.That(target1.Equals(target2), Is.False);
+            Assert.That(target2.Equals(target1), Is.False);
+            Assert.That(target1, Is.Not.EqualTo(target2));
         }
         
         [Test]
@@ -207,10 +207,10 @@ namespace Cassandra.Tests.MetadataHelpers
                     { "dc1", ReplicationFactor.Parse("2") },
                 });
             
-            Assert.AreNotEqual(target1.GetHashCode(), target2.GetHashCode());
-            Assert.IsFalse(target1.Equals(target2));
-            Assert.IsFalse(target2.Equals(target1));
-            Assert.AreNotEqual(target1, target2);
+            Assert.That(target1.GetHashCode(), Is.Not.EqualTo(target2.GetHashCode()));
+            Assert.That(target1.Equals(target2), Is.False);
+            Assert.That(target2.Equals(target1), Is.False);
+            Assert.That(target1, Is.Not.EqualTo(target2));
         }
     }
 }

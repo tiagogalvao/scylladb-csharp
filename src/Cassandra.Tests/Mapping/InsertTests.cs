@@ -24,6 +24,7 @@ using Cassandra.Tests.Mapping.TestData;
 using Moq;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.Mapping
 {
@@ -209,11 +210,11 @@ namespace Cassandra.Tests.Mapping
             var mapper = GetMappingClient(sessionMock);
             //with nulls by default
             mapper.Insert(album);
-            Assert.AreEqual("INSERT INTO Album (Id, Name, PublishingDate, Songs) VALUES (?, ?, ?, ?)", query);
+            Assert.That("INSERT INTO Album (Id, Name, PublishingDate, Songs) VALUES (?, ?, ?, ?)", Is.EqualTo(query));
             CollectionAssert.AreEqual(new object[] { album.Id, null, album.PublishingDate, null }, parameters);
             //Without nulls
             mapper.Insert(album, false);
-            Assert.AreEqual("INSERT INTO Album (Id, PublishingDate) VALUES (?, ?)", query);
+            Assert.That("INSERT INTO Album (Id, PublishingDate) VALUES (?, ?)", Is.EqualTo(query));
             CollectionAssert.AreEqual(new object[] { album.Id, album.PublishingDate }, parameters);
             sessionMock.Verify();
         }
@@ -245,7 +246,7 @@ namespace Cassandra.Tests.Mapping
             var mappingClient = GetMappingClient(sessionMock);
             //Execute
             mappingClient.Insert(newUser);
-            Assert.True(rowsetReturned);
+            Assert.That(rowsetReturned, Is.True);
             sessionMock.Verify();
         }
 
@@ -277,7 +278,7 @@ namespace Cassandra.Tests.Mapping
             sessionMock.Verify();
             StringAssert.StartsWith("INSERT INTO users (", query);
             StringAssert.EndsWith(") IF NOT EXISTS", query);
-            Assert.True(appliedInfo.Applied);
+            Assert.That(appliedInfo.Applied, Is.True);
         }
 
         [Test]
@@ -308,9 +309,9 @@ namespace Cassandra.Tests.Mapping
             sessionMock.Verify();
             StringAssert.StartsWith("INSERT INTO users (", query);
             StringAssert.EndsWith(") IF NOT EXISTS", query);
-            Assert.False(appliedInfo.Applied);
-            Assert.AreEqual(newUser.Id, appliedInfo.Existing.Id);
-            Assert.AreEqual("existing-name", appliedInfo.Existing.Name);
+            Assert.That(appliedInfo.Applied, Is.False);
+            Assert.That(newUser.Id, Is.EqualTo(appliedInfo.Existing.Id));
+            Assert.That("existing-name", Is.EqualTo(appliedInfo.Existing.Name));
         }
 
         [Test]
@@ -326,9 +327,9 @@ namespace Cassandra.Tests.Mapping
             var song = new Song { Id = Guid.NewGuid() };
             const int ttl = 600;
             mapper.Insert(song, true, ttl);
-            Assert.AreEqual("INSERT INTO Song (Artist, Id, ReleaseDate, Title) VALUES (?, ?, ?, ?) USING TTL ?", query);
-            Assert.AreEqual(song.Id, parameters[1]);
-            Assert.AreEqual(ttl, parameters.Last());
+            Assert.That("INSERT INTO Song (Artist, Id, ReleaseDate, Title) VALUES (?, ?, ?, ?) USING TTL ?", Is.EqualTo(query));
+            Assert.That(song.Id, Is.EqualTo(parameters[1]));
+            Assert.That(ttl, Is.EqualTo(parameters.Last()));
         }
 
         [Test]
@@ -344,11 +345,11 @@ namespace Cassandra.Tests.Mapping
             var song = new Song { Id = Guid.NewGuid(), Title = "t2", ReleaseDate = DateTimeOffset.Now };
             const int ttl = 600;
             mapper.InsertIfNotExists(song, false, ttl);
-            Assert.AreEqual("INSERT INTO Song (Id, ReleaseDate, Title) VALUES (?, ?, ?) IF NOT EXISTS USING TTL ?", query);
-            Assert.AreEqual(song.Id, parameters[0]);
-            Assert.AreEqual(song.ReleaseDate, parameters[1]);
-            Assert.AreEqual(song.Title, parameters[2]);
-            Assert.AreEqual(ttl, parameters[3]);
+            Assert.That("INSERT INTO Song (Id, ReleaseDate, Title) VALUES (?, ?, ?) IF NOT EXISTS USING TTL ?", Is.EqualTo(query));
+            Assert.That(song.Id, Is.EqualTo(parameters[0]));
+            Assert.That(song.ReleaseDate, Is.EqualTo(parameters[1]));
+            Assert.That(song.Title, Is.EqualTo(parameters[2]));
+            Assert.That(ttl, Is.EqualTo(parameters[3]));
         }
 
         [Test]
@@ -371,12 +372,12 @@ namespace Cassandra.Tests.Mapping
             var song = new Song { Id = Guid.NewGuid(), Title = "t2", ReleaseDate = DateTimeOffset.Now };
             var timestamp = DateTimeOffset.Now.Subtract(TimeSpan.FromDays(1));
             mapper.Insert(song);
-            Assert.Null(statement.Timestamp);
+            Assert.That(statement.Timestamp, Is.Null);
             mapper.Insert(song, CqlQueryOptions.New().SetTimestamp(timestamp));
-            Assert.AreEqual(timestamp, statement.Timestamp);
+            Assert.That(timestamp, Is.EqualTo(statement.Timestamp));
             timestamp = DateTimeOffset.Now.Subtract(TimeSpan.FromHours(10));
             mapper.InsertIfNotExists(song, CqlQueryOptions.New().SetTimestamp(timestamp));
-            Assert.AreEqual(timestamp, statement.Timestamp);
+            Assert.That(timestamp, Is.EqualTo(statement.Timestamp));
         }
 
         [Test]
@@ -413,15 +414,15 @@ namespace Cassandra.Tests.Mapping
             };
 
             mapper.Insert(poco, false);
-            Assert.AreEqual("INSERT INTO tbl1 (array1, id, list1, list2, map1, map2, map3, set1, set2, set3)" +
-                            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", query);
+            Assert.That("INSERT INTO tbl1 (array1, id, list1, list2, map1, map2, map3, set1, set2, set3)" +
+                            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Is.EqualTo(query));
 
-            Assert.AreEqual(
+            Assert.That(
                 new object[]
                 {
                     expectedCollection, 2L, expectedCollection, expectedCollection, expectedMap, expectedMap, expectedMap, expectedCollection,
                     expectedCollection, expectedCollection
-                }, parameters);
+                }, Is.EqualTo(parameters));
         }
     }
 }

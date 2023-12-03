@@ -31,6 +31,7 @@ using Cassandra.Tests.Connections.TestHelpers;
 using Cassandra.Tests.MetadataHelpers.TestHelpers;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.Requests
 {
@@ -58,7 +59,7 @@ namespace Cassandra.Tests.Requests
             }
             else
             {
-                Assert.IsNull(options.GraphProtocolVersion);
+                Assert.That(options.GraphProtocolVersion, Is.Null);
             }
 
             if (statementLevel.HasValue)
@@ -67,12 +68,12 @@ namespace Cassandra.Tests.Requests
             }
             else
             {
-                Assert.IsNull(statement.GraphProtocolVersion);
+                Assert.That(statement.GraphProtocolVersion, Is.Null);
             }
 
             var actual = factory.GetDefaultGraphProtocol(session, statement, options);
 
-            Assert.AreEqual(expected, actual);
+            Assert.That(expected, Is.EqualTo(actual));
         }
         
         [TestCase(GraphProtocol.GraphSON1, "ks2", null, null)]
@@ -100,7 +101,7 @@ namespace Cassandra.Tests.Requests
             }
             else
             {
-                Assert.IsNull(options.Name);
+                Assert.That(options.Name, Is.Null);
             }
 
             if (statementLevel != null)
@@ -109,12 +110,12 @@ namespace Cassandra.Tests.Requests
             }
             else
             {
-                Assert.IsNull(statement.GraphName);
+                Assert.That(statement.GraphName, Is.Null);
             }
 
             var actual = factory.GetDefaultGraphProtocol(session, statement, options);
 
-            Assert.AreEqual(expected, actual);
+            Assert.That(expected, Is.EqualTo(actual));
         }
         
         [Test]
@@ -196,11 +197,11 @@ namespace Cassandra.Tests.Requests
                     // otherwise it's supposed to be different
                     if (i + j == 1)
                     {
-                        Assert.AreSame(instances[i], instances[j], $"i: {i}, j: {j}");
+                        ClassicAssert.AreSame(instances[i], instances[j], $"i: {i}, j: {j}");
                     }
                     else
                     {
-                        Assert.AreNotSame(instances[i], instances[j], $"i: {i}, j: {j}");
+                        ClassicAssert.AreNotSame(instances[i], instances[j], $"i: {i}, j: {j}");
                     }
                 }
             }
@@ -249,7 +250,7 @@ namespace Cassandra.Tests.Requests
                 { "release_version", "3.11.1" }
             }));
             metadata.RebuildTokenMapAsync(false, true).GetAwaiter().GetResult();
-            Assert.IsNotNull(metadata.GetKeyspace(keyspace));
+            Assert.That(metadata.GetKeyspace(keyspace), Is.Not.Null);
             return session;
         }
     }

@@ -41,9 +41,9 @@ namespace Cassandra.IntegrationTests.CqlFunctions.Structures
 
         public static void AssertEquals(EntityWithTimeUuid expectedEntity, EntityWithTimeUuid actualEntity)
         {
-            Assert.AreEqual(expectedEntity.GuidType, actualEntity.GuidType);
-            Assert.AreEqual(expectedEntity.StringType, actualEntity.StringType);
-            Assert.AreEqual(expectedEntity.TimeUuidType, actualEntity.TimeUuidType);
+            Assert.That(expectedEntity.GuidType, Is.EqualTo(actualEntity.GuidType));
+            Assert.That(expectedEntity.StringType, Is.EqualTo(actualEntity.StringType));
+            Assert.That(expectedEntity.TimeUuidType, Is.EqualTo(actualEntity.TimeUuidType));
         }
 
         public static bool AssertListContains(List<EntityWithTimeUuid> expectedEntities, EntityWithTimeUuid actualEntity)

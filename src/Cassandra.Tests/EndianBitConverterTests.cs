@@ -16,6 +16,7 @@
 using System;
 using System.Linq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests
 {
@@ -40,9 +41,9 @@ namespace Cassandra.Tests
                 EndianBitConverter.SetBytes(true, buffer, 0, v.Item1);
                 CollectionAssert.AreEqual(v.Item2.Reverse(), buffer);
                 var decoded = EndianBitConverter.ToInt32(false, v.Item2, 0);
-                Assert.AreEqual(v.Item1, decoded);
+                Assert.That(v.Item1, Is.EqualTo(decoded));
                 decoded = EndianBitConverter.ToInt32(true, v.Item2.Reverse().ToArray(), 0);
-                Assert.AreEqual(v.Item1, decoded);
+                Assert.That(v.Item1, Is.EqualTo(decoded));
             }
         }
 
@@ -65,9 +66,9 @@ namespace Cassandra.Tests
                 EndianBitConverter.SetBytes(true, buffer, 0, v.Item1);
                 CollectionAssert.AreEqual(v.Item2.Reverse(), buffer);
                 var decoded = EndianBitConverter.ToDouble(false, v.Item2, 0);
-                Assert.AreEqual(v.Item1, decoded);
+                Assert.That(v.Item1, Is.EqualTo(decoded));
                 decoded = EndianBitConverter.ToDouble(true, v.Item2.Reverse().ToArray(), 0);
-                Assert.AreEqual(v.Item1, decoded);
+                Assert.That(v.Item1, Is.EqualTo(decoded));
             }
         }
     }

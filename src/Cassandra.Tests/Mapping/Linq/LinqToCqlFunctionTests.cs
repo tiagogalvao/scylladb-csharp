@@ -20,6 +20,7 @@ using Cassandra.Data.Linq;
 using Cassandra.Mapping;
 using Cassandra.Tests.Mapping.Pocos;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.Mapping.Linq
 {
@@ -39,14 +40,14 @@ namespace Cassandra.Tests.Mapping.Linq
         //     });
         //     var table = GetTable<AllTypesEntity>(session, new Map<AllTypesEntity>().TableName("tbl100"));
         //     table.Where(t => t.UuidValue <= CqlFunction.MaxTimeUuid(DateTimeOffset.Parse("1/1/2005"))).Execute();
-        //     Assert.AreEqual("SELECT BooleanValue, DateTimeValue, DecimalValue, DoubleValue, Int64Value, IntValue," +
+        //     Assert.That("SELECT BooleanValue, DateTimeValue, DecimalValue, DoubleValue, Int64Value, IntValue," +
         //                     " StringValue, UuidValue FROM tbl100 WHERE UuidValue <= maxtimeuuid(?)", query);
-        //     Assert.AreEqual(DateTimeOffset.Parse("1/1/2005"), parameters[0]);
+        //     Assert.That(DateTimeOffset.Parse("1/1/2005"), parameters[0]);
         //
         //     table.Where(t => CqlFunction.MaxTimeUuid(DateTimeOffset.Parse("1/1/2005")) > t.UuidValue).Execute();
-        //     Assert.AreEqual("SELECT BooleanValue, DateTimeValue, DecimalValue, DoubleValue, Int64Value, IntValue," +
+        //     Assert.That("SELECT BooleanValue, DateTimeValue, DecimalValue, DoubleValue, Int64Value, IntValue," +
         //                     " StringValue, UuidValue FROM tbl100 WHERE UuidValue < maxtimeuuid(?)", query);
-        //     Assert.AreEqual(DateTimeOffset.Parse("1/1/2005"), parameters[0]);
+        //     Assert.That(DateTimeOffset.Parse("1/1/2005"), parameters[0]);
         // }
 
         // TODO: Review
@@ -63,8 +64,8 @@ namespace Cassandra.Tests.Mapping.Linq
         //     var table = GetTable<AllTypesEntity>(session, new Map<AllTypesEntity>().TableName("tbl2"));
         //     var timestamp = DateTimeOffset.Parse("1/1/2010");
         //     table.Where(t => t.UuidValue < CqlFunction.MinTimeUuid(timestamp)).Execute();
-        //     Assert.AreEqual("SELECT BooleanValue, DateTimeValue, DecimalValue, DoubleValue, Int64Value, IntValue, StringValue, UuidValue FROM tbl2 WHERE UuidValue < mintimeuuid(?)", query);
-        //     Assert.AreEqual(timestamp, parameters[0]);
+        //     Assert.That("SELECT BooleanValue, DateTimeValue, DecimalValue, DoubleValue, Int64Value, IntValue, StringValue, UuidValue FROM tbl2 WHERE UuidValue < mintimeuuid(?)", query);
+        //     Assert.That(timestamp, parameters[0]);
         // }
 
         [Test]
@@ -81,12 +82,12 @@ namespace Cassandra.Tests.Mapping.Linq
             var table = GetTable<AllTypesEntity>(session, new Map<AllTypesEntity>().TableName("tbl3").CaseSensitive());
             var key = "key1";
             table.Where(t => CqlFunction.Token(t.StringValue) > CqlFunction.Token(key)).Execute();
-            Assert.AreEqual(@"SELECT ""BooleanValue"", ""DateTimeValue"", ""DecimalValue"", ""DoubleValue"", ""Int64Value"", ""IntValue"", ""StringValue"", ""UuidValue"" FROM ""tbl3"" WHERE token(""StringValue"") > token(?)", query);
-            Assert.AreEqual(key, parameters[0]);
+            Assert.That(@"SELECT ""BooleanValue"", ""DateTimeValue"", ""DecimalValue"", ""DoubleValue"", ""Int64Value"", ""IntValue"", ""StringValue"", ""UuidValue"" FROM ""tbl3"" WHERE token(""StringValue"") > token(?)", Is.EqualTo(query));
+            Assert.That(key, Is.EqualTo(parameters[0]));
             table.Where(t => CqlFunction.Token(t.StringValue, t.Int64Value) <= CqlFunction.Token(key, "key2")).Execute();
-            Assert.AreEqual(@"SELECT ""BooleanValue"", ""DateTimeValue"", ""DecimalValue"", ""DoubleValue"", ""Int64Value"", ""IntValue"", ""StringValue"", ""UuidValue"" FROM ""tbl3"" WHERE token(""StringValue"", ""Int64Value"") <= token(?, ?)", query);
-            Assert.AreEqual(key, parameters[0]);
-            Assert.AreEqual("key2", parameters[1]);
+            Assert.That(@"SELECT ""BooleanValue"", ""DateTimeValue"", ""DecimalValue"", ""DoubleValue"", ""Int64Value"", ""IntValue"", ""StringValue"", ""UuidValue"" FROM ""tbl3"" WHERE token(""StringValue"", ""Int64Value"") <= token(?, ?)", Is.EqualTo(query));
+            Assert.That(key, Is.EqualTo(parameters[0]));
+            Assert.That("key2", Is.EqualTo(parameters[1]));
         }
 
         [Test]
@@ -104,8 +105,8 @@ namespace Cassandra.Tests.Mapping.Linq
 
             table.Where(t => CqlToken.Create(t.StringValue, t.Int64Value) > token).Select(t => new {t.IntValue})
                  .Execute();
-            Assert.AreEqual("SELECT IntValue FROM tbl1 WHERE token(StringValue, Int64Value) > token(?, ?)", query);
-            Assert.AreEqual(token.Values, parameters);
+            Assert.That("SELECT IntValue FROM tbl1 WHERE token(StringValue, Int64Value) > token(?, ?)", Is.EqualTo(query));
+            Assert.That(token.Values, Is.EqualTo(parameters));
         }
         
         [Test]
@@ -120,7 +121,7 @@ namespace Cassandra.Tests.Mapping.Linq
             });
             var table = GetTable<AllTypesEntity>(session, new Map<AllTypesEntity>().TableName("tbl"));
             table.Select(x => new {WriteTime = CqlFunction.WriteTime(x.StringValue), x.StringValue, x.IntValue}).Execute();
-            Assert.AreEqual("SELECT WRITETIME(StringValue), StringValue, IntValue FROM tbl", query);
+            Assert.That("SELECT WRITETIME(StringValue), StringValue, IntValue FROM tbl", Is.EqualTo(query));
         }
 
         [Test]
@@ -140,7 +141,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 .Where(t => t.Id == 1L)
                 .Update()
                 .Execute();
-            Assert.AreEqual("UPDATE tbl SET score_values = score_values + ? WHERE Id = ?", query);
+            Assert.That("UPDATE tbl SET score_values = score_values + ? WHERE Id = ?", Is.EqualTo(query));
             CollectionAssert.AreEqual(new object[] { new List<int> { 5, 6 }, 1L }, parameters);
         }
 
@@ -161,7 +162,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 .Where(t => t.Id == 10L)
                 .Update()
                 .Execute();
-            Assert.AreEqual("UPDATE tbl SET Scores = ? + Scores WHERE Id = ?", query);
+            Assert.That("UPDATE tbl SET Scores = ? + Scores WHERE Id = ?", Is.EqualTo(query));
             CollectionAssert.AreEqual(new object[] { new List<int> { 50, 60 }, 10L }, parameters);
         }
 
@@ -182,7 +183,7 @@ namespace Cassandra.Tests.Mapping.Linq
                 .Where(t => t.Id == 100L)
                 .Update()
                 .Execute();
-            Assert.AreEqual("UPDATE tbl SET Tags = Tags - ? WHERE Id = ?", query);
+            Assert.That("UPDATE tbl SET Tags = Tags - ? WHERE Id = ?", Is.EqualTo(query));
             CollectionAssert.AreEqual(new object[] { new [] { "clock" }, 100L }, parameters);
         }
     }

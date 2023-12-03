@@ -30,6 +30,7 @@ using Cassandra.Tests;
 using Cassandra.Tests.Mapping.Pocos;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.ExecutionProfiles
 {
@@ -140,8 +141,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
                 ? _mapper.FetchPageAsync<Movie>(Cql.New($"SELECT MovieMaker FROM {_keyspace}.Movie").WithExecutionProfile("testDerivedProfile")).Result.ToList()
                 : _mapper.FetchPage<Movie>(Cql.New($"SELECT MovieMaker FROM {_keyspace}.Movie").WithExecutionProfile("testDerivedProfile")).ToList();
 
-            Assert.AreEqual(1, movies.Count);
-            Assert.IsTrue(new MovieComparer().Compare(_movieList.First(), movies.Single()) == 0);
+            Assert.That(1, Is.EqualTo(movies.Count));
+            Assert.That(new MovieComparer().Compare(_movieList.First(), movies.Single()) == 0, Is.True);
         }
 
         [Test]
@@ -155,8 +156,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
                 ? _mapper.FirstAsync<Movie>(Cql.New($"SELECT Title FROM {_keyspace}.Movie").WithExecutionProfile("testProfile")).Result
                 : _mapper.First<Movie>(Cql.New($"SELECT Title FROM {_keyspace}.Movie").WithExecutionProfile("testProfile"));
 
-            Assert.IsNotNull(movie);
-            Assert.IsTrue(new MovieComparer().Compare(_movieList.Skip(1).First(), movie) == 0);
+            Assert.That(movie, Is.Not.Null);
+            Assert.That(new MovieComparer().Compare(_movieList.Skip(1).First(), movie) == 0, Is.True);
         }
 
         [Test]
@@ -170,8 +171,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
                 ? _mapper.FirstOrDefaultAsync<Movie>(Cql.New($"SELECT Year FROM {_keyspace}.Movie").WithExecutionProfile("testProfile")).Result
                 : _mapper.FirstOrDefault<Movie>(Cql.New($"SELECT Year FROM {_keyspace}.Movie").WithExecutionProfile("testProfile"));
 
-            Assert.IsNotNull(movie);
-            Assert.IsTrue(new MovieComparer().Compare(_movieList.First(), movie) == 0);
+            Assert.That(movie, Is.Not.Null);
+            Assert.That(new MovieComparer().Compare(_movieList.First(), movie) == 0, Is.True);
         }
 
         [Test]
@@ -185,8 +186,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
                 ? _mapper.SingleAsync<Movie>(Cql.New($"SELECT ExampleSet FROM {_keyspace}.Movie").WithExecutionProfile("testProfile")).Result
                 : _mapper.Single<Movie>(Cql.New($"SELECT ExampleSet FROM {_keyspace}.Movie").WithExecutionProfile("testProfile"));
 
-            Assert.IsNotNull(movie);
-            Assert.IsTrue(new MovieComparer().Compare(_movieList.Skip(1).First(), movie) == 0);
+            Assert.That(movie, Is.Not.Null);
+            Assert.That(new MovieComparer().Compare(_movieList.Skip(1).First(), movie) == 0, Is.True);
         }
 
         [Test]
@@ -200,8 +201,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
                 ? _mapper.SingleOrDefaultAsync<Movie>(Cql.New($"SELECT Director FROM {_keyspace}.Movie").WithExecutionProfile("testProfile")).Result
                 : _mapper.SingleOrDefault<Movie>(Cql.New($"SELECT Director FROM {_keyspace}.Movie").WithExecutionProfile("testProfile"));
 
-            Assert.IsNotNull(movie);
-            Assert.IsTrue(new MovieComparer().Compare(_movieList.Skip(2).First(), movie) == 0);
+            Assert.That(movie, Is.Not.Null);
+            Assert.That(new MovieComparer().Compare(_movieList.Skip(2).First(), movie) == 0, Is.True);
         }
         
         [Test]
@@ -232,8 +233,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
                 _mapper.Insert(song, "testProfile", true);
             }
             var newQueries = _simulacronCluster.GetQueries(insert, QueryType.Execute);
-            Assert.AreEqual(queries.Count + 3, newQueries.Count);
-            Assert.IsTrue(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two));
+            Assert.That(queries.Count + 3, Is.EqualTo(newQueries.Count));
+            Assert.That(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two), Is.True);
         }
 
         [Test]
@@ -265,8 +266,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
             }
 
             var newQueries = _simulacronCluster.GetQueries(insertIfNotExists, QueryType.Execute);
-            Assert.AreEqual(queries.Count + 3, newQueries.Count);
-            Assert.IsTrue(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two));
+            Assert.That(queries.Count + 3, Is.EqualTo(newQueries.Count));
+            Assert.That(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two), Is.True);
         }
 
         [Test]
@@ -296,8 +297,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
             }
 
             var newQueries = _simulacronCluster.GetQueries(delete, QueryType.Execute);
-            Assert.AreEqual(queries.Count + 2, newQueries.Count);
-            Assert.IsTrue(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two));
+            Assert.That(queries.Count + 2, Is.EqualTo(newQueries.Count));
+            Assert.That(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two), Is.True);
         }
 
         [Test]
@@ -325,8 +326,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
             }
 
             var newQueries = _simulacronCluster.GetQueries(delete, QueryType.Execute);
-            Assert.AreEqual(queries.Count + 1, newQueries.Count);
-            Assert.IsTrue(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two));
+            Assert.That(queries.Count + 1, Is.EqualTo(newQueries.Count));
+            Assert.That(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two), Is.True);
         }
 
         [Test]
@@ -359,8 +360,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
                        .WithExecutionProfile("testProfile"));
             }
             var newQueries = _simulacronCluster.GetQueries(update, QueryType.Execute);
-            Assert.AreEqual(queries.Count + 2, newQueries.Count);
-            Assert.IsTrue(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two));
+            Assert.That(queries.Count + 2, Is.EqualTo(newQueries.Count));
+            Assert.That(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two), Is.True);
         }
 
         [Test]
@@ -391,8 +392,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
                        .WithExecutionProfile("testProfile"));
             }
             var newQueries = _simulacronCluster.GetQueries(update, QueryType.Execute);
-            Assert.AreEqual(queries.Count + 1, newQueries.Count);
-            Assert.IsTrue(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two));
+            Assert.That(queries.Count + 1, Is.EqualTo(newQueries.Count));
+            Assert.That(newQueries.All(q => q.ConsistencyLevel == ConsistencyLevel.Two), Is.True);
         }
         
         [Test]
@@ -421,8 +422,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
             }
 
             var newQueries = _simulacronCluster.GetQueries(null, QueryType.Batch);
-            Assert.AreEqual(queries.Count + 1, newQueries.Count);
-            Assert.AreEqual(ConsistencyLevel.Two, newQueries.Last().Frame.GetBatchMessage().ConsistencyLevel);
+            Assert.That(queries.Count + 1, Is.EqualTo(newQueries.Count));
+            Assert.That(ConsistencyLevel.Two, Is.EqualTo(newQueries.Last().Frame.GetBatchMessage().ConsistencyLevel));
         }
         
         [Test]
@@ -451,8 +452,8 @@ namespace Cassandra.IntegrationTests.ExecutionProfiles
             }
 
             var newQueries = _simulacronCluster.GetQueries(null, QueryType.Batch);
-            Assert.AreEqual(queries.Count + 1, newQueries.Count);
-            Assert.AreEqual(ConsistencyLevel.Two, newQueries.Last().Frame.GetBatchMessage().ConsistencyLevel);
+            Assert.That(queries.Count + 1, Is.EqualTo(newQueries.Count));
+            Assert.That(ConsistencyLevel.Two, Is.EqualTo(newQueries.Last().Frame.GetBatchMessage().ConsistencyLevel));
         }
     }
 }

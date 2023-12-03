@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests
 {
@@ -52,7 +53,7 @@ namespace Cassandra.Tests
         public void NoHostAvailableException_Message_Includes_No_Host_Tried()
         {
             var ex = new NoHostAvailableException(new Dictionary<IPEndPoint, Exception>());
-            Assert.AreEqual("No host is available to be queried (no host tried)", ex.Message);
+            Assert.That("No host is available to be queried (no host tried)", Is.EqualTo(ex.Message));
         }
 
         [Test]
@@ -62,9 +63,9 @@ namespace Cassandra.Tests
             {
                 { new IPEndPoint(IPAddress.Parse("10.10.0.1"), 9042), new AuthenticationException("Bad credentials") }
             });
-            Assert.AreEqual(
+            Assert.That(
                 "All hosts tried for query failed (tried 10.10.0.1:9042: AuthenticationException 'Bad credentials')", 
-                ex.Message);
+                Is.EqualTo(ex.Message));
         }
 
         [Test]
@@ -76,10 +77,10 @@ namespace Cassandra.Tests
                 { new IPEndPoint(IPAddress.Parse("10.10.0.2"), 9042), new AuthenticationException("No credentials") },
                 { new IPEndPoint(IPAddress.Parse("10.10.0.3"), 9042), new AuthenticationException("No credentials") }
             });
-            Assert.AreEqual(
+            Assert.That(
                 "All hosts tried for query failed (tried 10.10.0.1:9042: AuthenticationException 'Bad credentials';" +
                 " 10.10.0.2:9042: AuthenticationException 'No credentials'; ...), see Errors property for more info", 
-                ex.Message);
+                Is.EqualTo(ex.Message));
         }
 
         [Test]
@@ -90,10 +91,10 @@ namespace Cassandra.Tests
                 { new IPEndPoint(IPAddress.Parse("10.10.0.1"), 9042), null },
                 { new IPEndPoint(IPAddress.Parse("10.10.0.2"), 9042), new AuthenticationException("No credentials") }
             });
-            Assert.AreEqual(
+            Assert.That(
                 "All hosts tried for query failed (tried 10.10.0.1:9042; 10.10.0.2:9042: AuthenticationException " +
                 "'No credentials')", 
-                ex.Message);
+                Is.EqualTo(ex.Message));
         }
 
         [Test]
@@ -112,7 +113,7 @@ namespace Cassandra.Tests
             const string baseMessage = "Server failure during read query at consistency ";
             var expectedMessage = baseMessage + expectedMessageEnd;
             var ex = new ReadFailureException(consistencyLevel, received, required, dataPresent, failures);
-            Assert.AreEqual(expectedMessage, ex.Message);
+            Assert.That(expectedMessage, Is.EqualTo(ex.Message));
         }
     }
 }

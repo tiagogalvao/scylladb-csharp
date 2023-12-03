@@ -75,7 +75,7 @@ namespace Cassandra.Tests.MetadataTests
             TestHelper.RetryAssert(() =>
             {
                 var timers = mockResult.Timers.ToArray();
-                Assert.AreEqual(1, timers.Length);
+                Assert.That(1, Is.EqualTo(timers.Length));
                 VerifyTimerChange(timers[0], 10, Times.Exactly(2));
             });
             await Task.Delay(100).ConfigureAwait(false);
@@ -114,12 +114,12 @@ namespace Cassandra.Tests.MetadataTests
             TestHelper.RetryAssert(() =>
             {
                 var timers = mockResult.Timers.ToArray();
-                Assert.AreEqual(1, timers.Length);
+                Assert.That(1, Is.EqualTo(timers.Length));
                 VerifyTimerChange(timers[0], 10, Times.Exactly(2));
             });
             await Task.Delay(100).ConfigureAwait(false);
             VerifyTimerChange(mockResult.Timers.Single(), 10, Times.Exactly(2));
-            Assert.AreEqual(2, _target.GetQueue().Keyspaces.Count);
+            Assert.That(2, Is.EqualTo(_target.GetQueue().Keyspaces.Count));
         }
 
         [Test]
@@ -135,12 +135,12 @@ namespace Cassandra.Tests.MetadataTests
             TestHelper.RetryAssert(() =>
             {
                 var timers = mockResult.Timers.ToArray();
-                Assert.AreEqual(1, timers.Length);
+                Assert.That(1, Is.EqualTo(timers.Length));
                 VerifyTimerChange(timers[0], 10, Times.Exactly(3));
             });
             await Task.Delay(100).ConfigureAwait(false);
             VerifyTimerChange(mockResult.Timers.Single(), 10, Times.Exactly(3));
-            Assert.AreEqual(0, _target.GetQueue().Keyspaces.Count);
+            Assert.That(0, Is.EqualTo(_target.GetQueue().Keyspaces.Count));
         }
 
         [Repeat(100)]
@@ -163,10 +163,10 @@ namespace Cassandra.Tests.MetadataTests
             var handlerTask4 = tasks[3];
 
             await Task.WhenAll(callbacks).ConfigureAwait(false);
-            Assert.IsTrue(handlerTask1.IsCompleted);
-            Assert.IsTrue(handlerTask2.IsCompleted);
-            Assert.IsFalse(handlerTask3.IsCompleted);
-            Assert.IsFalse(handlerTask4.IsCompleted);
+            Assert.That(handlerTask1.IsCompleted, Is.True);
+            Assert.That(handlerTask2.IsCompleted, Is.True);
+            Assert.That(handlerTask3.IsCompleted, Is.False);
+            Assert.That(handlerTask4.IsCompleted, Is.False);
         }
 
         [Repeat(100)]
@@ -193,14 +193,14 @@ namespace Cassandra.Tests.MetadataTests
             var handlerTask6 = tasks[5];
 
             await Task.WhenAll(callbacks).ConfigureAwait(false);
-            Assert.IsFalse(handlerTask1.IsCompleted);
-            Assert.IsFalse(handlerTask2.IsCompleted);
-            Assert.IsFalse(handlerTask3.IsCompleted);
-            Assert.IsFalse(handlerTask4.IsCompleted);
+            Assert.That(handlerTask1.IsCompleted, Is.False);
+            Assert.That(handlerTask2.IsCompleted, Is.False);
+            Assert.That(handlerTask3.IsCompleted, Is.False);
+            Assert.That(handlerTask4.IsCompleted, Is.False);
 
             // last global event wins
-            Assert.IsFalse(handlerTask5.IsCompleted);
-            Assert.IsTrue(handlerTask6.IsCompleted);
+            Assert.That(handlerTask5.IsCompleted, Is.False);
+            Assert.That(handlerTask6.IsCompleted, Is.True);
         }
 
         private ProtocolEvent CreateProtocolEvent(string keyspace = null, bool? isRefreshEvent = null)

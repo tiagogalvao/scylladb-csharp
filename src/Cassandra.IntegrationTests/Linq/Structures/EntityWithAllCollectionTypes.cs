@@ -44,10 +44,10 @@ namespace Cassandra.IntegrationTests.Linq.Structures
 
         public void AssertEquals(EntityWithAllCollectionTypes actualEntity)
         {
-            Assert.AreEqual(Id, actualEntity.Id);
-            Assert.AreEqual(ListType, actualEntity.ListType);
-            Assert.AreEqual(ArrayType, actualEntity.ArrayType);
-            Assert.AreEqual(DictionaryType, actualEntity.DictionaryType);
+            Assert.That(Id, Is.EqualTo(actualEntity.Id));
+            Assert.That(ListType, Is.EqualTo(actualEntity.ListType));
+            Assert.That(ArrayType, Is.EqualTo(actualEntity.ArrayType));
+            Assert.That(DictionaryType, Is.EqualTo(actualEntity.DictionaryType));
         }
 
         public static List<EntityWithAllCollectionTypes> GetDefaultAllDataTypesList()

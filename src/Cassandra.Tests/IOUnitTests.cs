@@ -24,6 +24,7 @@ using Cassandra.Compression;
 using Cassandra.Responses;
 using Cassandra.Serialization;
 using Microsoft.IO;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests
 {
@@ -67,8 +68,8 @@ namespace Cassandra.Tests
             }, times);
             //Allow callbacks to be called using the default scheduler
             Thread.Sleep(1000);
-            Assert.AreEqual(times, clientCallbackCounter);
-            Assert.AreEqual(expectedTimedout, timedOutReceived);
+            Assert.That(times, Is.EqualTo(clientCallbackCounter));
+            Assert.That(expectedTimedout, Is.EqualTo(timedOutReceived));
         }
 
         [Test]
@@ -99,7 +100,7 @@ namespace Cassandra.Tests
             }, times);
             //Allow callbacks to be called using the default scheduler
             Thread.Sleep(1000);
-            Assert.AreEqual(times, Interlocked.Read(ref clientCallbackCounter));
+            Assert.That(times, Is.EqualTo(Interlocked.Read(ref clientCallbackCounter)));
         }
 
         [Test]
@@ -115,7 +116,7 @@ namespace Cassandra.Tests
             state.InvokeCallback(null, 0);
             //Allow callbacks to be called using the default scheduler
             Thread.Sleep(20);
-            Assert.AreEqual(0, clientCallbackCounter);
+            Assert.That(0, Is.EqualTo(clientCallbackCounter));
         }
 
         [Test]
@@ -133,9 +134,9 @@ namespace Cassandra.Tests
                     writer.WriteFrameHeader(0, 127, 8);
                     writer.WriteUInt16(Convert.ToUInt16(0x0900 + i));
                     var length = writer.Close();
-                    Assert.AreEqual(frameLength, length);
+                    Assert.That(frameLength, Is.EqualTo(length));
                 }
-                Assert.AreEqual(frameLength * iterations, stream.Length);
+                Assert.That(frameLength * iterations, Is.EqualTo(stream.Length));
                 for (byte i = 0; i < iterations; i++)
                 {
                     var buffer = new byte[frameLength];
@@ -165,21 +166,21 @@ namespace Cassandra.Tests
             {
                 stream.Write(buffer, 0, blockSize);
                 var bufferList = stream.GetBufferList();
-                Assert.AreEqual(1, bufferList.Count);
+                Assert.That(1, Is.EqualTo(bufferList.Count));
                 CollectionAssert.AreEqual(new[] { new ArraySegment<byte>(buffer, 0, blockSize) }, bufferList);
             }
             using (var stream = (RecyclableMemoryStream)bufferPool.GetStream())
             {
                 stream.Write(buffer, 0, blockSize * 2);
                 var bufferList = stream.GetBufferList();
-                Assert.AreEqual(2, bufferList.Count);
+                Assert.That(2, Is.EqualTo(bufferList.Count));
                 CollectionAssert.AreEqual(new[] { new ArraySegment<byte>(buffer, 0, blockSize), new ArraySegment<byte>(buffer, blockSize, blockSize) }, bufferList);
             }
             using (var stream = (RecyclableMemoryStream)bufferPool.GetStream())
             {
                 stream.Write(buffer, 0, blockSize * 2 + 1);
                 var bufferList = stream.GetBufferList();
-                Assert.AreEqual(3, bufferList.Count);
+                Assert.That(3, Is.EqualTo(bufferList.Count));
                 CollectionAssert.AreEqual(new[]
                 {
                     new ArraySegment<byte>(buffer, 0, blockSize),

@@ -168,7 +168,7 @@ namespace Cassandra.IntegrationTests.Core
                 Trace.TraceInformation("Inserted... now we are checking the count");
 
                 var ret = localSession.Execute(string.Format(@"SELECT * from {0} LIMIT {1};", tableName, RowsNo + 100), ConsistencyLevel.Quorum);
-                Assert.AreEqual(RowsNo, ret.GetRows().ToList().Count);
+                Assert.That(RowsNo, Is.EqualTo(ret.GetRows().ToList().Count));
 
 
                 for (int idx = 0; idx < RowsNo; idx++)
@@ -202,12 +202,12 @@ namespace Cassandra.IntegrationTests.Core
                 var taskArray = taskList.ToArray();
                 Task.WaitAny(taskArray);
                 var rs = localSession.Execute("SELECT * FROM sampletable", ConsistencyLevel.One);
-                Assert.IsTrue(rs.Count() > 0, "Table should contain 1 or more rows by now");
+                Assert.That(rs.Count() > 0, Is.True, "Table should contain 1 or more rows by now");
 
                 Task.WaitAll(taskArray);
                 rs = localSession.Execute("SELECT * FROM sampletable", ConsistencyLevel.Quorum);
 
-                Assert.AreEqual(rowLength, rs.Count());
+                Assert.That(rowLength, Is.EqualTo(rs.Count()));
             }
             catch (Exception e)
             {
@@ -283,7 +283,7 @@ namespace Cassandra.IntegrationTests.Core
             Trace.TraceInformation("Inserted... now we are checking the count");
 
             var ret = localSession.Execute(string.Format(@"SELECT * from {0} LIMIT {1};", tableName, RowsNo + 100), ConsistencyLevel.Quorum);
-            Assert.AreEqual(RowsNo, ret.GetRows().ToList().Count);
+            Assert.That(RowsNo, Is.EqualTo(ret.GetRows().ToList().Count));
             localSession.Dispose();
         }
 

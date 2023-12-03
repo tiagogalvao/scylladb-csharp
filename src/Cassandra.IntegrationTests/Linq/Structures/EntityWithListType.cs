@@ -20,6 +20,7 @@ using Cassandra.Data.Linq;
 using Cassandra.IntegrationTests.TestBase;
 using Cassandra.Mapping;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Linq.Structures
 {
@@ -91,7 +92,7 @@ namespace Cassandra.IntegrationTests.Linq.Structures
 
         public void AssertEquals(EntityWithListType actualEntity)
         {
-            Assert.AreEqual(Id, actualEntity.Id);
+            Assert.That(Id, Is.EqualTo(actualEntity.Id));
             CollectionAssert.AreEquivalent(ListType, actualEntity.ListType);
         }
     }
