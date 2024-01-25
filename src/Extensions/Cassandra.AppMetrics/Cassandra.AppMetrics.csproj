@@ -20,8 +20,8 @@
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <RepositoryUrl>https://github.com/datastax/csharp-driver</RepositoryUrl>
     <PackageProjectUrl>https://github.com/datastax/csharp-driver</PackageProjectUrl>
-    <LangVersion>11</LangVersion>
-    <TargetFramework>net7.0</TargetFramework>
+    <LangVersion>12</LangVersion>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
