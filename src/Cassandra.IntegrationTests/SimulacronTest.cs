@@ -97,7 +97,7 @@ namespace Cassandra.IntegrationTests
             var paramBytes = positionalParameters.Select(obj => obj == null ? null : Convert.ToBase64String(serializer.Serialize(obj))).ToList();
             var filteredQueries = logs.Where(q => (q.Query == cql || cql == null) && q.Frame.GetQueryMessage().Options.PositionalValues.SequenceEqual(paramBytes));
 
-            Assert.AreEqual(count, filteredQueries.Count());
+            Assert.That(count, Is.EqualTo(filteredQueries.Count()));
         }
 
         protected void VerifyBatchStatement(int count, byte[][] ids, params object[][] parameters)
@@ -114,7 +114,7 @@ namespace Cassandra.IntegrationTests
             var filteredQueries = logs.Where(q =>
                 q.Frame.GetBatchMessage().Values.SelectMany(l => l).SequenceEqual(paramBytes)
                 && q.Frame.GetBatchMessage().QueriesOrIds.SequenceEqual(queries));
-            Assert.AreEqual(count, filteredQueries.Count());
+            Assert.That(count, Is.EqualTo(filteredQueries.Count()));
         }
 
         protected void VerifyBatchStatement(int count, string[] queries, Func<BatchMessage, bool> func, params object[][] parameters)
@@ -127,7 +127,7 @@ namespace Cassandra.IntegrationTests
                 q.Frame.GetBatchMessage().Values.SelectMany(l => l).SequenceEqual(paramBytes)
                 && q.Frame.GetBatchMessage().QueriesOrIds.SequenceEqual(queries) 
                 && func(q.Frame.GetBatchMessage()));
-            Assert.AreEqual(count, filteredQueries.Count());
+            Assert.That(count, Is.EqualTo(filteredQueries.Count()));
         }
 
         protected void PrimeSystemSchemaTables(string keyspace, string table, IEnumerable<StubTableColumn> columns)

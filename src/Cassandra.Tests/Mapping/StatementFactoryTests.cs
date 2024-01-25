@@ -26,6 +26,7 @@ using Cassandra.Mapping.Statements;
 using Cassandra.Tasks;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.Mapping
 {
@@ -79,9 +80,9 @@ namespace Cassandra.Tests.Mapping
                 createdPreparedStatementsBag.Select(t => t.Result), 
                 new ReferenceEqualityComparer<PreparedStatement>());
 
-            Assert.AreEqual(1, preparedStatementsSet.Count);
-            Assert.AreEqual(concurrentTasks, boundStatementsSet.Count);
-            Assert.AreEqual(1, createdPreparedStatementsSet.Count);
+            Assert.That(1, Is.EqualTo(preparedStatementsSet.Count));
+            Assert.That(concurrentTasks, Is.EqualTo(boundStatementsSet.Count));
+            Assert.That(1, Is.EqualTo(createdPreparedStatementsSet.Count));
         }
         
         [Test]
@@ -131,11 +132,11 @@ namespace Cassandra.Tests.Mapping
             }
             catch (Exception ex)
             {
-                Assert.AreEqual(exceptionMessage, ex.Message);
+                Assert.That(exceptionMessage, Is.EqualTo(ex.Message));
             }
 
-            Assert.AreEqual(1, tasks.Count(t => t.IsFaulted));
-            Assert.AreEqual(concurrentTasks - 1, tasks.Count(t => t.IsCompleted && !t.IsFaulted));
+            Assert.That(1, Is.EqualTo(tasks.Count(t => t.IsFaulted)));
+            Assert.That(concurrentTasks - 1, Is.EqualTo(tasks.Count(t => t.IsCompleted && !t.IsFaulted)));
 
             tasks = tasks.Where(t => !t.IsFaulted).ToArray();
 
@@ -151,9 +152,9 @@ namespace Cassandra.Tests.Mapping
                 createdPreparedStatementsBag.Select(t => t.Result), 
                 new ReferenceEqualityComparer<PreparedStatement>());
 
-            Assert.AreEqual(1, preparedStatementsSet.Count);
-            Assert.AreEqual(concurrentTasks - 1, boundStatementsSet.Count);
-            Assert.AreEqual(1, createdPreparedStatementsSet.Count);
+            Assert.That(1, Is.EqualTo(preparedStatementsSet.Count));
+            Assert.That(concurrentTasks - 1, Is.EqualTo(boundStatementsSet.Count));
+            Assert.That(1, Is.EqualTo(createdPreparedStatementsSet.Count));
         }
 
         [Test]
@@ -183,28 +184,28 @@ namespace Cassandra.Tests.Mapping
             {
                 var bound1 = await sf.GetStatementAsync(sessionMock1.Object, cql1B)
                                     .ConfigureAwait(false);
-                Assert.AreSame(ps1, GetPreparedStatement(bound1));
+                Assert.That(ps1, Is.SameAs(GetPreparedStatement(bound1)));
             }
 
             var bound2 = await sf.GetStatementAsync(sessionMock1.Object, cql2).ConfigureAwait(false);
             // Different CQL should be cached differently
-            Assert.AreNotSame(ps1, GetPreparedStatement(bound2));
+            Assert.That(ps1, Is.Not.SameAs(GetPreparedStatement(bound2)));
 
             sessionMock1.Setup(s => s.Keyspace).Returns("ks2");
 
             // Different keyspace, same query
             var differentKsStatement = await sf.GetStatementAsync(sessionMock1.Object, cql1A).ConfigureAwait(false);
             var psSession1 = GetPreparedStatement(differentKsStatement);
-            Assert.AreNotSame(ps1, psSession1);
+            Assert.That(ps1, Is.Not.SameAs(psSession1));
 
             // Different Session instance
             var boundSession2 = await sf.GetStatementAsync(sessionMock2.Object, cql1A).ConfigureAwait(false);
             var psSession2 = GetPreparedStatement(boundSession2);
-            Assert.AreNotSame(psSession1, psSession2);
+            Assert.That(psSession1, Is.Not.SameAs(psSession2));
 
             // Same ks, query and ISession instance
             var bound3 = await sf.GetStatementAsync(sessionMock2.Object, cql1A).ConfigureAwait(false);
-            Assert.AreSame(psSession2, GetPreparedStatement(bound3));
+            Assert.That(psSession2, Is.SameAs(GetPreparedStatement(bound3)));
         }
 
         [Test]
@@ -240,20 +241,20 @@ namespace Cassandra.Tests.Mapping
             // Should not fail after setting the flag
             var statement = await sf.GetStatementAsync(sessionMock.Object, cql).ConfigureAwait(false);
 
-            Assert.IsInstanceOf<BoundStatement>(statement);
+            ClassicAssert.IsInstanceOf<BoundStatement>(statement);
 
             var ps = ((BoundStatement) statement).PreparedStatement;
 
             for (var i = 0; i < 10; i++)
             {
                 var bound = (BoundStatement) await sf.GetStatementAsync(sessionMock.Object, cql).ConfigureAwait(false);
-                Assert.AreSame(ps, bound.PreparedStatement);
+                Assert.That(ps, Is.SameAs(bound.PreparedStatement));
             }
         }
 
         private static PreparedStatement GetPreparedStatement(Statement statement)
         {
-            Assert.IsInstanceOf<BoundStatement>(statement);
+            ClassicAssert.IsInstanceOf<BoundStatement>(statement);
             return ((BoundStatement) statement).PreparedStatement;
         }
     }

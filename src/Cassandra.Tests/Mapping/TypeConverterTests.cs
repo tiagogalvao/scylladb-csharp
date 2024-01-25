@@ -21,6 +21,7 @@ using System.Linq;
 using Cassandra.Mapping.TypeConversion;
 using Cassandra.Tests.TestAttributes;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.Mapping
 {
@@ -65,8 +66,8 @@ namespace Cassandra.Tests.Mapping
                 { TimeUuid.NewId(), "First" }
             };
             var result = TestGetFromDbConverter<IDictionary<Guid, string>, Dictionary<TimeUuid, string>>(value, false);
-            Assert.AreEqual(value.First().Key.ToString(), result.First().Key.ToString());
-            Assert.AreEqual(value.First().Value, result.First().Value);
+            Assert.That(value.First().Key.ToString(), Is.EqualTo(result.First().Key.ToString()));
+            Assert.That(value.First().Value, Is.EqualTo(result.First().Value));
         }
 
         [Test]
@@ -77,8 +78,8 @@ namespace Cassandra.Tests.Mapping
                 { TimeUuid.NewId(), "First" }
             };
             var result = TestGetFromDbConverter<IDictionary<Guid, string>, SortedDictionary<TimeUuid, string>>(value, false);
-            Assert.AreEqual(value.First().Key.ToString(), result.First().Key.ToString());
-            Assert.AreEqual(value.First().Value, result.First().Value);
+            Assert.That(value.First().Key.ToString(), Is.EqualTo(result.First().Key.ToString()));
+            Assert.That(value.First().Value, Is.EqualTo(result.First().Value));
         }
 
         private static object[] ListSourceData =>
@@ -137,16 +138,16 @@ namespace Cassandra.Tests.Mapping
             var result = TestGetFromDbConverter<TSource, TResult>(src, false);
             if (expected == null)
             {
-                Assert.AreEqual(expected, result);
+                Assert.That(expected, Is.EqualTo(result));
             }
             else
             {
                 var expectedList = expected.Cast<object>().ToList();
                 var resultList = result.Cast<object>().ToList();
-                Assert.AreEqual(expectedList.Count, resultList.Count);
+                Assert.That(expectedList.Count, Is.EqualTo(resultList.Count));
                 for (var i = 0; i < resultList.Count; i++)
                 {
-                    Assert.AreEqual(expectedList[i], resultList[i]);
+                    Assert.That(expectedList[i], Is.EqualTo(resultList[i]));
                 }
             }
         }
@@ -166,7 +167,7 @@ namespace Cassandra.Tests.Mapping
         {
             var converter = new DefaultTypeConverter();
             var result = (Func<TSource, TResult>) converter.TryGetFromDbConverter(typeof(TSource), typeof(TResult));
-            Assert.NotNull(result);
+            Assert.That(result, Is.Not.Null);
             var convertedValue = result(value);
             if (compare)
             {

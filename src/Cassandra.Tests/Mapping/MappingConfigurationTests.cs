@@ -19,6 +19,7 @@ using Cassandra.Mapping.TypeConversion;
 using Cassandra.Tests.Mapping.FluentMappings;
 using Cassandra.Tests.Mapping.Pocos;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests.Mapping
 {
@@ -31,10 +32,10 @@ namespace Cassandra.Tests.Mapping
             var config = new MappingConfiguration();
             var originalMapperFactory = config.MapperFactory;
             //the mapper factory remains the same
-            Assert.AreSame(originalMapperFactory, config.MapperFactory);
+            Assert.That(originalMapperFactory, Is.SameAs(config.MapperFactory));
             config.ConvertTypesUsing(new DefaultTypeConverter());
             //New instance of the mapper factory
-            Assert.AreNotSame(originalMapperFactory, config.MapperFactory);
+            Assert.That(originalMapperFactory, Is.Not.SameAs(config.MapperFactory));
         }
 
         [Test]
@@ -44,8 +45,8 @@ namespace Cassandra.Tests.Mapping
             var mappingConfig = new MappingConfiguration();
             mappingConfig.Define(userMapping);
             var existingMapping = mappingConfig.Get<FluentUser>();
-            Assert.IsNotNull(existingMapping);
-            Assert.IsInstanceOf(typeof(FluentUserMapping), existingMapping);
+            Assert.That(existingMapping, Is.Not.Null);
+            ClassicAssert.IsInstanceOf(typeof(FluentUserMapping), existingMapping);
         }
 
         [Test]
@@ -53,7 +54,7 @@ namespace Cassandra.Tests.Mapping
         {
             var mappingConfig = new MappingConfiguration();
             var existingMapping = mappingConfig.Get<Album>();
-            Assert.IsNull(existingMapping);
+            Assert.That(existingMapping, Is.Null);
         }
     }
 }

@@ -80,7 +80,7 @@ namespace Cassandra.Tests
             // The accuracy of both should be within a 15.6ms range
             var generator1 = new AtomicMonotonicTimestampGenerator();
             var generator2 = new AtomicMonotonicWinApiTimestampGenerator();
-            Assert.Less(Math.Abs(generator1.Next() - generator2.Next()), 20000);
+            Assert.That(Math.Abs(generator1.Next() - generator2.Next()), Is.LessThan(20000));
         }
 
         private static void TimestampGeneratorMonitonicityTest(ITimestampGenerator generator)
@@ -95,12 +95,12 @@ namespace Cassandra.Tests
                 for (var i = 0; i < iterations; i++)
                 {
                     var value = generator.Next();
-                    Assert.Greater(value, lastValue);
+                    Assert.That(value, Is.GreaterThan(lastValue));
                     lastValue = value;
                     values.TryAdd(value, true);
                 }
             }, threads);
-            Assert.AreEqual(iterations * threads, values.Count);
+            Assert.That(iterations * threads, Is.EqualTo(values.Count));
         }
 
         private static void TimestampGeneratorLogDriftingTest(

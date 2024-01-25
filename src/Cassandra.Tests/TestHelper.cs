@@ -30,6 +30,7 @@ using Moq;
 
 using NUnit.Framework;
 using NUnit.Framework.Internal;
+using NUnit.Framework.Legacy;
 using IgnoreAttribute = Cassandra.Mapping.Attributes.IgnoreAttribute;
 
 namespace Cassandra.Tests
@@ -302,7 +303,7 @@ namespace Cassandra.Tests
                     continue;
                 }
                 SimplifyValues(ref actualValue, ref expectedValue);
-                Assert.AreEqual(expectedValue, actualValue,
+                Assert.That(expectedValue, Is.EqualTo(actualValue),
                     // ReSharper disable once PossibleNullReferenceException
                     string.Format("Property {0}.{1} does not match. Expected: {2} but was: {3}", property.DeclaringType.Name, property.Name, expectedValue, actualValue));
             }
@@ -534,13 +535,13 @@ namespace Cassandra.Tests
             var queryColumnsOrder = new int[cqlParamCount];
             var queryColumnsOrderIndex = 0;
             var columnsMatch = columnsRegex.Match(query);
-            Assert.IsTrue(columnsMatch.Success);
-            Assert.GreaterOrEqual(columnsMatch.Groups.Count, 3);
+            Assert.That(columnsMatch.Success, Is.True);
+            Assert.That(columnsMatch.Groups.Count, Is.GreaterThanOrEqualTo(3));
             var setColumnsGroup = columnsMatch.Groups[1].Value;
             var setCQlColumns = (from x in setColumnsGroup.Split(',') select x.Replace(" = ?", "").Trim()).ToArray();
             foreach (var setColumn in setColumns)
             {
-                Assert.Contains(setColumn, setCQlColumns);
+                ClassicAssert.Contains(setColumn, setCQlColumns);
                 queryColumnsOrder[queryColumnsOrderIndex++] = Array.IndexOf(setCQlColumns, setColumn);
             }
 
@@ -561,7 +562,7 @@ namespace Cassandra.Tests
 
             foreach (var whereColumn in whereColumns)
             {
-                Assert.Contains(whereColumn, whereCQlColumns);
+                ClassicAssert.Contains(whereColumn, whereCQlColumns);
                 queryColumnsOrder[queryColumnsOrderIndex++] = setColumns.Length + Array.IndexOf(whereCQlColumns, whereColumn);
             }
 
@@ -569,11 +570,11 @@ namespace Cassandra.Tests
             {
                 queryColumnsOrder[queryColumnsOrderIndex] = queryColumnsOrderIndex;
             }
-            Assert.AreEqual(expectedValues.Length, cqlParamCount);
-            Assert.AreEqual(expectedValues.Length, values.Length);
+            Assert.That(expectedValues.Length, Is.EqualTo(cqlParamCount));
+            Assert.That(expectedValues.Length, Is.EqualTo(values.Length));
             for (var i = 0; i < expectedValues.Length; i++)
             {
-                Assert.AreEqual(expectedValues[i], values[queryColumnsOrder[i]]);
+                Assert.That(expectedValues[i], Is.EqualTo(values[queryColumnsOrder[i]]));
             }
         }
 
@@ -583,13 +584,13 @@ namespace Cassandra.Tests
             var cqlParamCount = query.Count(x => x == '?');
             var insertColumnsRegex = new Regex($"INSERT INTO {tableName} \\((.*)\\) VALUES \\((.*)\\)\\s?(.*)", RegexOptions.IgnoreCase);
             var matchInsertColumnsMatch = insertColumnsRegex.Match(query);
-            Assert.IsTrue(matchInsertColumnsMatch.Success);
-            Assert.GreaterOrEqual(matchInsertColumnsMatch.Groups.Count, 3);
-            Assert.AreEqual(columns.Length, matchInsertColumnsMatch.Groups[2].Value.Count(c => c == '?'));
+            Assert.That(matchInsertColumnsMatch.Success, Is.True);
+            Assert.That(matchInsertColumnsMatch.Groups.Count, Is.GreaterThanOrEqualTo(3));
+            Assert.That(columns.Length, Is.EqualTo(matchInsertColumnsMatch.Groups[2].Value.Count(c => c == '?')));
             if (complement != null)
             {
-                Assert.AreEqual(4, matchInsertColumnsMatch.Groups.Count);
-                Assert.AreEqual(complement, matchInsertColumnsMatch.Groups[3].Value);
+                Assert.That(4, Is.EqualTo(matchInsertColumnsMatch.Groups.Count));
+                Assert.That(complement, Is.EqualTo(matchInsertColumnsMatch.Groups[3].Value));
             }
             var insertColumnsGroup = matchInsertColumnsMatch.Groups[1].Value;
             var insertColumns = (from x in insertColumnsGroup.Split(',') select x.Trim()).ToArray();
@@ -601,11 +602,11 @@ namespace Cassandra.Tests
                 queryColumnsOrder[i] = (i < columns.Length) ? Array.IndexOf(insertColumns, columns[i]) : i;
             }
 
-            Assert.AreEqual(expectedValues.Length, cqlParamCount);
-            Assert.AreEqual(expectedValues.Length, values.Length);
+            Assert.That(expectedValues.Length, Is.EqualTo(cqlParamCount));
+            Assert.That(expectedValues.Length, Is.EqualTo(values.Length));
             for (var i = 0; i < expectedValues.Length; i++)
             {
-                Assert.AreEqual(expectedValues[i], values[queryColumnsOrder[i]]);
+                Assert.That(expectedValues[i], Is.EqualTo(values[queryColumnsOrder[i]]));
             }
         }
 

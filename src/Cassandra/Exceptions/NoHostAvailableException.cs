@@ -63,12 +63,6 @@ namespace Cassandra
         {
             Errors = new Dictionary<IPEndPoint, Exception>(0);
         }
-        
-        protected NoHostAvailableException(SerializationInfo info, StreamingContext context) :
-            base(info, context)
-        {
-            
-        }
 
         private static string CreateMessage(Dictionary<IPEndPoint, Exception> errors)
         {

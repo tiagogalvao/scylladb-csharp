@@ -86,7 +86,7 @@ namespace Cassandra.IntegrationTests.Core
             _cluster = BuildCluster(_simulacronCluster);
 
             _cluster.Connect();
-            Assert.IsTrue(await _cluster.Metadata.CheckSchemaAgreementAsync().ConfigureAwait(false));
+            Assert.That(await _cluster.Metadata.CheckSchemaAgreementAsync().ConfigureAwait(false), Is.True);
         }
 
         [Test]
@@ -104,7 +104,7 @@ namespace Cassandra.IntegrationTests.Core
             _cluster = BuildCluster(_simulacronCluster);
 
             await _cluster.ConnectAsync().ConfigureAwait(false);
-            Assert.IsFalse(await _cluster.Metadata.CheckSchemaAgreementAsync().ConfigureAwait(false));
+            Assert.That(await _cluster.Metadata.CheckSchemaAgreementAsync().ConfigureAwait(false), Is.False);
         }
 
         [Test]
@@ -135,9 +135,9 @@ namespace Cassandra.IntegrationTests.Core
             await _simulacronCluster.PrimeAsync(queryPrime).ConfigureAwait(false);
             var cql = new SimpleStatement(selectStatement);
             var rowSet = await session.ExecuteAsync(cql).ConfigureAwait(false);
-            Assert.AreEqual("123", rowSet.First().GetValue<string>("test"));
-            Assert.IsTrue(rowSet.Info.IsSchemaInAgreement);
-            Assert.IsFalse(await _cluster.Metadata.CheckSchemaAgreementAsync().ConfigureAwait(false));
+            Assert.That("123", Is.EqualTo(rowSet.First().GetValue<string>("test")));
+            Assert.That(rowSet.Info.IsSchemaInAgreement, Is.True);
+            Assert.That(await _cluster.Metadata.CheckSchemaAgreementAsync().ConfigureAwait(false), Is.False);
         }
     }
 }

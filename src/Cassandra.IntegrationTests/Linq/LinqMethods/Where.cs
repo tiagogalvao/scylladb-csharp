@@ -72,7 +72,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
             // test
             var query = _movieTable.Where(m => m.Title == expectedMovie.Title && m.MovieMaker == expectedMovie.MovieMaker);
             var movies = async ? query.ExecuteAsync().GetAwaiter().GetResult().ToList() : query.Execute().ToList();
-            Assert.AreEqual(1, movies.Count);
+            Assert.That(1, Is.EqualTo(movies.Count));
 
             var actualMovie = movies.First();
             Movie.AssertEquals(expectedMovie, actualMovie);
@@ -92,7 +92,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                       .ThenRowsSuccess(Movie.GetColumns()));
 
             var movies = _movieTable.Where(m => m.Title == existingMovie.Title && m.MovieMaker == randomStr).Execute().ToList();
-            Assert.AreEqual(0, movies.Count);
+            Assert.That(0, Is.EqualTo(movies.Count));
         }
 
         [Test]
@@ -282,17 +282,17 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
             var query2Expected = "SELECT \"date\", \"time\", \"user\" FROM \"test1\" WHERE \"user\" = ? AND \"date\" = ? AND \"time\" >= ? ORDER BY \"time\" ALLOW FILTERING";
             var query3Expected = "SELECT \"date\", \"time\", \"user\" FROM \"test1\" WHERE \"user\" = ? AND \"date\" = ? AND \"time\" <= ? ORDER BY \"time\" DESC ALLOW FILTERING";
 
-            Assert.AreEqual(query1Expected, query1Actual.ToString());
-            Assert.AreEqual(query2Expected, query2Actual.ToString());
-            Assert.AreEqual(query3Expected, query3Actual.ToString());
+            Assert.That(query1Expected, Is.EqualTo(query1Actual.ToString()));
+            Assert.That(query2Expected, Is.EqualTo(query2Actual.ToString()));
+            Assert.That(query3Expected, Is.EqualTo(query3Actual.ToString()));
 
             var result2Actual = query2Actual.Execute().ToList();
             var result3Actual = query3Actual.Execute().ToList();
 
-            Assert.AreEqual(3, result2Actual.First().TimeColumn);
-            Assert.AreEqual(5, result2Actual.Last().TimeColumn);
-            Assert.AreEqual(3, result3Actual.First().TimeColumn);
-            Assert.AreEqual(1, result3Actual.Last().TimeColumn);
+            Assert.That(3, Is.EqualTo(result2Actual.First().TimeColumn));
+            Assert.That(5, Is.EqualTo(result2Actual.Last().TimeColumn));
+            Assert.That(3, Is.EqualTo(result3Actual.First().TimeColumn));
+            Assert.That(1, Is.EqualTo(result3Actual.Last().TimeColumn));
         }
 
         [Test]
@@ -328,8 +328,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           ("time",DataType.GetDataType(typeof(long)))));
 
             var emptyResults = table.Where(t => t.UserId == 1 && localList.Contains(t.Date)).Execute();
-            Assert.NotNull(emptyResults);
-            Assert.AreEqual(0, emptyResults.ToArray().Length);
+            Assert.That(emptyResults, Is.Not.Null);
+            Assert.That(0, Is.EqualTo(emptyResults.ToArray().Length));
 
             localList.Add(1); //adding to list existent tuple
 
@@ -344,13 +344,13 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           rows => rows.WithRow(data.Date, data.UserId, data.TimeColumn)));
 
             var tCreateResults = table.Where(t => t.UserId == 1 && localList.Contains(t.Date)).Execute();
-            Assert.NotNull(tCreateResults);
+            Assert.That(tCreateResults, Is.Not.Null);
             var tCreateResultsArr = tCreateResults.ToArray();
-            Assert.AreEqual(1, tCreateResultsArr.Length);
+            Assert.That(1, Is.EqualTo(tCreateResultsArr.Length));
             var tCreateResultObj = tCreateResultsArr[0];
-            Assert.AreEqual(1, tCreateResultObj.UserId);
-            Assert.AreEqual(1, tCreateResultObj.Date);
-            Assert.AreEqual(1, tCreateResultObj.UserId);
+            Assert.That(1, Is.EqualTo(tCreateResultObj.UserId));
+            Assert.That(1, Is.EqualTo(tCreateResultObj.Date));
+            Assert.That(1, Is.EqualTo(tCreateResultObj.UserId));
 
             //invalid case: string.Contains
             Assert.Throws<InvalidOperationException>(() =>
@@ -385,8 +385,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           ("time",DataType.GetDataType(typeof(long)))));
 
             var emptyResults = table.Where(t => t.UserId == 1 && localList.Contains(Tuple.Create(t.Date, t.TimeColumn))).Execute();
-            Assert.NotNull(emptyResults);
-            Assert.AreEqual(0, emptyResults.ToArray().Length);
+            Assert.That(emptyResults, Is.Not.Null);
+            Assert.That(0, Is.EqualTo(emptyResults.ToArray().Length));
             
             TestCluster.PrimeDelete();
             TestCluster.PrimeFluent(
@@ -400,8 +400,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           ("time",DataType.GetDataType(typeof(long)))));
 
             emptyResults = table.Where(t => t.UserId == 1 && new List<Tuple<int, long>>().Contains(Tuple.Create(t.Date, t.TimeColumn))).Execute();
-            Assert.NotNull(emptyResults);
-            Assert.AreEqual(0, emptyResults.ToArray().Length);
+            Assert.That(emptyResults, Is.Not.Null);
+            Assert.That(0, Is.EqualTo(emptyResults.ToArray().Length));
 
             localList.Add(Tuple.Create(1, 1L)); //adding to list existent tuple
             
@@ -414,13 +414,13 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                       .ThenRowsSuccess(new[] { "date", "id", "time" }, rows => rows.WithRow(1, 1, 1L)));
 
             var tCreateResults = table.Where(t => t.UserId == 1 && localList.Contains(Tuple.Create(t.Date, t.TimeColumn))).Execute();
-            Assert.NotNull(tCreateResults);
+            Assert.That(tCreateResults, Is.Not.Null);
             var tCreateResultsArr = tCreateResults.ToArray();
-            Assert.AreEqual(1, tCreateResultsArr.Length);
+            Assert.That(1, Is.EqualTo(tCreateResultsArr.Length));
             var tCreateResultObj = tCreateResultsArr[0];
-            Assert.AreEqual(1, tCreateResultObj.UserId);
-            Assert.AreEqual(1, tCreateResultObj.Date);
-            Assert.AreEqual(1, tCreateResultObj.UserId);
+            Assert.That(1, Is.EqualTo(tCreateResultObj.UserId));
+            Assert.That(1, Is.EqualTo(tCreateResultObj.Date));
+            Assert.That(1, Is.EqualTo(tCreateResultObj.UserId));
         }
 
         [Test]
@@ -451,8 +451,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                       .ThenRowsSuccess(new[] { "date", "id", "time" }, rows => rows.WithRow(1, 1, 1L)));
 
             var listInsideObjResults = table.Where(t => t.UserId == 1 && anomObj.list.Contains(Tuple.Create(t.Date, t.TimeColumn))).Execute();
-            Assert.NotNull(listInsideObjResults);
-            Assert.AreEqual(1, listInsideObjResults.Count());
+            Assert.That(listInsideObjResults, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(listInsideObjResults.Count()));
             
             TestCluster.PrimeDelete();
             TestCluster.PrimeFluent(
@@ -463,8 +463,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                       .ThenRowsSuccess(new[] { "date", "id", "time" }, rows => rows.WithRow(1, 1, 1L)));
 
             var listOuterScopeResults = table.Where(t => t.UserId == 1 && _tupleList.Contains(Tuple.Create(t.Date, t.TimeColumn))).Execute();
-            Assert.NotNull(listOuterScopeResults);
-            Assert.AreEqual(1, listOuterScopeResults.Count());
+            Assert.That(listOuterScopeResults, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(listOuterScopeResults.Count()));
             
             TestCluster.PrimeDelete();
             TestCluster.PrimeFluent(
@@ -475,8 +475,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                       .ThenRowsSuccess(new[] { "date", "id", "time" }, rows => rows.WithRow(1, 1, 1L)));
 
             var listOuterStaticScopeResults = table.Where(t => t.UserId == 1 && TupleList.Contains(Tuple.Create(t.Date, t.TimeColumn))).Execute();
-            Assert.NotNull(listOuterStaticScopeResults);
-            Assert.AreEqual(1, listOuterStaticScopeResults.Count());
+            Assert.That(listOuterStaticScopeResults, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(listOuterStaticScopeResults.Count()));
         }
 
         [Test]
@@ -497,9 +497,9 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
 
             //there are no records with BooleanType == true
             var rs = _manyDataTypesEntitiesTable.Where(m => m.BooleanType).Execute();
-            Assert.NotNull(rs);
+            Assert.That(rs, Is.Not.Null);
             var rows = rs.ToArray();
-            Assert.AreEqual(0, rows.Length);
+            Assert.That(0, Is.EqualTo(rows.Length));
             var guid = Guid.NewGuid();
             var data = new ManyDataTypesEntity
             {
@@ -530,12 +530,12 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           r => r.WithRow(data.GetColumnValues())));
 
             rs = _manyDataTypesEntitiesTable.Where(m => m.BooleanType).Execute();
-            Assert.NotNull(rs);
+            Assert.That(rs, Is.Not.Null);
             rows = rs.ToArray();
-            Assert.AreEqual(1, rows.Length);
-            Assert.AreEqual(guid, rows[0].GuidType);
-            Assert.AreEqual("Boolean True", rows[0].StringType);
-            Assert.IsTrue(rows[0].BooleanType);
+            Assert.That(1, Is.EqualTo(rows.Length));
+            Assert.That(guid, Is.EqualTo(rows[0].GuidType));
+            Assert.That("Boolean True", Is.EqualTo(rows[0].StringType));
+            Assert.That(rows[0].BooleanType, Is.True);
         }
 
         [Test]
@@ -556,8 +556,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           p => p.WithParams(all))
                       .ThenRowsSuccess(ManyDataTypesEntity.GetColumnsWithTypes()));
             var rs = _manyDataTypesEntitiesTable.Where(m => m.BooleanType == all).Execute();
-            Assert.NotNull(rs);
-            Assert.AreEqual(0, rs.Count());
+            Assert.That(rs, Is.Not.Null);
+            Assert.That(0, Is.EqualTo(rs.Count()));
             
             //get all records
             TestCluster.PrimeDelete();
@@ -575,8 +575,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           ManyDataTypesEntity.GetColumnsWithTypes(),
                           r => r.WithRow(_manyDataTypesEntitiesList.First().GetColumnValues())));
             rs = _manyDataTypesEntitiesTable.Where(m => m.BooleanType == bool.Parse("false")).Execute();
-            Assert.NotNull(rs);
-            Assert.AreEqual(1, rs.Count());
+            Assert.That(rs, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(rs.Count()));
         }
 
         [Test, TestCassandraVersion(3, 0)]
@@ -620,8 +620,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
 
             var rs = _manyDataTypesEntitiesTable
                      .Where(m => m.StringType == pk && m.IntType == expectedShortValue).AllowFiltering().Execute();
-            Assert.NotNull(rs);
-            Assert.AreEqual(1, rs.Count());
+            Assert.That(rs, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(rs.Count()));
             
             TestCluster.PrimeDelete();
             TestCluster.PrimeFluent(
@@ -636,8 +636,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
 
             rs = _manyDataTypesEntitiesTable.Where(m => m.StringType == pk && m.IntType == ExpectedShortValue)
                                             .AllowFiltering().Execute();
-            Assert.NotNull(rs);
-            Assert.AreEqual(1, rs.Count());
+            Assert.That(rs, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(rs.Count()));
             
             TestCluster.PrimeDelete();
             TestCluster.PrimeFluent(
@@ -651,8 +651,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           r => r.WithRow(data.GetColumnValues())));
             rs = _manyDataTypesEntitiesTable.Where(m => m.StringType == pk && ExpectedShortValue == m.IntType)
                                             .AllowFiltering().Execute();
-            Assert.NotNull(rs);
-            Assert.AreEqual(1, rs.Count());
+            Assert.That(rs, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(rs.Count()));
             
             TestCluster.PrimeDelete();
             TestCluster.PrimeFluent(
@@ -666,8 +666,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           r => r.WithRow(data.GetColumnValues())));
             rs = _manyDataTypesEntitiesTable.Where(m => m.StringType == pk && expectedShortValue == m.IntType)
                                             .AllowFiltering().Execute();
-            Assert.NotNull(rs);
-            Assert.AreEqual(1, rs.Count());
+            Assert.That(rs, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(rs.Count()));
 
             TestCluster.PrimeDelete();
             TestCluster.PrimeFluent(
@@ -681,8 +681,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           r => r.WithRow(data.GetColumnValues())));
             rs = _manyDataTypesEntitiesTable.Where(m => m.StringType == pk && m.Int64Type == expectedShortValue)
                                             .AllowFiltering().Execute();
-            Assert.NotNull(rs);
-            Assert.AreEqual(1, rs.Count());
+            Assert.That(rs, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(rs.Count()));
             
             TestCluster.PrimeDelete();
             TestCluster.PrimeFluent(
@@ -696,8 +696,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           r => r.WithRow(data.GetColumnValues())));
             rs = _manyDataTypesEntitiesTable.Where(m => m.StringType == pk && expectedShortValue == m.Int64Type)
                                             .AllowFiltering().Execute();
-            Assert.NotNull(rs);
-            Assert.AreEqual(1, rs.Count());
+            Assert.That(rs, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(rs.Count()));
             
             TestCluster.PrimeDelete();
             TestCluster.PrimeFluent(
@@ -711,8 +711,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           r => r.WithRow(data.GetColumnValues())));
             rs = _manyDataTypesEntitiesTable.Where(m => m.StringType == pk && m.Int64Type == ExpectedShortValue)
                                             .AllowFiltering().Execute();
-            Assert.NotNull(rs);
-            Assert.AreEqual(1, rs.Count());
+            Assert.That(rs, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(rs.Count()));
 
             TestCluster.PrimeDelete();
             TestCluster.PrimeFluent(
@@ -726,8 +726,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           r => r.WithRow(data.GetColumnValues())));
             rs = _manyDataTypesEntitiesTable.Where(m => m.StringType == pk && ExpectedShortValue == m.Int64Type)
                                             .AllowFiltering().Execute();
-            Assert.NotNull(rs);
-            Assert.AreEqual(1, rs.Count());
+            Assert.That(rs, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(rs.Count()));
         }
 
         [Test]
@@ -757,7 +757,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           ("ReleaseDate", DataType.GetDataType(typeof(DateTimeOffset))), 
                           ("Title", DataType.GetDataType(typeof(string)))));
 
-            Assert.AreEqual(0, table.Where(x => x.Title == "Do I Wanna Know").Execute().Count());
+            Assert.That(0, Is.EqualTo(table.Where(x => x.Title == "Do I Wanna Know").Execute().Count()));
         }
 
         [Table(TestTable.TableName)]

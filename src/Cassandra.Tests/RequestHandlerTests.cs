@@ -24,7 +24,7 @@ using Cassandra.Requests;
 using Cassandra.Serialization;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using PrepareFlags = Cassandra.Requests.PrepareRequest.PrepareFlags;
 using QueryFlags = Cassandra.QueryProtocolOptions.QueryFlags;
 
@@ -69,25 +69,25 @@ namespace Cassandra.Tests
         public void RequestHandler_GetRequest_SimpleStatement_Default_QueryOptions_Are_Used()
         {
             var stmt = new SimpleStatement("DUMMY QUERY");
-            Assert.AreEqual(0, stmt.PageSize);
-            Assert.Null(stmt.ConsistencyLevel);
+            Assert.That(0, Is.EqualTo(stmt.PageSize));
+            Assert.That(stmt.ConsistencyLevel, Is.Null);
             var request = (QueryRequest)RequestHandler.GetRequest(stmt, Serializer, GetRequestOptions());
-            Assert.AreEqual(DefaultQueryOptions.GetPageSize(), request.PageSize);
-            Assert.AreEqual(DefaultQueryOptions.GetConsistencyLevel(), request.Consistency);
+            Assert.That(DefaultQueryOptions.GetPageSize(), Is.EqualTo(request.PageSize));
+            Assert.That(DefaultQueryOptions.GetConsistencyLevel(), Is.EqualTo(request.Consistency));
         }
 
         [Test]
         public void RequestHandler_GetRequest_SimpleStatement_QueryOptions_Are_Used()
         {
             var stmt = new SimpleStatement("DUMMY QUERY");
-            Assert.AreEqual(0, stmt.PageSize);
-            Assert.Null(stmt.ConsistencyLevel);
+            Assert.That(0, Is.EqualTo(stmt.PageSize));
+            Assert.That(stmt.ConsistencyLevel, Is.Null);
             var queryOptions = new QueryOptions().SetConsistencyLevel(ConsistencyLevel.LocalQuorum).SetPageSize(100);
             var request = (QueryRequest)RequestHandler.GetRequest(stmt, Serializer, GetRequestOptions(queryOptions));
-            Assert.AreEqual(100, request.PageSize);
-            Assert.AreEqual(queryOptions.GetPageSize(), request.PageSize);
-            Assert.AreEqual(queryOptions.GetConsistencyLevel(), request.Consistency);
-            Assert.AreEqual(queryOptions.GetSerialConsistencyLevel(), request.SerialConsistency);
+            Assert.That(100, Is.EqualTo(request.PageSize));
+            Assert.That(queryOptions.GetPageSize(), Is.EqualTo(request.PageSize));
+            Assert.That(queryOptions.GetConsistencyLevel(), Is.EqualTo(request.Consistency));
+            Assert.That(queryOptions.GetSerialConsistencyLevel(), Is.EqualTo(request.SerialConsistency));
         }
 
         [Test]
@@ -97,13 +97,13 @@ namespace Cassandra.Tests
             stmt.SetConsistencyLevel(ConsistencyLevel.EachQuorum);
             stmt.SetPageSize(350);
             stmt.SetSerialConsistencyLevel(ConsistencyLevel.LocalSerial);
-            Assert.AreEqual(350, stmt.PageSize);
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, stmt.ConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, stmt.SerialConsistencyLevel);
+            Assert.That(350, Is.EqualTo(stmt.PageSize));
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(stmt.ConsistencyLevel));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(stmt.SerialConsistencyLevel));
             var request = (QueryRequest)RequestHandler.GetRequest(stmt, Serializer, GetRequestOptions());
-            Assert.AreEqual(350, request.PageSize);
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, request.Consistency);
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, request.SerialConsistency);
+            Assert.That(350, Is.EqualTo(request.PageSize));
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(request.Consistency));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(request.SerialConsistency));
         }
 
         [Test]
@@ -111,11 +111,11 @@ namespace Cassandra.Tests
         {
             var ps = GetPrepared();
             var stmt = ps.Bind();
-            Assert.AreEqual(0, stmt.PageSize);
-            Assert.Null(stmt.ConsistencyLevel);
+            Assert.That(0, Is.EqualTo(stmt.PageSize));
+            Assert.That(stmt.ConsistencyLevel, Is.Null);
             var request = (ExecuteRequest)RequestHandler.GetRequest(stmt, Serializer, GetRequestOptions());
-            Assert.AreEqual(DefaultQueryOptions.GetPageSize(), request.PageSize);
-            Assert.AreEqual(DefaultQueryOptions.GetConsistencyLevel(), request.Consistency);
+            Assert.That(DefaultQueryOptions.GetPageSize(), Is.EqualTo(request.PageSize));
+            Assert.That(DefaultQueryOptions.GetConsistencyLevel(), Is.EqualTo(request.Consistency));
         }
 
         [Test]
@@ -123,14 +123,14 @@ namespace Cassandra.Tests
         {
             var ps = GetPrepared();
             var stmt = ps.Bind();
-            Assert.AreEqual(0, stmt.PageSize);
-            Assert.Null(stmt.ConsistencyLevel);
+            Assert.That(0, Is.EqualTo(stmt.PageSize));
+            Assert.That(stmt.ConsistencyLevel, Is.Null);
             var queryOptions = new QueryOptions().SetConsistencyLevel(ConsistencyLevel.LocalQuorum).SetPageSize(100);
             var request = (ExecuteRequest)RequestHandler.GetRequest(stmt, Serializer, GetRequestOptions(queryOptions));
-            Assert.AreEqual(100, request.PageSize);
-            Assert.AreEqual(queryOptions.GetPageSize(), request.PageSize);
-            Assert.AreEqual(queryOptions.GetConsistencyLevel(), request.Consistency);
-            Assert.AreEqual(QueryOptions.DefaultSerialConsistencyLevel, request.SerialConsistency);
+            Assert.That(100, Is.EqualTo(request.PageSize));
+            Assert.That(queryOptions.GetPageSize(), Is.EqualTo(request.PageSize));
+            Assert.That(queryOptions.GetConsistencyLevel(), Is.EqualTo(request.Consistency));
+            Assert.That(QueryOptions.DefaultSerialConsistencyLevel, Is.EqualTo(request.SerialConsistency));
         }
 
         [Test]
@@ -147,7 +147,7 @@ namespace Cassandra.Tests
             var stmt = ps.Bind();
             var queryOptions = new QueryOptions();
             var request = (ExecuteRequest)RequestHandler.GetRequest(stmt, serializerManager.GetCurrentSerializer(), GetRequestOptions(queryOptions));
-            Assert.IsFalse(request.SkipMetadata);
+            Assert.That(request.SkipMetadata, Is.False);
         }
 
         [Test]
@@ -166,7 +166,7 @@ namespace Cassandra.Tests
             var stmt = ps.Bind();
             var queryOptions = new QueryOptions();
             var request = (ExecuteRequest)RequestHandler.GetRequest(stmt, serializerManager.GetCurrentSerializer(), GetRequestOptions(queryOptions));
-            Assert.AreEqual(isSet, request.SkipMetadata);
+            Assert.That(isSet, Is.EqualTo(request.SkipMetadata));
         }
         
         [Test]
@@ -182,7 +182,7 @@ namespace Cassandra.Tests
             var stmt = new SimpleStatement("DUMMY QUERY");
             var queryOptions = new QueryOptions();
             var request = (QueryRequest)RequestHandler.GetRequest(stmt, serializerManager.GetCurrentSerializer(), GetRequestOptions(queryOptions));
-            Assert.IsFalse(request.SkipMetadata);
+            Assert.That(request.SkipMetadata, Is.False);
         }
 
         [Test]
@@ -193,32 +193,32 @@ namespace Cassandra.Tests
             stmt.SetConsistencyLevel(ConsistencyLevel.EachQuorum);
             stmt.SetPageSize(350);
             stmt.SetSerialConsistencyLevel(ConsistencyLevel.LocalSerial);
-            Assert.AreEqual(350, stmt.PageSize);
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, stmt.ConsistencyLevel);
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, stmt.SerialConsistencyLevel);
+            Assert.That(350, Is.EqualTo(stmt.PageSize));
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(stmt.ConsistencyLevel));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(stmt.SerialConsistencyLevel));
             var request = (ExecuteRequest)RequestHandler.GetRequest(stmt, Serializer, GetRequestOptions());
-            Assert.AreEqual(350, request.PageSize);
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, request.Consistency);
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, request.SerialConsistency);
+            Assert.That(350, Is.EqualTo(request.PageSize));
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(request.Consistency));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(request.SerialConsistency));
         }
 
         [Test]
         public void RequestHandler_GetRequest_BatchStatement_Default_QueryOptions_Are_Used()
         {
             var stmt = new BatchStatement();
-            Assert.Null(stmt.ConsistencyLevel);
+            Assert.That(stmt.ConsistencyLevel, Is.Null);
             var request = (BatchRequest)RequestHandler.GetRequest(stmt, Serializer, GetRequestOptions());
-            Assert.AreEqual(DefaultQueryOptions.GetConsistencyLevel(), request.Consistency);
+            Assert.That(DefaultQueryOptions.GetConsistencyLevel(), Is.EqualTo(request.Consistency));
         }
 
         [Test]
         public void RequestHandler_GetRequest_BatchStatement_QueryOptions_Are_Used()
         {
             var stmt = new BatchStatement();
-            Assert.Null(stmt.ConsistencyLevel);
+            Assert.That(stmt.ConsistencyLevel, Is.Null);
             var queryOptions = new QueryOptions().SetConsistencyLevel(ConsistencyLevel.LocalQuorum);
             var request = (BatchRequest)RequestHandler.GetRequest(stmt, Serializer, GetRequestOptions(queryOptions));
-            Assert.AreEqual(queryOptions.GetConsistencyLevel(), request.Consistency);
+            Assert.That(queryOptions.GetConsistencyLevel(), Is.EqualTo(request.Consistency));
         }
 
         [Test]
@@ -226,9 +226,9 @@ namespace Cassandra.Tests
         {
             var stmt = new BatchStatement();
             stmt.SetConsistencyLevel(ConsistencyLevel.EachQuorum);
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, stmt.ConsistencyLevel);
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(stmt.ConsistencyLevel));
             var request = (BatchRequest)RequestHandler.GetRequest(stmt, Serializer, GetRequestOptions());
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, request.Consistency);
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(request.Consistency));
         }
 
         [Test]
@@ -241,31 +241,31 @@ namespace Cassandra.Tests
             var expected = RetryDecision.RetryDecisionType.Rethrow;
             var decision = GetRetryDecisionFromServerError(
                 new ReadTimeoutException(ConsistencyLevel.Quorum, 1, 2, true), policy, statement, config, 0);
-            Assert.AreEqual(expected, decision.DecisionType);
+            Assert.That(expected, Is.EqualTo(decision.DecisionType));
 
             decision = GetRetryDecisionFromServerError(
                 new WriteTimeoutException(ConsistencyLevel.Quorum, 1, 2, "SIMPLE"), policy, statement, config, 0);
-            Assert.AreEqual(expected, decision.DecisionType);
+            Assert.That(expected, Is.EqualTo(decision.DecisionType));
 
             decision = GetRetryDecisionFromServerError(
                 new UnavailableException(ConsistencyLevel.Quorum, 2, 1), policy, statement, config, 0);
-            Assert.AreEqual(expected, decision.DecisionType);
+            Assert.That(expected, Is.EqualTo(decision.DecisionType));
 
             decision = GetRetryDecisionFromClientError(
                 new Exception(), policy, statement, config, 0);
-            Assert.AreEqual(expected, decision.DecisionType);
+            Assert.That(expected, Is.EqualTo(decision.DecisionType));
 
             //Expecting to retry when a Cassandra node is Bootstrapping/overloaded
             expected = RetryDecision.RetryDecisionType.Retry;
             decision = GetRetryDecisionFromServerError(
                 new OverloadedException(null), policy, statement, config, 0);
-            Assert.AreEqual(expected, decision.DecisionType);
+            Assert.That(expected, Is.EqualTo(decision.DecisionType));
             decision = GetRetryDecisionFromServerError(
                 new IsBootstrappingException(null), policy, statement, config, 0);
-            Assert.AreEqual(expected, decision.DecisionType);
+            Assert.That(expected, Is.EqualTo(decision.DecisionType));
             decision = GetRetryDecisionFromServerError(
                 new TruncateException(null), policy, statement, config, 0);
-            Assert.AreEqual(expected, decision.DecisionType);
+            Assert.That(expected, Is.EqualTo(decision.DecisionType));
         }
 
         [Test]
@@ -287,17 +287,17 @@ namespace Cassandra.Tests
             // Skip the query and consistency (2)
             var offset = queryBuffer.Length + 2;
             var flags = GetQueryFlags(bodyBuffer, ref offset);
-            Assert.True(flags.HasFlag(QueryFlags.WithDefaultTimestamp));
-            Assert.True(flags.HasFlag(QueryFlags.PageSize));
-            Assert.False(flags.HasFlag(QueryFlags.Values));
-            Assert.False(flags.HasFlag(QueryFlags.WithPagingState));
-            Assert.False(flags.HasFlag(QueryFlags.SkipMetadata));
-            Assert.True(flags.HasFlag(QueryFlags.WithSerialConsistency));
+            Assert.That(flags.HasFlag(QueryFlags.WithDefaultTimestamp), Is.True);
+            Assert.That(flags.HasFlag(QueryFlags.PageSize), Is.True);
+            Assert.That(flags.HasFlag(QueryFlags.Values), Is.False);
+            Assert.That(flags.HasFlag(QueryFlags.WithPagingState), Is.False);
+            Assert.That(flags.HasFlag(QueryFlags.SkipMetadata), Is.False);
+            Assert.That(flags.HasFlag(QueryFlags.WithSerialConsistency), Is.True);
             // Skip result_page_size (4) + serial_consistency (2)
             offset += 6;
             var timestamp = BeConverter.ToInt64(bodyBuffer, offset);
             var expectedTimestamp = TypeSerializer.SinceUnixEpoch(DateTimeOffset.Now.Subtract(TimeSpan.FromMilliseconds(100))).Ticks / 10;
-            Assert.Greater(timestamp, expectedTimestamp);
+            Assert.That(timestamp, Is.GreaterThan(expectedTimestamp));
         }
 
         [Test]
@@ -323,12 +323,12 @@ namespace Cassandra.Tests
             // Skip the query and consistency (2)
             var offset = queryBuffer.Length + 2;
             var flags = GetQueryFlags(bodyBuffer, ref offset);
-            Assert.False(flags.HasFlag(QueryFlags.WithDefaultTimestamp));
-            Assert.True(flags.HasFlag(QueryFlags.PageSize));
-            Assert.False(flags.HasFlag(QueryFlags.Values));
-            Assert.False(flags.HasFlag(QueryFlags.WithPagingState));
-            Assert.False(flags.HasFlag(QueryFlags.SkipMetadata));
-            Assert.True(flags.HasFlag(QueryFlags.WithSerialConsistency));
+            Assert.That(flags.HasFlag(QueryFlags.WithDefaultTimestamp), Is.False);
+            Assert.That(flags.HasFlag(QueryFlags.PageSize), Is.True);
+            Assert.That(flags.HasFlag(QueryFlags.Values), Is.False);
+            Assert.That(flags.HasFlag(QueryFlags.WithPagingState), Is.False);
+            Assert.That(flags.HasFlag(QueryFlags.SkipMetadata), Is.False);
+            Assert.That(flags.HasFlag(QueryFlags.WithSerialConsistency), Is.True);
         }
 
         [Test]
@@ -355,12 +355,12 @@ namespace Cassandra.Tests
             // Skip the query and consistency (2)
             var offset = queryBuffer.Length + 2;
             var flags = GetQueryFlags(bodyBuffer, ref offset);
-            Assert.True(flags.HasFlag(QueryFlags.WithDefaultTimestamp));
-            Assert.True(flags.HasFlag(QueryFlags.PageSize));
+            Assert.That(flags.HasFlag(QueryFlags.WithDefaultTimestamp), Is.True);
+            Assert.That(flags.HasFlag(QueryFlags.PageSize), Is.True);
             // Skip result_page_size (4) + serial_consistency (2)
             offset += 6;
             var timestamp = BeConverter.ToInt64(bodyBuffer, offset);
-            Assert.AreEqual(TypeSerializer.SinceUnixEpoch(expectedTimestamp).Ticks / 10, timestamp);
+            Assert.That(TypeSerializer.SinceUnixEpoch(expectedTimestamp).Ticks / 10, Is.EqualTo(timestamp));
         }
 
         [Test]
@@ -398,22 +398,23 @@ namespace Cassandra.Tests
             // <type><n><query_1>...<query_n><consistency><flags>[<serial_consistency>][<timestamp>]
             var offset = 1;
             // n = 1
-            Assert.AreEqual(1, BeConverter.ToInt16(bodyBuffer, offset));
+            Assert.That(1, Is.EqualTo(BeConverter.ToInt16(bodyBuffer, offset)));
             // Query_1 <kind><string><n_params>
             offset += 2;
             // kind = 0, not prepared
-            Assert.AreEqual(0, bodyBuffer[offset++]);
+            Assert.That(0, Is.EqualTo(bodyBuffer[offset++]));
+            
             var queryLength = BeConverter.ToInt32(bodyBuffer, offset);
-            Assert.AreEqual(5, queryLength);
+            Assert.That(5, Is.EqualTo(queryLength));
             // skip query, n_params and consistency
             offset += 4 + queryLength + 2 + 2;
             var flags = GetQueryFlags(bodyBuffer, ref offset);
-            Assert.True(flags.HasFlag(QueryFlags.WithDefaultTimestamp));
+            Assert.That(flags.HasFlag(QueryFlags.WithDefaultTimestamp), Is.True);
             // Skip serial consistency
             offset += 2;
             var timestamp = TypeSerializer.UnixStart.AddTicks(BeConverter.ToInt64(bodyBuffer, offset) * 10);
-            Assert.GreaterOrEqual(timestamp, startDate);
-            Assert.LessOrEqual(timestamp, DateTimeOffset.Now.Add(TimeSpan.FromMilliseconds(100)));
+            Assert.That(timestamp, Is.GreaterThanOrEqualTo(startDate));
+            Assert.That(timestamp, Is.LessThanOrEqualTo(DateTimeOffset.Now.Add(TimeSpan.FromMilliseconds(100))));
         }
 
         [Test]
@@ -434,13 +435,13 @@ namespace Cassandra.Tests
             // <type><n><query_1>...<query_n><consistency><flags>[<serial_consistency>][<timestamp>]
             var offset = 1 + 2 + 1;
             var queryLength = BeConverter.ToInt32(bodyBuffer, offset);
-            Assert.AreEqual(5, queryLength);
+            Assert.That(5, Is.EqualTo(queryLength));
             // skip query, n_params and consistency
             offset += 4 + queryLength + 2 + 2;
             var flags = GetQueryFlags(bodyBuffer, ref offset);
-            Assert.False(flags.HasFlag(QueryFlags.WithDefaultTimestamp));
+            Assert.That(flags.HasFlag(QueryFlags.WithDefaultTimestamp), Is.False);
             // Only serial consistency left
-            Assert.AreEqual(bodyBuffer.Length, offset + 2);
+            Assert.That(bodyBuffer.Length, Is.EqualTo(offset + 2));
         }
 
         [Test]
@@ -461,15 +462,15 @@ namespace Cassandra.Tests
             // <type><n><query_1>...<query_n><consistency><flags>[<serial_consistency>][<timestamp>]
             var offset = 1 + 2 + 1;
             var queryLength = BeConverter.ToInt32(bodyBuffer, offset);
-            Assert.AreEqual(5, queryLength);
+            Assert.That(5, Is.EqualTo(queryLength));
             // skip query, n_params and consistency
             offset += 4 + queryLength + 2 + 2;
             var flags = GetQueryFlags(bodyBuffer, ref offset);
-            Assert.True(flags.HasFlag(QueryFlags.WithDefaultTimestamp));
+            Assert.That(flags.HasFlag(QueryFlags.WithDefaultTimestamp), Is.True);
             // Skip serial consistency
             offset += 2;
             var timestamp = TypeSerializer.UnixStart.AddTicks(BeConverter.ToInt64(bodyBuffer, offset) * 10);
-            Assert.AreEqual(providedTimestamp, timestamp);
+            Assert.That(providedTimestamp, Is.EqualTo(timestamp));
         }
 
         [Test]
@@ -486,11 +487,11 @@ namespace Cassandra.Tests
             // <type><n><query_1>...<query_n><consistency><flags>[<serial_consistency>][<timestamp>][<keyspace>]
             var offset = 1 + 2 + 1;
             var queryLength = BeConverter.ToInt32(bodyBuffer, offset);
-            Assert.AreEqual(5, queryLength);
+            Assert.That(5, Is.EqualTo(queryLength));
             // skip query, n_params and consistency
             offset += 4 + queryLength + 2 + 2;
             var flags = GetQueryFlags(bodyBuffer, ref offset);
-            Assert.True(flags.HasFlag(QueryFlags.WithKeyspace));
+            Assert.That(flags.HasFlag(QueryFlags.WithKeyspace), Is.True);
 
             // Skip serial consistency and timestamp
             offset +=
@@ -499,7 +500,7 @@ namespace Cassandra.Tests
 
             var keyspaceLength = BeConverter.ToInt16(bodyBuffer, offset);
             offset += 2;
-            Assert.AreEqual(keyspace, Encoding.UTF8.GetString(bodyBuffer, offset, keyspaceLength));
+            Assert.That(keyspace, Is.EqualTo(Encoding.UTF8.GetString(bodyBuffer, offset, keyspaceLength)));
         }
 
         [Test]
@@ -515,11 +516,11 @@ namespace Cassandra.Tests
             // <type><n><query_1>...<query_n><consistency><flags>[<serial_consistency>][<timestamp>][<keyspace>]
             var offset = 1 + 2 + 1;
             var queryLength = BeConverter.ToInt32(bodyBuffer, offset);
-            Assert.AreEqual(5, queryLength);
+            Assert.That(5, Is.EqualTo(queryLength));
             // skip query, n_params and consistency
             offset += 4 + queryLength + 2 + 2;
             var flags = GetQueryFlags(bodyBuffer, ref offset);
-            Assert.False(flags.HasFlag(QueryFlags.WithKeyspace));
+            Assert.That(flags.HasFlag(QueryFlags.WithKeyspace), Is.False);
         }
 
         [Test]
@@ -538,9 +539,9 @@ namespace Cassandra.Tests
             // <type><n><query_1>...<query_n><consistency>
             const int queryOffSet = 1 + 2 + 1;
             var queryLength = BeConverter.ToInt32(bodyBuffer, queryOffSet);
-            Assert.AreEqual(query.Length, queryLength);
+            Assert.That(query.Length, Is.EqualTo(queryLength));
             // query, n_params and consistency
-            Assert.AreEqual(4 + 4 + queryLength + 2 + 2, bodyBuffer.Length);
+            Assert.That(4 + 4 + queryLength + 2 + 2, Is.EqualTo(bodyBuffer.Length));
         }
 
         [Test]
@@ -595,9 +596,9 @@ namespace Cassandra.Tests
                 offset += 18;
             }
             var flags = GetQueryFlags(bodyBuffer, ref offset);
-            Assert.True(flags.HasFlag(QueryFlags.WithDefaultTimestamp));
-            Assert.True(flags.HasFlag(QueryFlags.PageSize));
-            Assert.True(flags.HasFlag(QueryFlags.WithSerialConsistency));
+            Assert.That(flags.HasFlag(QueryFlags.WithDefaultTimestamp), Is.True);
+            Assert.That(flags.HasFlag(QueryFlags.PageSize), Is.True);
+            Assert.That(flags.HasFlag(QueryFlags.WithSerialConsistency), Is.True);
             // Skip result_page_size (4)
             offset += 4;
             Assert.That((ConsistencyLevel)BeConverter.ToInt16(bodyBuffer, offset), Is.EqualTo(expectedSerialConsistencyLevel));
@@ -625,9 +626,9 @@ namespace Cassandra.Tests
                 offset += 18;
             }
             var flags = GetQueryFlags(bodyBuffer, ref offset);
-            Assert.True(flags.HasFlag(QueryFlags.WithDefaultTimestamp));
-            Assert.True(flags.HasFlag(QueryFlags.PageSize));
-            Assert.True(flags.HasFlag(QueryFlags.WithSerialConsistency));
+            Assert.That(flags.HasFlag(QueryFlags.WithDefaultTimestamp), Is.True);
+            Assert.That(flags.HasFlag(QueryFlags.PageSize), Is.True);
+            Assert.That(flags.HasFlag(QueryFlags.WithSerialConsistency), Is.True);
             // Skip result_page_size (4)
             offset += 4;
             Assert.That((ConsistencyLevel)BeConverter.ToInt16(bodyBuffer, offset), Is.EqualTo(expectedSerialConsistencyLevel));
@@ -651,8 +652,8 @@ namespace Cassandra.Tests
             // Skip the query and consistency (2)
             var offset = 4 + statement.QueryString.Length + 2;
             var flags = GetQueryFlags(bodyBuffer, ref offset);
-            Assert.True(flags.HasFlag(QueryFlags.WithDefaultTimestamp));
-            Assert.True(flags.HasFlag(QueryFlags.PageSize));
+            Assert.That(flags.HasFlag(QueryFlags.WithDefaultTimestamp), Is.True);
+            Assert.That(flags.HasFlag(QueryFlags.PageSize), Is.True);
             // Skip result_page_size (4)
             offset += 4;
             Assert.That((ConsistencyLevel)BeConverter.ToInt16(bodyBuffer, offset), Is.EqualTo(expectedSerialConsistencyLevel));
@@ -679,7 +680,7 @@ namespace Cassandra.Tests
 
             var keyspaceLength = BeConverter.ToInt16(bodyBuffer, offset);
             offset += 2;
-            Assert.AreEqual(keyspace, Encoding.UTF8.GetString(bodyBuffer, offset, keyspaceLength));
+            Assert.That(keyspace, Is.EqualTo(Encoding.UTF8.GetString(bodyBuffer, offset, keyspaceLength)));
         }
 
         [Test]
@@ -696,7 +697,7 @@ namespace Cassandra.Tests
             // Skip the query and consistency (2)
             var offset = 4 + statement.QueryString.Length + 2;
             var flags = GetQueryFlags(bodyBuffer, ref offset);
-            Assert.False(flags.HasFlag(QueryFlags.WithKeyspace));
+            Assert.That(flags.HasFlag(QueryFlags.WithKeyspace), Is.False);
         }
 
         [Test]
@@ -716,9 +717,9 @@ namespace Cassandra.Tests
             // Skip the query and consistency (2)
             var offset = 4 + statement.QueryString.Length + 2;
             var flags = GetQueryFlags(bodyBuffer, ref offset);
-            Assert.True(flags.HasFlag(QueryFlags.WithDefaultTimestamp));
-            Assert.True(flags.HasFlag(QueryFlags.PageSize));
-            Assert.True(flags.HasFlag(QueryFlags.WithSerialConsistency));
+            Assert.That(flags.HasFlag(QueryFlags.WithDefaultTimestamp), Is.True);
+            Assert.That(flags.HasFlag(QueryFlags.PageSize), Is.True);
+            Assert.That(flags.HasFlag(QueryFlags.WithSerialConsistency), Is.True);
             // Skip result_page_size (4)
             offset += 4;
             Assert.That((ConsistencyLevel)BeConverter.ToInt16(bodyBuffer, offset), Is.EqualTo(expectedSerialConsistencyLevel));
@@ -735,15 +736,15 @@ namespace Cassandra.Tests
             var buffer = GetBodyBuffer(request);
 
             var queryLength = BeConverter.ToInt32(buffer);
-            Assert.AreEqual(query.Length, queryLength);
+            Assert.That(query.Length, Is.EqualTo(queryLength));
             var offset = 4 + queryLength;
             var flags = (PrepareFlags)BeConverter.ToInt32(buffer, offset);
             offset += 4;
-            Assert.True(flags.HasFlag(PrepareFlags.WithKeyspace));
+            Assert.That(flags.HasFlag(PrepareFlags.WithKeyspace), Is.True);
             var keyspaceLength = BeConverter.ToInt16(buffer, offset);
             offset += 2;
-            Assert.AreEqual(keyspace.Length, keyspaceLength);
-            Assert.AreEqual(keyspace, Encoding.UTF8.GetString(buffer.Skip(offset).Take(keyspaceLength).ToArray()));
+            Assert.That(keyspace.Length, Is.EqualTo(keyspaceLength));
+            Assert.That(keyspace, Is.EqualTo(Encoding.UTF8.GetString(buffer.Skip(offset).Take(keyspaceLength).ToArray())));
         }
 
         [Test]
@@ -757,8 +758,8 @@ namespace Cassandra.Tests
             var buffer = GetBodyBuffer(request, serializer);
 
             var queryLength = BeConverter.ToInt32(buffer);
-            Assert.AreEqual(query.Length, queryLength);
-            Assert.AreEqual(4 + queryLength, buffer.Length);
+            Assert.That(query.Length, Is.EqualTo(queryLength));
+            Assert.That(4 + queryLength, Is.EqualTo(buffer.Length));
         }
 
         private static byte[] GetBodyBuffer(IRequest request, ISerializer serializer = null)
@@ -788,7 +789,7 @@ namespace Cassandra.Tests
             // Skip query, n_params and consistency
             var offset = 1 + 2 + 1 + 4 + query.Length + 2 + 2;
             var flags = GetQueryFlags(bodyBuffer, ref offset);
-            Assert.True(flags.HasFlag(QueryFlags.WithSerialConsistency));
+            Assert.That(flags.HasFlag(QueryFlags.WithSerialConsistency), Is.True);
             Assert.That((ConsistencyLevel)BeConverter.ToInt16(bodyBuffer, offset), Is.EqualTo(expectedSerialConsistencyLevel));
         }
 

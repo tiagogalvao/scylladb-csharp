@@ -74,14 +74,14 @@ namespace Cassandra.IntegrationTests.MetadataTests
 
                 TestHelper.RetryAssert(() =>
                 {
-                    Assert.AreEqual(3, ClusterObjSync.Metadata.Hosts.Count);
-                    Assert.AreEqual(3, ClusterObjNotSync.Metadata.Hosts.Count);
+                    Assert.That(3, Is.EqualTo(ClusterObjSync.Metadata.Hosts.Count));
+                    Assert.That(3, Is.EqualTo(ClusterObjNotSync.Metadata.Hosts.Count));
 
                     replicasSync = ClusterObjSync.Metadata.GetReplicas(keyspaceName, Encoding.UTF8.GetBytes("123"));
                     replicasNotSync = ClusterObjNotSync.Metadata.GetReplicas(keyspaceName, Encoding.UTF8.GetBytes("123"));
 
-                    Assert.AreEqual(3, replicasSync.Count);
-                    Assert.AreEqual(1, replicasNotSync.Count);
+                    Assert.That(3, Is.EqualTo(replicasSync.Count));
+                    Assert.That(1, Is.EqualTo(replicasNotSync.Count));
                 }, 100, 150);
 
                 var oldTokenMapNotSync = ClusterObjNotSync.Metadata.TokenToReplicasMap;
@@ -100,17 +100,17 @@ namespace Cassandra.IntegrationTests.MetadataTests
 
                 TestHelper.RetryAssert(() =>
                 {
-                    Assert.AreEqual(2, ClusterObjSync.Metadata.Hosts.Count, "ClusterObjSync.Metadata.Hosts.Count");
-                    Assert.AreEqual(2, ClusterObjNotSync.Metadata.Hosts.Count, "ClusterObjNotSync.Metadata.Hosts.Count");
+                    Assert.That(2, Is.EqualTo(ClusterObjSync.Metadata.Hosts.Count), "ClusterObjSync.Metadata.Hosts.Count");
+                    Assert.That(2, Is.EqualTo(ClusterObjNotSync.Metadata.Hosts.Count), "ClusterObjNotSync.Metadata.Hosts.Count");
 
                     replicasSync = ClusterObjSync.Metadata.GetReplicas(keyspaceName, Encoding.UTF8.GetBytes("123"));
                     replicasNotSync = ClusterObjNotSync.Metadata.GetReplicas(keyspaceName, Encoding.UTF8.GetBytes("123"));
 
-                    Assert.AreEqual(2, replicasSync.Count, "replicasSync.Count");
-                    Assert.AreEqual(1, replicasNotSync.Count, "replicasNotSync.Count");
+                    Assert.That(2, Is.EqualTo(replicasSync.Count), "replicasSync.Count");
+                    Assert.That(1, Is.EqualTo(replicasNotSync.Count), "replicasNotSync.Count");
 
-                    Assert.IsFalse(object.ReferenceEquals(ClusterObjNotSync.Metadata.TokenToReplicasMap, oldTokenMapNotSync));
-                    Assert.IsFalse(object.ReferenceEquals(ClusterObjSync.Metadata.TokenToReplicasMap, oldTokenMapSync));
+                    Assert.That(object.ReferenceEquals(ClusterObjNotSync.Metadata.TokenToReplicasMap, oldTokenMapNotSync), Is.False);
+                    Assert.That(object.ReferenceEquals(ClusterObjSync.Metadata.TokenToReplicasMap, oldTokenMapSync), Is.False);
                 }, 1000, 360);
 
                 oldTokenMapNotSync = ClusterObjNotSync.Metadata.TokenToReplicasMap;
@@ -119,17 +119,17 @@ namespace Cassandra.IntegrationTests.MetadataTests
                 this.TestCluster.BootstrapNode(4);
                 TestHelper.RetryAssert(() =>
                 {
-                    Assert.AreEqual(3, ClusterObjSync.Metadata.Hosts.Count);
-                    Assert.AreEqual(3, ClusterObjNotSync.Metadata.Hosts.Count);
+                    Assert.That(3, Is.EqualTo(ClusterObjSync.Metadata.Hosts.Count));
+                    Assert.That(3, Is.EqualTo(ClusterObjNotSync.Metadata.Hosts.Count));
 
                     replicasSync = ClusterObjSync.Metadata.GetReplicas(keyspaceName, Encoding.UTF8.GetBytes("123"));
                     replicasNotSync = ClusterObjNotSync.Metadata.GetReplicas(keyspaceName, Encoding.UTF8.GetBytes("123"));
 
-                    Assert.AreEqual(3, replicasSync.Count);
-                    Assert.AreEqual(1, replicasNotSync.Count);
+                    Assert.That(3, Is.EqualTo(replicasSync.Count));
+                    Assert.That(1, Is.EqualTo(replicasNotSync.Count));
 
-                    Assert.IsFalse(object.ReferenceEquals(ClusterObjNotSync.Metadata.TokenToReplicasMap, oldTokenMapNotSync));
-                    Assert.IsFalse(object.ReferenceEquals(ClusterObjSync.Metadata.TokenToReplicasMap, oldTokenMapSync));
+                    Assert.That(object.ReferenceEquals(ClusterObjNotSync.Metadata.TokenToReplicasMap, oldTokenMapNotSync), Is.False);
+                    Assert.That(object.ReferenceEquals(ClusterObjSync.Metadata.TokenToReplicasMap, oldTokenMapSync), Is.False);
                 }, 1000, 360);
 
             }

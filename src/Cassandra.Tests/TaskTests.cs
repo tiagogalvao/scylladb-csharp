@@ -24,6 +24,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Cassandra.Tasks;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests
 {
@@ -36,7 +37,7 @@ namespace Cassandra.Tests
             var completedTask = Completed<bool>();
             var t2 = completedTask.Then(_ => TestHelper.DelayedTask(true));
             t2.Wait();
-            Assert.True(t2.Result);
+            Assert.That(t2.Result, Is.True);
         }
 
         [Test]
@@ -45,7 +46,7 @@ namespace Cassandra.Tests
             var t1 = TestHelper.DelayedTask(1);
             var t2 = t1.Then(inValue => TestHelper.DelayedTask(2 + inValue));
             t2.Wait();
-            Assert.AreEqual(3, t2.Result);
+            Assert.That(3, Is.EqualTo(t2.Result));
         }
 
         [Test]
@@ -55,8 +56,8 @@ namespace Cassandra.Tests
             var t2 = tcs.Task.Then(_ => TestHelper.DelayedTask(true));
             tcs.SetException(new InvalidQueryException("Dummy exception"));
             var ex = Assert.Throws<AggregateException>(() => t2.Wait());
-            Assert.IsInstanceOf<InvalidQueryException>(ex.InnerException);
-            Assert.AreEqual("Dummy exception", ex.InnerException.Message);
+            ClassicAssert.IsInstanceOf<InvalidQueryException>(ex.InnerException);
+            Assert.That("Dummy exception", Is.EqualTo(ex.InnerException.Message));
         }
 
         [Test]
@@ -65,7 +66,7 @@ namespace Cassandra.Tests
             var completedTask = Completed<bool>();
             var t2 = completedTask.ContinueSync(_ => true);
             t2.Wait();
-            Assert.True(t2.Result);
+            Assert.That(t2.Result, Is.True);
         }
 
         [Test]
@@ -75,7 +76,7 @@ namespace Cassandra.Tests
             tcs.SetException(new InvalidQueryException("Dummy exception"));
             var t2 = tcs.Task.ContinueSync(_ => true);
             var ex = Assert.Throws<AggregateException>(() => t2.Wait());
-            Assert.AreEqual("Dummy exception", ex.InnerExceptions[0].Message);
+            Assert.That("Dummy exception", Is.EqualTo(ex.InnerExceptions[0].Message));
         }
 
         [Test]
@@ -84,7 +85,7 @@ namespace Cassandra.Tests
             var t1 = TestHelper.DelayedTask(1);
             var t2 = t1.ContinueSync(inValue => 2 + inValue);
             t2.Wait();
-            Assert.AreEqual(3, t2.Result);
+            Assert.That(3, Is.EqualTo(t2.Result));
         }
 
         [Test]
@@ -94,8 +95,8 @@ namespace Cassandra.Tests
             var t2 = tcs.Task.ContinueSync(_ => true);
             tcs.SetException(new InvalidQueryException("Dummy exception"));
             var ex = Assert.Throws<AggregateException>(t2.Wait);
-            Assert.AreEqual(1, ex.InnerExceptions.Count);
-            Assert.AreEqual("Dummy exception", ex.InnerException.Message);
+            Assert.That(1, Is.EqualTo(ex.InnerExceptions.Count));
+            Assert.That("Dummy exception", Is.EqualTo(ex.InnerException.Message));
         }
 
         [Test]
@@ -112,8 +113,8 @@ namespace Cassandra.Tests
             }, TaskContinuationOptions.ExecuteSynchronously);
 
             var ex = Assert.Throws<AggregateException>(t2.Wait);
-            Assert.AreEqual(1, ex.InnerExceptions.Count);
-            Assert.AreEqual("Dummy exception from continuation", ex.InnerException.Message);
+            Assert.That(1, Is.EqualTo(ex.InnerExceptions.Count));
+            Assert.That("Dummy exception from continuation", Is.EqualTo(ex.InnerException.Message));
         }
 
         [Test]
@@ -127,7 +128,7 @@ namespace Cassandra.Tests
             }, TaskContinuationOptions.ExecuteSynchronously).Wait();
 
             Trace.TraceInformation("{0} - {1}", threadIdInit, threadIdContinue);
-            Assert.AreEqual(threadIdInit, threadIdContinue);
+            Assert.That(threadIdInit, Is.EqualTo(threadIdContinue));
         }
 
         [Test]
@@ -137,9 +138,9 @@ namespace Cassandra.Tests
             var tcs = TaskHelper.TaskCompletionSourceWithTimeout<int>(20, () => ex);
             var task = tcs.Task;
             Thread.Sleep(200);
-            Assert.AreEqual(TaskStatus.Faulted, task.Status);
-            Assert.NotNull(task.Exception);
-            Assert.AreEqual(ex, task.Exception.InnerException);
+            Assert.That(TaskStatus.Faulted, Is.EqualTo(task.Status));
+            Assert.That(task.Exception, Is.Not.Null);
+            Assert.That(ex, Is.EqualTo(task.Exception.InnerException));
         }
 
         [Test]
@@ -153,9 +154,9 @@ namespace Cassandra.Tests
             });
             var task = tcs.Task;
             tcs.TrySetResult(1);
-            Assert.AreEqual(TaskStatus.RanToCompletion, task.Status);
+            Assert.That(TaskStatus.RanToCompletion, Is.EqualTo(task.Status));
             Thread.Sleep(200);
-            Assert.False(called);
+            Assert.That(called, Is.False);
         }
 
         [Test]
@@ -187,8 +188,7 @@ namespace Cassandra.Tests
                 var match = regex.Match(source);
                 if (match.Success)
                 {
-                    Assert.Fail("Awaited Task without ConfigureAwait() call in file {0}: {1}", 
-                                fileInfo.FullName, match.Value);
+                    Assert.Fail($"Awaited Task without ConfigureAwait() call in file {fileInfo.FullName}: {match.Value}");
                 }
             }
         }

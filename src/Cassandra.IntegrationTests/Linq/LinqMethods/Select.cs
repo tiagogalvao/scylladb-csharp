@@ -58,7 +58,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                 async 
                     ? table.Select(m => m).ExecuteAsync().GetAwaiter().GetResult().ToList() 
                     : table.Select(m => m).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, allEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(allEntities.Count));
             foreach (var entity in allEntities)
             {
                 AllDataTypesEntityUtil.AssertListContains(_entityList, entity);
@@ -78,7 +78,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new [] { "boolean_type" }, 
                           rows => rows.WithRows(_entityList.Select(e => new object [] { e.BooleanType }).ToArray())));
             List<AllDataTypesEntity> actualEntities = _table.Select(e => new AllDataTypesEntity { BooleanType = e.BooleanType }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, actualEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(actualEntities.Count));
             foreach (var entity in _entityList)
             {
                 AllDataTypesEntity expectedEntity = new AllDataTypesEntity
@@ -98,7 +98,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new[] { "date_time_offset_type" },
                           rows => rows.WithRows(_entityList.Select(e => new object[] { e.DateTimeOffsetType }).ToArray())));
             List<AllDataTypesEntity> actualEntities = _table.Select(e => new AllDataTypesEntity { DateTimeOffsetType = e.DateTimeOffsetType }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, actualEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(actualEntities.Count));
             foreach (var entity in _entityList)
             {
                 AllDataTypesEntity expectedEntity = new AllDataTypesEntity
@@ -118,7 +118,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new[] { "date_time_type" },
                           rows => rows.WithRows(_entityList.Select(e => new object[] { e.DateTimeType }).ToArray())));
             List<AllDataTypesEntity> actualEntities = _table.Select(e => new AllDataTypesEntity { DateTimeType = e.DateTimeType }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, actualEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(actualEntities.Count));
             foreach (var entity in _entityList)
             {
                 AllDataTypesEntity expectedEntity = new AllDataTypesEntity
@@ -138,7 +138,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new[] { ("nullable_date_time_type", DataType.Timestamp) },
                           rows => rows.WithRows(_entityList.Select(e => new object[] { e.NullableDateTimeType }).ToArray())));
             List<AllDataTypesEntity> actualEntities = _table.Select(e => new AllDataTypesEntity { NullableDateTimeType = e.NullableDateTimeType }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, actualEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(actualEntities.Count));
             foreach (var entity in _entityList)
             {
                 AllDataTypesEntity expectedEntity = new AllDataTypesEntity
@@ -158,7 +158,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new[] { "decimal_type" },
                           rows => rows.WithRows(_entityList.Select(e => new object[] { e.DecimalType }).ToArray())));
             List<AllDataTypesEntity> actualEntities = _table.Select(e => new AllDataTypesEntity { DecimalType = e.DecimalType }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, actualEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(actualEntities.Count));
             foreach (var entity in _entityList)
             {
                 AllDataTypesEntity expectedEntity = new AllDataTypesEntity
@@ -178,7 +178,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new[] { "map_type_string_long_type" },
                           rows => rows.WithRows(_entityList.Select(e => new object[] { e.DictionaryStringLongType }).ToArray())));
             List<AllDataTypesEntity> actualEntities = _table.Select(e => new AllDataTypesEntity { DictionaryStringLongType = e.DictionaryStringLongType }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, actualEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(actualEntities.Count));
             foreach (var entity in _entityList)
             {
                 AllDataTypesEntity expectedEntity = new AllDataTypesEntity
@@ -198,7 +198,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new[] { "map_type_string_string_type" },
                           rows => rows.WithRows(_entityList.Select(e => new object[] { e.DictionaryStringStringType }).ToArray())));
             List<AllDataTypesEntity> actualEntities = _table.Select(e => new AllDataTypesEntity { DictionaryStringStringType = e.DictionaryStringStringType }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, actualEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(actualEntities.Count));
             foreach (var entity in _entityList)
             {
                 AllDataTypesEntity expectedEntity = new AllDataTypesEntity
@@ -218,7 +218,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new[] { "double_type" },
                           rows => rows.WithRows(_entityList.Select(e => new object[] { e.DoubleType }).ToArray())));
             List<AllDataTypesEntity> actualEntities = _table.Select(e => new AllDataTypesEntity { DoubleType = e.DoubleType }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, actualEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(actualEntities.Count));
             foreach (var entity in _entityList)
             {
                 AllDataTypesEntity expectedEntity = new AllDataTypesEntity
@@ -238,7 +238,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new[] { "float_type" },
                           rows => rows.WithRows(_entityList.Select(e => new object[] { e.FloatType }).ToArray())));
             List<AllDataTypesEntity> actualEntities = _table.Select(e => new AllDataTypesEntity { FloatType = e.FloatType }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, actualEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(actualEntities.Count));
             foreach (var entity in _entityList)
             {
                 AllDataTypesEntity expectedEntity = new AllDataTypesEntity
@@ -258,7 +258,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new[] { "guid_type" },
                           rows => rows.WithRows(_entityList.Select(e => new object[] { e.GuidType }).ToArray())));
             List<AllDataTypesEntity> actualEntities = _table.Select(e => new AllDataTypesEntity { GuidType = e.GuidType }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, actualEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(actualEntities.Count));
             foreach (var entity in _entityList)
             {
                 AllDataTypesEntity expectedEntity = new AllDataTypesEntity
@@ -278,7 +278,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new[] { "int64_type" },
                           rows => rows.WithRows(_entityList.Select(e => new object[] { e.Int64Type }).ToArray())));
             List<AllDataTypesEntity> actualEntities = _table.Select(e => new AllDataTypesEntity { Int64Type = e.Int64Type }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, actualEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(actualEntities.Count));
             foreach (var entity in _entityList)
             {
                 AllDataTypesEntity expectedEntity = new AllDataTypesEntity
@@ -298,7 +298,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new[] { "int_type" },
                           rows => rows.WithRows(_entityList.Select(e => new object[] { e.IntType }).ToArray())));
             List<AllDataTypesEntity> actualEntities = _table.Select(e => new AllDataTypesEntity { IntType = e.IntType }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, actualEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(actualEntities.Count));
             foreach (var entity in _entityList)
             {
                 AllDataTypesEntity expectedEntity = new AllDataTypesEntity
@@ -318,7 +318,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new[] { "list_of_guids_type" },
                           rows => rows.WithRows(_entityList.Select(e => new object[] { e.ListOfGuidsType }).ToArray())));
             List<AllDataTypesEntity> actualEntities = _table.Select(e => new AllDataTypesEntity { ListOfGuidsType = e.ListOfGuidsType }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, actualEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(actualEntities.Count));
             foreach (var entity in _entityList)
             {
                 AllDataTypesEntity expectedEntity = new AllDataTypesEntity
@@ -338,7 +338,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new[] { "list_of_strings_type" },
                           rows => rows.WithRows(_entityList.Select(e => new object[] { e.ListOfStringsType }).ToArray())));
             List<AllDataTypesEntity> actualEntities = _table.Select(e => new AllDataTypesEntity { ListOfStringsType = e.ListOfStringsType }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, actualEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(actualEntities.Count));
             foreach (var entity in _entityList)
             {
                 AllDataTypesEntity expectedEntity = new AllDataTypesEntity
@@ -358,7 +358,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new[] { ("nullable_int_type", DataType.GetDataType(typeof(int?))) },
                           rows => rows.WithRows(_entityList.Select(e => new object[] { e.NullableIntType }).ToArray())));
             List<AllDataTypesEntity> actualEntities = _table.Select(e => new AllDataTypesEntity { NullableIntType = e.NullableIntType }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, actualEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(actualEntities.Count));
             foreach (var entity in _entityList)
             {
                 AllDataTypesEntity expectedEntity = new AllDataTypesEntity
@@ -378,7 +378,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new[] { ("nullable_time_uuid_type", DataType.GetDataType(typeof(TimeUuid?))) },
                           rows => rows.WithRows(_entityList.Select(e => new object[] { e.NullableTimeUuidType }).ToArray())));
             List<AllDataTypesEntity> actualEntities = _table.Select(e => new AllDataTypesEntity { NullableTimeUuidType = e.NullableTimeUuidType }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, actualEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(actualEntities.Count));
             foreach (var entity in _entityList)
             {
                 AllDataTypesEntity expectedEntity = new AllDataTypesEntity
@@ -398,7 +398,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new[] { "time_uuid_type" },
                           rows => rows.WithRows(_entityList.Select(e => new object[] { e.TimeUuidType }).ToArray())));
             List<AllDataTypesEntity> actualEntities = _table.Select(e => new AllDataTypesEntity { TimeUuidType = e.TimeUuidType }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, actualEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(actualEntities.Count));
             foreach (var entity in _entityList)
             {
                 AllDataTypesEntity expectedEntity = new AllDataTypesEntity
@@ -418,7 +418,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new[] { "string_type" },
                           rows => rows.WithRows(_entityList.Select(e => new object[] { e.StringType }).ToArray())));
             List<AllDataTypesEntity> actualEntities = _table.Select(e => new AllDataTypesEntity { StringType = e.StringType }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, actualEntities.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(actualEntities.Count));
             foreach (var entity in _entityList)
             {
                 AllDataTypesEntity expectedEntity = new AllDataTypesEntity
@@ -462,17 +462,17 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           new[] { "string_type", "guid_type" },
                           rows => rows.WithRows(_entityList.Select(e => new object[] { e.StringType, e.GuidType }).ToArray())));
             var result = _table.Select(e => new Album { Name = e.StringType, Id = e.GuidType }).Execute().ToList();
-            Assert.AreEqual(_entityList.Count, result.Count);
+            Assert.That(_entityList.Count, Is.EqualTo(result.Count));
 
             var first = _entityList.FirstOrDefault();
 
             //Double checking if the properties were filled correctly
             var fetchedAlbum = result.FirstOrDefault(row => row.Name == first.StringType);
 
-            Assert.AreEqual(first.StringType, fetchedAlbum.Name);
-            Assert.AreEqual(first.GuidType, fetchedAlbum.Id);
+            Assert.That(first.StringType, Is.EqualTo(fetchedAlbum.Name));
+            Assert.That(first.GuidType, Is.EqualTo(fetchedAlbum.Id));
 
-            Assert.AreNotEqual(Guid.Empty, fetchedAlbum.Id);
+            Assert.That(Guid.Empty, Is.Not.EqualTo(fetchedAlbum.Id));
         }
 
         /// Tests the mapper when projecting to a new type.
@@ -499,9 +499,9 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
             
             var a = (from row in table where row.Id == pk select new TestClassDefaultCtor { S1 = row.Col1, S2 = row.Col2 }).Execute().First();
 
-            Assert.AreEqual(value1, a.S1);
-            Assert.AreEqual(value2, a.S2);
-            Assert.IsNull(a.Col1);
+            Assert.That(value1, Is.EqualTo(a.S1));
+            Assert.That(value2, Is.EqualTo(a.S2));
+            Assert.That(a.Col1, Is.Null);
         }
 
         /// Tests the mapper when projecting to a new type using constructor.
@@ -529,9 +529,9 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                           rows => rows.WithRow(value1, value2)));
 
             var b = (from row in table where row.Id == pk select new TestClassBothCtors(row.Col1, row.Col2)).Execute().First();
-            Assert.AreEqual(value1, b.S1);
-            Assert.AreEqual(value2, b.S2);
-            Assert.IsNull(b.Col1);
+            Assert.That(value1, Is.EqualTo(b.S1));
+            Assert.That(value2, Is.EqualTo(b.S2));
+            Assert.That(b.Col1, Is.Null);
 
             TestCluster.PrimeFluent(
                 builder => builder.WhenQuery("SELECT \"Col1\" FROM \"TestMapper\" WHERE \"Id\" = ?",
@@ -541,8 +541,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                                       rows => rows.WithRow(value1)));
 
             var c = (from row in table where row.Id == pk select new TestClassSingleProp(row.Col1)).Execute().First(); // throws
-            Assert.NotNull(c);
-            Assert.AreEqual(value1, c.S1);
+            Assert.That(c, Is.Not.Null);
+            Assert.That(value1, Is.EqualTo(c.S1));
         }
 
         /// Tests the mapper when projecting to a new type using constructor.
@@ -569,8 +569,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                                       rows => rows.WithRow(value1)));
 
             var c = (from row in table where row.Id == pk select new TestClassSingleProp(row.Col1)).Execute().First(); // throws
-            Assert.NotNull(c);
-            Assert.AreEqual(value1, c.S1);
+            Assert.That(c, Is.Not.Null);
+            Assert.That(value1, Is.EqualTo(c.S1));
         }
 
         [Table]

@@ -200,7 +200,7 @@ namespace Cassandra.Tests.Mapping
                 .TableName("tbl1");
             var table = GetTable<AllTypesEntity>(sessionMock.Object, map);
             var resultTrace = queryExecutor(table);
-            Assert.AreSame(rs.Info.QueryTrace, resultTrace);
+            Assert.That(rs.Info.QueryTrace, Is.SameAs(resultTrace));
         }
 
         [TearDown]

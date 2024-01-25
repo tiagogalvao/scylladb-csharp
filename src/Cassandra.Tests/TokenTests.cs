@@ -28,6 +28,7 @@ using Cassandra.Tests.Connections.TestHelpers;
 using Cassandra.Tests.MetadataHelpers.TestHelpers;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests
 {
@@ -64,7 +65,7 @@ namespace Cassandra.Tests
             var factory = new M3PToken.M3PTokenFactory();
             foreach (var kv in values)
             {
-                Assert.AreEqual(kv.Value, factory.Hash(kv.Key));
+                Assert.That(kv.Value, Is.EqualTo(factory.Hash(kv.Key)));
             }
         }
 
@@ -87,8 +88,8 @@ namespace Cassandra.Tests
             };
             foreach (var kv in values)
             {
-                Assert.AreEqual(kv.Value, RPToken.Factory.Hash(kv.Key));
-                Assert.AreEqual(kv.Value.ToString(), RPToken.Factory.Hash(kv.Key).ToString());
+                Assert.That(kv.Value, Is.EqualTo(RPToken.Factory.Hash(kv.Key)));
+                Assert.That(kv.Value.ToString(), Is.EqualTo(RPToken.Factory.Hash(kv.Key).ToString()));
             }
         }
 
@@ -110,34 +111,34 @@ namespace Cassandra.Tests
 
             //the primary replica and the next
             var replicas = tokenMap.GetReplicas("ks1", new M3PToken(0));
-            Assert.AreEqual("0,1", String.Join(",", replicas.Select(TestHelper.GetLastAddressByte)));
+            Assert.That("0,1", Is.EqualTo(String.Join(",", replicas.Select(TestHelper.GetLastAddressByte))));
             replicas = tokenMap.GetReplicas("ks1", new M3PToken(-100));
-            Assert.AreEqual("0,1", String.Join(",", replicas.Select(TestHelper.GetLastAddressByte)));
+            Assert.That("0,1", Is.EqualTo(String.Join(",", replicas.Select(TestHelper.GetLastAddressByte))));
             //Greater than the greatest token
             replicas = tokenMap.GetReplicas("ks1", new M3PToken(500000));
-            Assert.AreEqual("0,1", String.Join(",", replicas.Select(TestHelper.GetLastAddressByte)));
+            Assert.That("0,1", Is.EqualTo(String.Join(",", replicas.Select(TestHelper.GetLastAddressByte))));
 
             //The next replica should be the first
             replicas = tokenMap.GetReplicas("ks1", new M3PToken(20));
-            Assert.AreEqual("2,0", String.Join(",", replicas.Select(TestHelper.GetLastAddressByte)));
+            Assert.That("2,0", Is.EqualTo(String.Join(",", replicas.Select(TestHelper.GetLastAddressByte))));
 
             //The closest replica and the next
             replicas = tokenMap.GetReplicas("ks1", new M3PToken(19));
-            Assert.AreEqual("2,0", String.Join(",", replicas.Select(TestHelper.GetLastAddressByte)));
+            Assert.That("2,0", Is.EqualTo(String.Join(",", replicas.Select(TestHelper.GetLastAddressByte))));
 
             //Even if the replication factor is greater than the ring, it should return only ring size
             replicas = tokenMap.GetReplicas("ks2", new M3PToken(5));
-            Assert.AreEqual("1,2,0", String.Join(",", replicas.Select(TestHelper.GetLastAddressByte)));
+            Assert.That("1,2,0", Is.EqualTo(String.Join(",", replicas.Select(TestHelper.GetLastAddressByte))));
 
             //The primary replica only as the keyspace was not found
             replicas = tokenMap.GetReplicas(null, new M3PToken(0));
-            Assert.AreEqual("0", String.Join(",", replicas.Select(TestHelper.GetLastAddressByte)));
+            Assert.That("0", Is.EqualTo(String.Join(",", replicas.Select(TestHelper.GetLastAddressByte))));
             replicas = tokenMap.GetReplicas(null, new M3PToken(10));
-            Assert.AreEqual("1", String.Join(",", replicas.Select(TestHelper.GetLastAddressByte)));
+            Assert.That("1", Is.EqualTo(String.Join(",", replicas.Select(TestHelper.GetLastAddressByte))));
             replicas = tokenMap.GetReplicas("ks_does_not_exist", new M3PToken(20));
-            Assert.AreEqual("2", String.Join(",", replicas.Select(TestHelper.GetLastAddressByte)));
+            Assert.That("2", Is.EqualTo(String.Join(",", replicas.Select(TestHelper.GetLastAddressByte))));
             replicas = tokenMap.GetReplicas(null, new M3PToken(19));
-            Assert.AreEqual("2", String.Join(",", replicas.Select(TestHelper.GetLastAddressByte)));
+            Assert.That("2", Is.EqualTo(String.Join(",", replicas.Select(TestHelper.GetLastAddressByte))));
         }
 
         [Test]
@@ -199,28 +200,28 @@ namespace Cassandra.Tests
             //KS1
             //the primary replica and the next
             var replicas = tokenMap.GetReplicas("ks1", new M3PToken(0));
-            Assert.AreEqual("0,100,1,101", String.Join(",", replicas.Select(TestHelper.GetLastAddressByte)));
+            Assert.That("0,100,1,101", Is.EqualTo(String.Join(",", replicas.Select(TestHelper.GetLastAddressByte))));
             //The next replica should be the first
             replicas = tokenMap.GetReplicas("ks1", new M3PToken(200));
-            Assert.AreEqual("2,102,0,100", String.Join(",", replicas.Select(TestHelper.GetLastAddressByte)));
+            Assert.That("2,102,0,100", Is.EqualTo(String.Join(",", replicas.Select(TestHelper.GetLastAddressByte))));
             //The closest replica and the next
             replicas = tokenMap.GetReplicas("ks1", new M3PToken(190));
-            Assert.AreEqual("2,102,0,100", String.Join(",", replicas.Select(TestHelper.GetLastAddressByte)));
+            Assert.That("2,102,0,100", Is.EqualTo(String.Join(",", replicas.Select(TestHelper.GetLastAddressByte))));
 
             //KS2
             //Simple strategy: 3 tokens no matter which dc
             replicas = tokenMap.GetReplicas("ks2", new M3PToken(5000));
-            Assert.AreEqual("0,100,1", String.Join(",", replicas.Select(TestHelper.GetLastAddressByte)));
+            Assert.That("0,100,1", Is.EqualTo(String.Join(",", replicas.Select(TestHelper.GetLastAddressByte))));
 
             //KS3
             replicas = tokenMap.GetReplicas("ks3", new M3PToken(0));
-            Assert.AreEqual("0,100,1,2", String.Join(",", replicas.Select(TestHelper.GetLastAddressByte)));
+            Assert.That("0,100,1,2", Is.EqualTo(String.Join(",", replicas.Select(TestHelper.GetLastAddressByte))));
             replicas = tokenMap.GetReplicas("ks3", new M3PToken(201));
-            Assert.AreEqual("102,0,1,2", String.Join(",", replicas.Select(TestHelper.GetLastAddressByte)));
+            Assert.That("102,0,1,2", Is.EqualTo(String.Join(",", replicas.Select(TestHelper.GetLastAddressByte))));
 
             //KS4
             replicas = tokenMap.GetReplicas("ks4", new M3PToken(0));
-            Assert.AreEqual("0,1,2", String.Join(",", replicas.Select(TestHelper.GetLastAddressByte)));
+            Assert.That("0,1,2", Is.EqualTo(String.Join(",", replicas.Select(TestHelper.GetLastAddressByte))));
         }
 
         [Test]
@@ -237,7 +238,7 @@ namespace Cassandra.Tests
             var ks = CreateKeyspaceMetadata(null, "ks1", true, strategy, new Dictionary<string, string> { { "dc1", "2" } });
             var map = TokenMap.Build("Murmur3Partitioner", hosts, new[] { ks });
             var replicas = map.GetReplicas("ks1", new M3PToken(0));
-            Assert.AreEqual(2, replicas.Count);
+            Assert.That(2, Is.EqualTo(replicas.Count));
             //It should contain the first host and the second, even though the first host contains adjacent
             CollectionAssert.AreEqual(new byte[] { 1, 2 }, replicas.Select(TestHelper.GetLastAddressByte));
         }
@@ -262,8 +263,8 @@ namespace Cassandra.Tests
             var tokens1 = map.GetByKeyspace("ks1");
             var tokens2 = map.GetByKeyspace("ks2");
             var tokens3 = map.GetByKeyspace("ks3");
-            Assert.AreSame(tokens1, tokens2);
-            Assert.AreNotSame(tokens1, tokens3);
+            Assert.That(tokens1, Is.SameAs(tokens2));
+            Assert.That(tokens1, Is.Not.SameAs(tokens3));
         }
 
         [Test]
@@ -365,7 +366,7 @@ namespace Cassandra.Tests
             var ks = FakeSchemaParserFactory.CreateSimpleKeyspace("ks1", 2);
             var map = TokenMap.Build("Murmur3Partitioner", hosts, new[] { ks });
             var replicas = map.GetReplicas("ks1", new M3PToken(0));
-            Assert.AreEqual(2, replicas.Count);
+            Assert.That(2, Is.EqualTo(replicas.Count));
             //It should contain the first host and the second, even though the first host contains adjacent
             CollectionAssert.AreEqual(new byte[] { 1, 2 }, replicas.Select(TestHelper.GetLastAddressByte));
         }
@@ -404,7 +405,7 @@ namespace Cassandra.Tests
 
             var proxyStrategies = keyspaces.Select(k => (ProxyReplicationStrategy)k.Strategy).ToList();
 
-            Assert.AreEqual(6, proxyStrategies.Count(strategy => strategy.Calls > 0));
+            Assert.That(6, Is.EqualTo(proxyStrategies.Count(strategy => strategy.Calls > 0)));
 
             AssertOnlyOneStrategyIsCalled(proxyStrategies, 0, 10);
             AssertOnlyOneStrategyIsCalled(proxyStrategies, 1, 9);
@@ -539,7 +540,7 @@ namespace Cassandra.Tests
             }
             metadata.RebuildTokenMapAsync(false, true).GetAwaiter().GetResult();
             var expectedTokenMap = metadata.TokenToReplicasMap;
-            Assert.NotNull(expectedTokenMap);
+            Assert.That(expectedTokenMap, Is.Not.Null);
             var bag = new ConcurrentBag<string>();
             var tasks = new List<Task>();
             for (var i = 0; i < 100; i++)
@@ -625,9 +626,9 @@ namespace Cassandra.Tests
                 { "release_version", "3.11.1" }
             }));
 
-            Assert.IsNull(metadata.TokenToReplicasMap);
+            Assert.That(metadata.TokenToReplicasMap, Is.Null);
             metadata.RefreshSingleKeyspace("ks1").GetAwaiter().GetResult();
-            Assert.NotNull(metadata.TokenToReplicasMap);
+            Assert.That(metadata.TokenToReplicasMap, Is.Not.Null);
         }
 
         private KeyspaceMetadata CreateKeyspaceMetadata(
@@ -660,7 +661,7 @@ namespace Cassandra.Tests
                     CollectionAssert.AreEqual(expected.Keys, actual.Keys);
                     foreach (var kvp in expected)
                     {
-                        Assert.IsTrue(
+                        ClassicAssert.IsTrue(
                             expected[kvp.Key].SetEquals(actual[kvp.Key]),
                             $"mismatch in keyspace '{k}' and token '{kvp.Key}': " +
                             $"'{string.Join(",", expected[kvp.Key].Select(h => h.Address.ToString()))}' vs " +
@@ -671,10 +672,10 @@ namespace Cassandra.Tests
                 {
                     // keyspace is one of the keyspaces that were inserted by the tasks and wasn't removed
                     var rf = k.Replication["replication_factor"];
-                    Assert.AreEqual(10 * 256, actual.Count);
+                    Assert.That(10 * 256, Is.EqualTo(actual.Count));
                     foreach (var kvp in actual)
                     {
-                        Assert.AreEqual(rf, kvp.Value.Count);
+                        Assert.That(rf, Is.EqualTo(kvp.Value.Count));
                     }
                 }
             }
@@ -683,8 +684,8 @@ namespace Cassandra.Tests
         private void AssertOnlyOneStrategyIsCalled(IList<ProxyReplicationStrategy> strategies, params int[] equalStrategiesIndexes)
         {
             var sameStrategies = equalStrategiesIndexes.Select(t => strategies[t]).ToList();
-            Assert.AreEqual(1, sameStrategies.Count(strategy => strategy.Calls == 1));
-            Assert.AreEqual(sameStrategies.Count - 1, sameStrategies.Count(strategy => strategy.Calls == 0));
+            Assert.That(1, Is.EqualTo(sameStrategies.Count(strategy => strategy.Calls == 1)));
+            Assert.That(sameStrategies.Count - 1, Is.EqualTo(sameStrategies.Count(strategy => strategy.Calls == 0)));
         }
 
         private IEnumerable<string> GenerateTokens(int initialToken, int numTokens)

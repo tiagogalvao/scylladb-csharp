@@ -22,6 +22,7 @@ using Cassandra.IntegrationTests.TestBase;
 using Cassandra.IntegrationTests.TestClusterManagement;
 using Cassandra.Tests;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -66,24 +67,24 @@ namespace Cassandra.IntegrationTests.Core
                 var timeUuid = TimeUuid.NewId(new DateTimeOffset(ticks, TimeSpan.Zero));
                 Session.Execute(_insertPrepared.Bind(rowId, timeUuid));
                 var row = Session.Execute(_selectPrepared.Bind(rowId)).FirstOrDefault();
-                Assert.NotNull(row);
+                Assert.That(row, Is.Not.Null);
                 var resultTimeUuidValue = row.GetValue<TimeUuid>("timeuuid_sample");
-                Assert.AreEqual(timeUuid, resultTimeUuidValue);
-                Assert.AreEqual(timeUuid.GetDate(), resultTimeUuidValue.GetDate());
+                Assert.That(timeUuid, Is.EqualTo(resultTimeUuidValue));
+                Assert.That(timeUuid.GetDate(), Is.EqualTo(resultTimeUuidValue.GetDate()));
                 if (row.GetColumn("timeuuid_date_value") != null)
                 {
                     // the timestamp retrieved by the cql function has lower precision than timeuuid
                     const long precision = 10000L;
-                    Assert.AreEqual(
+                    Assert.That(
                         timeUuid.GetDate().Ticks / precision, 
-                        row.GetValue<DateTimeOffset>("timeuuid_date_value").Ticks / precision);
+                        Is.EqualTo(row.GetValue<DateTimeOffset>("timeuuid_date_value").Ticks / precision));
                 }
                 //Still defaults to Guid
                 var boxedValue = row.GetValue<object>("timeuuid_sample");
-                Assert.IsInstanceOf<Guid>(boxedValue);
-                Assert.AreEqual(resultTimeUuidValue, (TimeUuid)(Guid)boxedValue);
+                ClassicAssert.IsInstanceOf<Guid>(boxedValue);
+                Assert.That(resultTimeUuidValue, Is.EqualTo((TimeUuid)(Guid)boxedValue));
                 //The precision is lost, up to milliseconds is fine
-                Assert.AreEqual(timeUuid.GetDate().ToString(format), row.GetValue<DateTimeOffset>(2).ToString(format));
+                Assert.That(timeUuid.GetDate().ToString(format), Is.EqualTo(row.GetValue<DateTimeOffset>(2).ToString(format)));
             }
         }
 
@@ -100,7 +101,7 @@ namespace Cassandra.IntegrationTests.Core
 
             Session.Execute(insertMinMaxTimeuuidPrepared.Bind(guid, timeuuidSample));
             var row = Session.Execute(selectMinMaxTimeuuidPrepared.Bind(guid, TimeUuid.Max(dateOffset), TimeUuid.Min(dateOffset))).FirstOrDefault();
-            Assert.NotNull(row);
+            Assert.That(row, Is.Not.Null);
         }
 
         [Test]
@@ -142,9 +143,9 @@ namespace Cassandra.IntegrationTests.Core
             Assert.That(cuuids < 0); //Double checking Timeuuid comparison
 
             var row1 = Session.Execute(_selectPrepared.Bind(rowIdBefore)).FirstOrDefault();
-            Assert.NotNull(row1);
+            Assert.That(row1, Is.Not.Null);
             var row2 = Session.Execute(_selectPrepared.Bind(rowIdAfter)).FirstOrDefault();
-            Assert.NotNull(row2);
+            Assert.That(row2, Is.Not.Null);
 
             if (row1.GetColumn("timeuuid_date_value") != null
                 && row2.GetColumn("timeuuid_date_value") != null)
@@ -152,7 +153,7 @@ namespace Cassandra.IntegrationTests.Core
                 //checking the comparison of (de)serialized timeuuid timestamps
                 var ticks1 = row1.GetValue<DateTimeOffset>("timeuuid_date_value").Ticks;
                 var ticks2 = row2.GetValue<DateTimeOffset>("timeuuid_date_value").Ticks;
-                Assert.Greater(ticks2, ticks1);
+                Assert.That(ticks2, Is.GreaterThan(ticks1));
             }
         }
 

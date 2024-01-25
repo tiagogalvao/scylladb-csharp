@@ -30,7 +30,7 @@ namespace Cassandra.Tests
             var translator = new EC2MultiRegionTranslator();
             // Use TEST-NET-1: https://tools.ietf.org/html/rfc5735
             var address = new IPEndPoint(IPAddress.Parse("192.0.2.1"), 9042);
-            Assert.AreEqual(address, translator.Translate(address));
+            Assert.That(address, Is.EqualTo(translator.Translate(address)));
         }
 
         [Test]
@@ -39,7 +39,7 @@ namespace Cassandra.Tests
             var ip = TaskHelper.WaitToComplete(Dns.GetHostAddressesAsync("datastax.com")).First();
             var translator = new EC2MultiRegionTranslator();
             var address = new IPEndPoint(ip, 8888);
-            Assert.AreEqual(address, translator.Translate(address));
+            Assert.That(address, Is.EqualTo(translator.Translate(address)));
         }
     }
 }

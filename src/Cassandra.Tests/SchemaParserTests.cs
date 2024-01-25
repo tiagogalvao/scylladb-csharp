@@ -23,6 +23,7 @@ using Cassandra.Connections.Control;
 using Cassandra.Tasks;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using SortOrder = Cassandra.DataCollectionMetadata.SortOrder;
 
 namespace Cassandra.Tests
@@ -72,7 +73,7 @@ namespace Cassandra.Tests
                 .Returns(() => TaskHelper.ToTask(Enumerable.Empty<IRow>()));
             var parser = GetV1Instance(queryProviderMock.Object);
             var ks = TaskHelper.WaitToComplete(parser.GetKeyspaceAsync(ksName));
-            Assert.Null(ks);
+            Assert.That(ks, Is.Null);
         }
 
         [Test]
@@ -92,10 +93,10 @@ namespace Cassandra.Tests
                 .Returns(() => TestHelper.DelayedTask<IEnumerable<IRow>>(new[] { row }));
             var parser = GetV1Instance(queryProviderMock.Object);
             var ks = TaskHelper.WaitToComplete(parser.GetKeyspaceAsync(ksName));
-            Assert.NotNull(ks);
-            Assert.AreEqual(ksName, ks.Name);
-            Assert.AreEqual(true, ks.DurableWrites);
-            Assert.AreEqual("Simple", ks.StrategyClass);
+            Assert.That(ks, Is.Not.Null);
+            Assert.That(ksName, Is.EqualTo(ks.Name));
+            Assert.That(true, Is.EqualTo(ks.DurableWrites));
+            Assert.That("Simple", Is.EqualTo(ks.StrategyClass));
             CollectionAssert.AreEqual(new Dictionary<string, int> {{"replication_factor", 4}}, ks.Replication);
         }
 
@@ -160,15 +161,15 @@ namespace Cassandra.Tests
                 .Returns(() => TestHelper.DelayedTask(columnRows));
             var parser = GetV1Instance(queryProviderMock.Object);
             var ks = TaskHelper.WaitToComplete(parser.GetKeyspaceAsync("ks1"));
-            Assert.NotNull(ks);
+            Assert.That(ks, Is.Not.Null);
             var table = ks.GetTableMetadata("ks_tbl_meta");
-            Assert.True(table.Options.IsCompactStorage);
-            Assert.NotNull(table.Options.Caching);
-            Assert.AreEqual(3, table.TableColumns.Length);
+            Assert.That(table.Options.IsCompactStorage, Is.True);
+            Assert.That(table.Options.Caching, Is.Not.Null);
+            Assert.That(3, Is.EqualTo(table.TableColumns.Length));
             CollectionAssert.AreEqual(table.TableColumns.Select(c => c.Name), new[] { "id", "text1", "text2" });
-            Assert.AreEqual(ColumnTypeCode.Uuid, table.TableColumns[0].TypeCode);
+            Assert.That(ColumnTypeCode.Uuid, Is.EqualTo(table.TableColumns[0].TypeCode));
             CollectionAssert.AreEqual(table.PartitionKeys.Select(c => c.Name), new[] { "id" });
-            Assert.AreEqual(0, table.ClusteringKeys.Length);
+            Assert.That(0, Is.EqualTo(table.ClusteringKeys.Length));
         }
 
         [Test]
@@ -229,19 +230,19 @@ namespace Cassandra.Tests
                 .Returns(() => TestHelper.DelayedTask(columnRows));
             var parser = GetV1Instance(queryProviderMock.Object);
             var ks = TaskHelper.WaitToComplete(parser.GetKeyspaceAsync("ks1"));
-            Assert.NotNull(ks);
+            Assert.That(ks, Is.Not.Null);
             var table = ks.GetTableMetadata("ks_tbl_meta");
-            Assert.False(table.Options.IsCompactStorage);
-            Assert.NotNull(table.Options.Caching);
-            Assert.AreEqual(3, table.TableColumns.Length);
+            Assert.That(table.Options.IsCompactStorage, Is.False);
+            Assert.That(table.Options.Caching, Is.Not.Null);
+            Assert.That(3, Is.EqualTo(table.TableColumns.Length));
             CollectionAssert.AreEqual(table.TableColumns.Select(c => c.Name), new[] { "pk", "ck", "stat" });
-            Assert.AreEqual(ColumnTypeCode.Varchar, table.TableColumns[0].TypeCode);
+            Assert.That(ColumnTypeCode.Varchar, Is.EqualTo(table.TableColumns[0].TypeCode));
             CollectionAssert.AreEqual(table.PartitionKeys.Select(c => c.Name), new[] { "pk" });
-            Assert.AreEqual(ColumnTypeCode.Varchar, table.TableColumns[1].TypeCode);
+            Assert.That(ColumnTypeCode.Varchar, Is.EqualTo(table.TableColumns[1].TypeCode));
             CollectionAssert.AreEqual(table.ClusteringKeys.Select(c => c.Item1.Name), new[] { "ck" });
-            Assert.True(table.TableColumns[2].IsStatic);
-            Assert.AreEqual(ColumnTypeCode.Varchar, table.TableColumns[2].TypeCode);
-            Assert.AreEqual("stat", table.TableColumns[2].Name);
+            Assert.That(table.TableColumns[2].IsStatic, Is.True);
+            Assert.That(ColumnTypeCode.Varchar, Is.EqualTo(table.TableColumns[2].TypeCode));
+            Assert.That("stat", Is.EqualTo(table.TableColumns[2].Name));
         }
 
         [Test]
@@ -279,11 +280,11 @@ namespace Cassandra.Tests
                 .Returns(() => TestHelper.DelayedTask(columnRows));
             var parser = GetV1Instance(queryProviderMock.Object);
             var ks = TaskHelper.WaitToComplete(parser.GetKeyspaceAsync("ks1"));
-            Assert.NotNull(ks);
+            Assert.That(ks, Is.Not.Null);
             var table = ks.GetTableMetadata("ks_tbl_meta");
-            Assert.False(table.Options.IsCompactStorage);
-            Assert.NotNull(table.Options.Caching);
-            Assert.AreEqual(5, table.TableColumns.Length);
+            Assert.That(table.Options.IsCompactStorage, Is.False);
+            Assert.That(table.Options.Caching, Is.Not.Null);
+            Assert.That(5, Is.EqualTo(table.TableColumns.Length));
             CollectionAssert.AreEqual(new[] { "pk1", "apk2" }, table.PartitionKeys.Select(c => c.Name));
             CollectionAssert.AreEqual(new[] { "zck" }, table.ClusteringKeys.Select(c => c.Item1.Name));
             CollectionAssert.AreEqual(new[] { SortOrder.Ascending }, table.ClusteringKeys.Select(c => c.Item2));
@@ -342,7 +343,7 @@ namespace Cassandra.Tests
                 .Returns(() => TestHelper.DelayedTask(Enumerable.Empty<IRow>));
             var parser = GetV1Instance(queryProviderMock.Object);
             var ks = TaskHelper.WaitToComplete(parser.GetKeyspaceAsync("ks1"));
-            Assert.NotNull(ks);
+            Assert.That(ks, Is.Not.Null);
             var ex = Assert.Throws<ArgumentException>(() => ks.GetTableMetadata("ks_tbl_meta"));
             StringAssert.Contains("bloom_filter_fp_chance", ex.Message);
         }
@@ -411,7 +412,7 @@ namespace Cassandra.Tests
                 .Returns(() => TestHelper.DelayedTask<IEnumerable<IRow>>(new[] { columnRow }));
             var parser = GetV1Instance(queryProviderMock.Object);
             var ks = TaskHelper.WaitToComplete(parser.GetKeyspaceAsync("ks1"));
-            Assert.NotNull(ks);
+            Assert.That(ks, Is.Not.Null);
             var ex = Assert.Throws<ArgumentException>(() => ks.GetTableMetadata("ks_tbl_meta"));
             StringAssert.Contains("column_name", ex.Message);
         }
@@ -436,7 +437,7 @@ namespace Cassandra.Tests
                 .Returns(() => TaskHelper.FromException<IEnumerable<IRow>>(new NoHostAvailableException(new Dictionary<IPEndPoint, Exception>())));
             var parser = GetV1Instance(queryProviderMock.Object);
             var ks = TaskHelper.WaitToComplete(parser.GetKeyspaceAsync("ks1"));
-            Assert.NotNull(ks);
+            Assert.That(ks, Is.Not.Null);
             Assert.Throws<NoHostAvailableException>(() => ks.GetTableMetadata("tbl1"));
         }
 
@@ -456,10 +457,10 @@ namespace Cassandra.Tests
                 .Returns(() => TestHelper.DelayedTask<IEnumerable<IRow>>(new[] { row }));
             var parser = GetV2Instance(queryProviderMock.Object);
             var ks = TaskHelper.WaitToComplete(parser.GetKeyspaceAsync(ksName));
-            Assert.NotNull(ks);
-            Assert.AreEqual(ksName, ks.Name);
-            Assert.AreEqual(true, ks.DurableWrites);
-            Assert.AreEqual("SimpleStrategy", ks.StrategyClass);
+            Assert.That(ks, Is.Not.Null);
+            Assert.That(ksName, Is.EqualTo(ks.Name));
+            Assert.That(true, Is.EqualTo(ks.DurableWrites));
+            Assert.That("SimpleStrategy", Is.EqualTo(ks.StrategyClass));
             CollectionAssert.AreEqual(new Dictionary<string, int> { { "replication_factor", 2 } }, ks.Replication);
         }
 
@@ -512,10 +513,10 @@ namespace Cassandra.Tests
                 .Returns(() => TestHelper.DelayedTask(Enumerable.Empty<IRow>()));
             var parser = GetV2Instance(queryProviderMock.Object);
             var ks = TaskHelper.WaitToComplete(parser.GetKeyspaceAsync("ks1"));
-            Assert.NotNull(ks);
+            Assert.That(ks, Is.Not.Null);
             var table = ks.GetTableMetadata("ks_tbl_meta");
-            Assert.False(table.Options.IsCompactStorage);
-            Assert.AreEqual("{\"keys\":\"ALL\",\"rows_per_partition\":\"NONE\"}", table.Options.Caching);
+            Assert.That(table.Options.IsCompactStorage, Is.False);
+            Assert.That("{\"keys\":\"ALL\",\"rows_per_partition\":\"NONE\"}", Is.EqualTo(table.Options.Caching));
             CollectionAssert.AreEquivalent(new[] { "pk1", "apk2", "val2", "valz1", "zck" }, table.TableColumns.Select(c => c.Name));
             CollectionAssert.AreEqual(new[] { "pk1", "apk2" }, table.PartitionKeys.Select(c => c.Name));
             CollectionAssert.AreEqual(new[] { "zck" }, table.ClusteringKeys.Select(c => c.Item1.Name));
@@ -571,15 +572,15 @@ namespace Cassandra.Tests
                 .Returns(() => TestHelper.DelayedTask(Enumerable.Empty<IRow>()));
             var parser = GetV2Instance(queryProviderMock.Object);
             var ks = TaskHelper.WaitToComplete(parser.GetKeyspaceAsync("ks1"));
-            Assert.NotNull(ks);
+            Assert.That(ks, Is.Not.Null);
             var table = ks.GetTableMetadata("tbl4");
-            Assert.False(table.Options.IsCompactStorage);
-            Assert.AreEqual("{\"keys\":\"ALL\",\"rows_per_partition\":\"NONE\"}", table.Options.Caching);
+            Assert.That(table.Options.IsCompactStorage, Is.False);
+            Assert.That("{\"keys\":\"ALL\",\"rows_per_partition\":\"NONE\"}", Is.EqualTo(table.Options.Caching));
             CollectionAssert.AreEquivalent(new[] { "pk", "ck", "val1", "stat" }, table.TableColumns.Select(c => c.Name));
             CollectionAssert.AreEqual(new[] { "pk" }, table.PartitionKeys.Select(c => c.Name));
             CollectionAssert.AreEqual(new[] { "ck" }, table.ClusteringKeys.Select(c => c.Item1.Name));
             CollectionAssert.AreEqual(new[] { SortOrder.Ascending }, table.ClusteringKeys.Select(c => c.Item2));
-            Assert.True(table.ColumnsByName["stat"].IsStatic);
+            Assert.That(table.ColumnsByName["stat"].IsStatic, Is.True);
         }
 
         [Test]
@@ -639,20 +640,20 @@ namespace Cassandra.Tests
                 .Returns(() => TestHelper.DelayedTask<IEnumerable<IRow>>(new[] {indexRow}));
             var parser = GetV2Instance(queryProviderMock.Object);
             var ks = TaskHelper.WaitToComplete(parser.GetKeyspaceAsync("ks1"));
-            Assert.NotNull(ks);
+            Assert.That(ks, Is.Not.Null);
             var table = ks.GetTableMetadata("tbl4");
-            Assert.False(table.Options.IsCompactStorage);
+            Assert.That(table.Options.IsCompactStorage, Is.False);
             CollectionAssert.AreEquivalent(new[] { "pk", "ck", "val"}, table.TableColumns.Select(c => c.Name));
             CollectionAssert.AreEqual(new[] { "pk" }, table.PartitionKeys.Select(c => c.Name));
             CollectionAssert.AreEqual(new[] { "ck" }, table.ClusteringKeys.Select(c => c.Item1.Name));
             CollectionAssert.AreEqual(new[] { SortOrder.Descending }, table.ClusteringKeys.Select(c => c.Item2));
-            Assert.NotNull(table.Indexes);
-            Assert.AreEqual(1, table.Indexes.Count);
+            Assert.That(table.Indexes, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(table.Indexes.Count));
             var index = table.Indexes["ix1"];
-            Assert.AreEqual("ix1", index.Name);
-            Assert.AreEqual(IndexMetadata.IndexKind.Composites, index.Kind);
-            Assert.AreEqual("val", index.Target);
-            Assert.NotNull(index.Options);
+            Assert.That("ix1", Is.EqualTo(index.Name));
+            Assert.That(IndexMetadata.IndexKind.Composites, Is.EqualTo(index.Kind));
+            Assert.That("val", Is.EqualTo(index.Target));
+            Assert.That(index.Options, Is.Not.Null);
         }
 
         [Test]
@@ -678,7 +679,7 @@ namespace Cassandra.Tests
                 .Returns(() => TestHelper.DelayedTask(Enumerable.Empty<IRow>()));
             var parser = GetV2Instance(queryProviderMock.Object);
             var ks = TaskHelper.WaitToComplete(parser.GetKeyspaceAsync("ks1"));
-            Assert.NotNull(ks);
+            Assert.That(ks, Is.Not.Null);
             Assert.Throws<NoHostAvailableException>(() => ks.GetTableMetadata("tbl1"));
         }
 
@@ -713,11 +714,11 @@ namespace Cassandra.Tests
             var parser = GetV1Instance(queryProviderMock.Object);
             var timer = new HashedWheelTimer();
             var resultTrace = TaskHelper.WaitToComplete(parser.GetQueryTraceAsync(queryTrace, timer));
-            Assert.AreSame(queryTrace, resultTrace);
-            Assert.Greater(queryTrace.DurationMicros, 0);
-            Assert.AreEqual("test query", queryTrace.RequestType);
-            Assert.AreEqual(1, queryTrace.Events.Count);
-            Assert.AreEqual("whatever", queryTrace.Events.First().Description);
+            Assert.That(queryTrace, Is.SameAs(resultTrace));
+            Assert.That(queryTrace.DurationMicros, Is.GreaterThan(0));
+            Assert.That("test query", Is.EqualTo(queryTrace.RequestType));
+            Assert.That(1, Is.EqualTo(queryTrace.Events.Count));
+            Assert.That("whatever", Is.EqualTo(queryTrace.Events.First().Description));
             timer.Dispose();
         }
 
@@ -736,7 +737,7 @@ namespace Cassandra.Tests
             var parser = GetV1Instance(queryProviderMock.Object);
             var timer = new HashedWheelTimer();
             var ex = Assert.Throws<Exception>(() => TaskHelper.WaitToComplete(parser.GetQueryTraceAsync(queryTrace, timer)));
-            Assert.AreEqual("Test exception", ex.Message);
+            Assert.That("Test exception", Is.EqualTo(ex.Message));
             timer.Dispose();
         }
 
@@ -763,7 +764,7 @@ namespace Cassandra.Tests
             var parser = GetV1Instance(queryProviderMock.Object);
             var timer = new HashedWheelTimer();
             var ex = Assert.Throws<Exception>(() => TaskHelper.WaitToComplete(parser.GetQueryTraceAsync(queryTrace, timer)));
-            Assert.AreEqual("Test exception 2", ex.Message);
+            Assert.That("Test exception 2", Is.EqualTo(ex.Message));
             timer.Dispose();
         }
 
@@ -793,8 +794,8 @@ namespace Cassandra.Tests
             var parser = GetV1Instance(queryProviderMock.Object);
             var timer = new HashedWheelTimer();
             TaskHelper.WaitToComplete(parser.GetQueryTraceAsync(queryTrace, timer));
-            Assert.AreEqual(counter, 3);
-            Assert.AreEqual("test query 3", queryTrace.RequestType);
+            Assert.That(counter, Is.EqualTo(3));
+            Assert.That("test query 3", Is.EqualTo(queryTrace.RequestType));
             timer.Dispose();
         }
 
@@ -825,7 +826,7 @@ namespace Cassandra.Tests
             var parser = GetV1Instance(queryProviderMock.Object);
             var timer = new HashedWheelTimer();
             Assert.Throws<TraceRetrievalException>(() => TaskHelper.WaitToComplete(parser.GetQueryTraceAsync(queryTrace, timer)));
-            Assert.AreEqual(counter, 5);
+            Assert.That(counter, Is.EqualTo(5));
             timer.Dispose();
         }
     }

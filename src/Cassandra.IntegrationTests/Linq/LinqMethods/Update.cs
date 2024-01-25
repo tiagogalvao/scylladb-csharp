@@ -100,7 +100,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                            .UpdateIfExists();
             var appliedInfo = cql.Execute();
 
-            Assert.IsFalse(appliedInfo.Applied);
+            Assert.That(appliedInfo.Applied, Is.False);
 
             VerifyBoundStatement(
                 $"UPDATE \"{Movie.TableName}\" " +

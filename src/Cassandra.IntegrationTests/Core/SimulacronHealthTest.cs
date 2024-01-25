@@ -48,13 +48,13 @@ namespace Cassandra.IntegrationTests.Core
 
                 var result = session.Execute(query);
                 var firstRow = result.FirstOrDefault();
-                Assert.NotNull(firstRow);
-                Assert.AreEqual("value", firstRow["value"]);
+                Assert.That(firstRow, Is.Not.Null);
+                Assert.That("value", Is.EqualTo(firstRow["value"]));
 
                 var logs = simulacronCluster.GetLogs();
                 var dcLogs = logs.DataCenters;
-                Assert.NotNull(dcLogs);
-                Assert.True(logs.HasQueryBeenExecuted(query));
+                Assert.That(dcLogs, Is.Not.Null);
+                Assert.That(logs.HasQueryBeenExecuted(query), Is.True);
             }
         }
     }

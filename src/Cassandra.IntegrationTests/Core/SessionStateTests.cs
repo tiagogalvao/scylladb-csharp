@@ -26,6 +26,7 @@ using Cassandra.IntegrationTests.TestClusterManagement.Simulacron;
 using Cassandra.Tests;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -77,17 +78,17 @@ namespace Cassandra.IntegrationTests.Core
                     }
                     return await session.ExecuteAsync(new SimpleStatement(Query)).ConfigureAwait(false);
                 }, 280, 100).ConfigureAwait(false);
-                Assert.NotNull(state);
+                Assert.That(state, Is.Not.Null);
                 var stringState = state.ToString();
                 CollectionAssert.AreEquivalent(cluster.AllHosts(), state.GetConnectedHosts());
                 foreach (var host in cluster.AllHosts())
                 {
-                    Assert.AreEqual(2, state.GetOpenConnections(host));
+                    Assert.That(2, Is.EqualTo(state.GetOpenConnections(host)));
                     StringAssert.Contains($"\"{host.Address}\": {{", stringState);
                 }
                 var totalInFlight = cluster.AllHosts().Sum(h => state.GetInFlightQueries(h));
-                Assert.Greater(totalInFlight, 0);
-                Assert.LessOrEqual(totalInFlight, limit);
+                Assert.That(totalInFlight, Is.GreaterThan(0));
+                Assert.That(totalInFlight, Is.LessThanOrEqualTo(limit));
             }
         }
 
@@ -103,15 +104,15 @@ namespace Cassandra.IntegrationTests.Core
             {
                 session = cluster.Connect();
                 state = session.GetState();
-                Assert.AreNotEqual(SessionState.Empty(), state);
+                Assert.That(SessionState.Empty(), Is.Not.EqualTo(state));
                 hosts = cluster.AllHosts();
             }
             state = session.GetState();
-            Assert.NotNull(hosts);
+            Assert.That(hosts, Is.Not.Null);
             foreach (var host in hosts)
             {
-                Assert.AreEqual(0, state.GetInFlightQueries(host));
-                Assert.AreEqual(0, state.GetOpenConnections(host));
+                Assert.That(0, Is.EqualTo(state.GetInFlightQueries(host)));
+                Assert.That(0, Is.EqualTo(state.GetOpenConnections(host)));
             }
         }
     }

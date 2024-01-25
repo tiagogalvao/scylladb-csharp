@@ -36,12 +36,12 @@ namespace Cassandra.Tests.Connections.Control
             var target = CreateWithAddress("127.0.0.1");
             var resolved = (await target.GetConnectionEndPointsAsync(false).ConfigureAwait(false)).ToList();
 
-            Assert.AreEqual(1, resolved.Count);
-            Assert.AreEqual(_localhostIpEndPoint, resolved[0].GetHostIpEndPointWithFallback());
-            Assert.AreEqual(_localhostIpEndPoint, resolved[0].SocketIpEndPoint);
-            Assert.AreEqual($"127.0.0.1:{ResolvedContactPointTests.Port}", resolved[0].EndpointFriendlyName);
-            Assert.AreEqual($"127.0.0.1", target.StringRepresentation);
-            Assert.AreEqual(_localhostIpEndPoint, resolved[0].GetHostIpEndPointWithFallback());
+            Assert.That(1, Is.EqualTo(resolved.Count));
+            Assert.That(_localhostIpEndPoint, Is.EqualTo(resolved[0].GetHostIpEndPointWithFallback()));
+            Assert.That(_localhostIpEndPoint, Is.EqualTo(resolved[0].SocketIpEndPoint));
+            Assert.That($"127.0.0.1:{ResolvedContactPointTests.Port}", Is.EqualTo(resolved[0].EndpointFriendlyName));
+            Assert.That($"127.0.0.1", Is.EqualTo(target.StringRepresentation));
+            Assert.That(_localhostIpEndPoint, Is.EqualTo(resolved[0].GetHostIpEndPointWithFallback()));
         }
 
         [Test]
@@ -50,12 +50,12 @@ namespace Cassandra.Tests.Connections.Control
             var target = CreateWithEndPoint("127.0.0.2", 1234);
             var resolved = (await target.GetConnectionEndPointsAsync(false).ConfigureAwait(false)).ToList();
 
-            Assert.AreEqual(1, resolved.Count);
-            Assert.AreEqual(_localhostIpEndPoint2, resolved[0].GetHostIpEndPointWithFallback());
-            Assert.AreEqual(_localhostIpEndPoint2, resolved[0].SocketIpEndPoint);
-            Assert.AreEqual("127.0.0.2:1234", resolved[0].EndpointFriendlyName);
-            Assert.AreEqual("127.0.0.2:1234", target.StringRepresentation);
-            Assert.AreEqual(_localhostIpEndPoint2, resolved[0].GetHostIpEndPointWithFallback());
+            Assert.That(1, Is.EqualTo(resolved.Count));
+            Assert.That(_localhostIpEndPoint2, Is.EqualTo(resolved[0].GetHostIpEndPointWithFallback()));
+            Assert.That(_localhostIpEndPoint2, Is.EqualTo(resolved[0].SocketIpEndPoint));
+            Assert.That("127.0.0.2:1234", Is.EqualTo(resolved[0].EndpointFriendlyName));
+            Assert.That("127.0.0.2:1234", Is.EqualTo(target.StringRepresentation));
+            Assert.That(_localhostIpEndPoint2, Is.EqualTo(resolved[0].GetHostIpEndPointWithFallback()));
         }
 
         [Test]
@@ -64,8 +64,8 @@ namespace Cassandra.Tests.Connections.Control
             var target = CreateWithAddress("127.0.0.1");
             var resolved = (await target.GetConnectionEndPointsAsync(false).ConfigureAwait(false)).ToList();
 
-            Assert.AreEqual(1, resolved.Count);
-            Assert.AreEqual("127.0.0.1", await resolved[0].GetServerNameAsync().ConfigureAwait(false));
+            Assert.That(1, Is.EqualTo(resolved.Count));
+            Assert.That("127.0.0.1", Is.EqualTo(await resolved[0].GetServerNameAsync().ConfigureAwait(false)));
         }
 
         [Test]
@@ -74,8 +74,8 @@ namespace Cassandra.Tests.Connections.Control
             var target = CreateWithEndPoint("127.0.0.1", 123);
             var resolved = (await target.GetConnectionEndPointsAsync(false).ConfigureAwait(false)).ToList();
 
-            Assert.AreEqual(1, resolved.Count);
-            Assert.AreEqual("127.0.0.1", await resolved[0].GetServerNameAsync().ConfigureAwait(false));
+            Assert.That(1, Is.EqualTo(resolved.Count));
+            Assert.That("127.0.0.1", Is.EqualTo(await resolved[0].GetServerNameAsync().ConfigureAwait(false)));
         }
         
         [Test]
@@ -84,16 +84,16 @@ namespace Cassandra.Tests.Connections.Control
             var target = CreateWithAddress("127.0.0.2");
             var target2 = CreateWithAddress("127.0.0.2");
 
-            Assert.AreEqual(target, target2);
-            Assert.AreEqual(target.GetHashCode(), target2.GetHashCode());
+            Assert.That(target, Is.EqualTo(target2));
+            Assert.That(target.GetHashCode(), Is.EqualTo(target2.GetHashCode()));
             
             await target.GetConnectionEndPointsAsync(false).ConfigureAwait(false);
-            Assert.AreEqual(target, target2);
-            Assert.AreEqual(target.GetHashCode(), target2.GetHashCode());
+            Assert.That(target, Is.EqualTo(target2));
+            Assert.That(target.GetHashCode(), Is.EqualTo(target2.GetHashCode()));
             
             await target2.GetConnectionEndPointsAsync(false).ConfigureAwait(false);
-            Assert.AreEqual(target, target2);
-            Assert.AreEqual(target.GetHashCode(), target2.GetHashCode());
+            Assert.That(target, Is.EqualTo(target2));
+            Assert.That(target.GetHashCode(), Is.EqualTo(target2.GetHashCode()));
         }
 
         [Test]
@@ -102,16 +102,16 @@ namespace Cassandra.Tests.Connections.Control
             var target = CreateWithAddress("127.0.0.2");
             var target2 = CreateWithAddress("127.0.0.1");
 
-            Assert.AreNotEqual(target, target2);
-            Assert.AreNotEqual(target.GetHashCode(), target2.GetHashCode());
+            Assert.That(target, Is.Not.EqualTo(target2));
+            Assert.That(target.GetHashCode(), Is.Not.EqualTo(target2.GetHashCode()));
             
             await target.GetConnectionEndPointsAsync(false).ConfigureAwait(false);
-            Assert.AreNotEqual(target, target2);
-            Assert.AreNotEqual(target.GetHashCode(), target2.GetHashCode());
+            Assert.That(target, Is.Not.EqualTo(target2));
+            Assert.That(target.GetHashCode(), Is.Not.EqualTo(target2.GetHashCode()));
             
             await target2.GetConnectionEndPointsAsync(false).ConfigureAwait(false);
-            Assert.AreNotEqual(target, target2);
-            Assert.AreNotEqual(target.GetHashCode(), target2.GetHashCode());
+            Assert.That(target, Is.Not.EqualTo(target2));
+            Assert.That(target.GetHashCode(), Is.Not.EqualTo(target2.GetHashCode()));
         }
         
         [Test]
@@ -120,16 +120,16 @@ namespace Cassandra.Tests.Connections.Control
             var target = CreateWithEndPoint("127.0.0.2", 1234);
             var target2 = CreateWithEndPoint("127.0.0.2", 1234);
 
-            Assert.AreEqual(target, target2);
-            Assert.AreEqual(target.GetHashCode(), target2.GetHashCode());
+            Assert.That(target, Is.EqualTo(target2));
+            Assert.That(target.GetHashCode(), Is.EqualTo(target2.GetHashCode()));
             
             await target.GetConnectionEndPointsAsync(false).ConfigureAwait(false);
-            Assert.AreEqual(target, target2);
-            Assert.AreEqual(target.GetHashCode(), target2.GetHashCode());
+            Assert.That(target, Is.EqualTo(target2));
+            Assert.That(target.GetHashCode(), Is.EqualTo(target2.GetHashCode()));
             
             await target2.GetConnectionEndPointsAsync(false).ConfigureAwait(false);
-            Assert.AreEqual(target, target2);
-            Assert.AreEqual(target.GetHashCode(), target2.GetHashCode());
+            Assert.That(target, Is.EqualTo(target2));
+            Assert.That(target.GetHashCode(), Is.EqualTo(target2.GetHashCode()));
         }
 
         [Test]
@@ -138,16 +138,16 @@ namespace Cassandra.Tests.Connections.Control
             var target = CreateWithEndPoint("127.0.0.2", 12345);
             var target2 = CreateWithEndPoint("127.0.0.2", 1234);
 
-            Assert.AreNotEqual(target, target2);
-            Assert.AreNotEqual(target.GetHashCode(), target2.GetHashCode());
+            Assert.That(target, Is.Not.EqualTo(target2));
+            Assert.That(target.GetHashCode(), Is.Not.EqualTo(target2.GetHashCode()));
 
             await target.GetConnectionEndPointsAsync(false).ConfigureAwait(false);
-            Assert.AreNotEqual(target, target2);
-            Assert.AreNotEqual(target.GetHashCode(), target2.GetHashCode());
+            Assert.That(target, Is.Not.EqualTo(target2));
+            Assert.That(target.GetHashCode(), Is.Not.EqualTo(target2.GetHashCode()));
 
             await target2.GetConnectionEndPointsAsync(false).ConfigureAwait(false);
-            Assert.AreNotEqual(target, target2);
-            Assert.AreNotEqual(target.GetHashCode(), target2.GetHashCode());
+            Assert.That(target, Is.Not.EqualTo(target2));
+            Assert.That(target.GetHashCode(), Is.Not.EqualTo(target2.GetHashCode()));
         }
         
         [Test]
@@ -156,16 +156,16 @@ namespace Cassandra.Tests.Connections.Control
             var target = CreateWithEndPoint("127.0.0.1", 1234);
             var target2 = CreateWithEndPoint("127.0.0.2", 1234);
 
-            Assert.AreNotEqual(target, target2);
-            Assert.AreNotEqual(target.GetHashCode(), target2.GetHashCode());
+            Assert.That(target, Is.Not.EqualTo(target2));
+            Assert.That(target.GetHashCode(), Is.Not.EqualTo(target2.GetHashCode()));
             
             await target.GetConnectionEndPointsAsync(false).ConfigureAwait(false);
-            Assert.AreNotEqual(target, target2);
-            Assert.AreNotEqual(target.GetHashCode(), target2.GetHashCode());
+            Assert.That(target, Is.Not.EqualTo(target2));
+            Assert.That(target.GetHashCode(), Is.Not.EqualTo(target2.GetHashCode()));
             
             await target2.GetConnectionEndPointsAsync(false).ConfigureAwait(false);
-            Assert.AreNotEqual(target, target2);
-            Assert.AreNotEqual(target.GetHashCode(), target2.GetHashCode());
+            Assert.That(target, Is.Not.EqualTo(target2));
+            Assert.That(target.GetHashCode(), Is.Not.EqualTo(target2.GetHashCode()));
         }
 
         private IpLiteralContactPoint CreateWithAddress(string ipAddress)

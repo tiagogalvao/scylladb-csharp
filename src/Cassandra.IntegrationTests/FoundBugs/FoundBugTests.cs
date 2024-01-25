@@ -69,7 +69,7 @@ namespace Cassandra.IntegrationTests.FoundBugs
             var query = new SimpleStatement(cqlQuery).EnableTracing();
             {
                 var result = session.Execute(query);
-                Assert.Greater(result.Count(), 0, "It should return rows");
+                Assert.That(result.Count(), Is.GreaterThan(0), "It should return rows");
             }
 
             nonShareableTestCluster.StopForce(1);
@@ -121,7 +121,7 @@ namespace Cassandra.IntegrationTests.FoundBugs
                 }
             }
             RowSet rowSet = session.Execute(query);
-            Assert.True(rowSet.GetRows().Count() > 0, "It should return rows");
+            Assert.That(rowSet.GetRows().Count() > 0, Is.True, "It should return rows");
         }
     }
 }

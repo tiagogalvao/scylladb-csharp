@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cassandra.Collections;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests
 {

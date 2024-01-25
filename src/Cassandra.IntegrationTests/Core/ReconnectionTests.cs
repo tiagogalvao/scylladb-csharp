@@ -98,7 +98,7 @@ namespace Cassandra.IntegrationTests.Core
                     }
                     Interlocked.Increment(ref downCounter);
                 };
-                Assert.True(host.IsUp);
+                Assert.That(host.IsUp, Is.True);
                 Trace.TraceInformation("Stopping node");
                 var node = _testCluster.GetNodes().First(); 
                 node.Stop().GetAwaiter().GetResult();
@@ -106,18 +106,18 @@ namespace Cassandra.IntegrationTests.Core
                 TestHelper.RetryAssert(() =>
                 {
                     Assert.Throws<NoHostAvailableException>(() => session.Execute("SELECT * FROM system.local"));
-                    Assert.False(host.IsUp);
-                    Assert.AreEqual(1, Volatile.Read(ref downCounter));
-                    Assert.AreEqual(0, Volatile.Read(ref upCounter));
+                    Assert.That(host.IsUp, Is.False);
+                    Assert.That(1, Is.EqualTo(Volatile.Read(ref downCounter)));
+                    Assert.That(0, Is.EqualTo(Volatile.Read(ref upCounter)));
                 }, 100, 200);
                 Trace.TraceInformation("Restarting node");
                 node.Start().GetAwaiter().GetResult();
                 Trace.TraceInformation("Waiting up to 20s");
                 TestHelper.RetryAssert(() =>
                 {
-                    Assert.True(host.IsUp);
-                    Assert.AreEqual(1, Volatile.Read(ref downCounter));
-                    Assert.AreEqual(1, Volatile.Read(ref upCounter));
+                    Assert.That(host.IsUp, Is.True);
+                    Assert.That(1, Is.EqualTo(Volatile.Read(ref downCounter)));
+                    Assert.That(1,Is.EqualTo( Volatile.Read(ref upCounter)));
                 }, 100, 200);
             }
         }
@@ -171,7 +171,7 @@ namespace Cassandra.IntegrationTests.Core
                     }
                     downCounter.AddOrUpdate(e.Address.ToString(), 1, (k, v) => ++v);
                 };
-                Assert.True(host1.IsUp);
+                Assert.That(host1.IsUp, Is.True);
                 Trace.TraceInformation("Stopping node #1");
                 var nodes = _testCluster.GetNodes().ToArray();
                 nodes[0].Stop().GetAwaiter().GetResult();
@@ -179,9 +179,9 @@ namespace Cassandra.IntegrationTests.Core
                 TestHelper.RetryAssert(() =>
                 {
                     Assert.DoesNotThrow(() => TestHelper.Invoke(() => session.Execute("SELECT * FROM system.local"), 6));
-                    Assert.False(host1.IsUp);
-                    Assert.AreEqual(1, downCounter.GetOrAdd(nodes[0].ContactPoint, 0));
-                    Assert.AreEqual(0, upCounter.GetOrAdd(nodes[0].ContactPoint, 0));
+                    Assert.That(host1.IsUp, Is.False);
+                    Assert.That(1, Is.EqualTo(downCounter.GetOrAdd(nodes[0].ContactPoint, 0)));
+                    Assert.That(0, Is.EqualTo(upCounter.GetOrAdd(nodes[0].ContactPoint, 0)));
                 }, 100, 100);
                 Trace.TraceInformation("Stopping node #2");
                 nodes[1].Stop().GetAwaiter().GetResult();
@@ -189,13 +189,13 @@ namespace Cassandra.IntegrationTests.Core
                 TestHelper.RetryAssert(() =>
                 {
                     Assert.Throws<NoHostAvailableException>(() => TestHelper.Invoke(() => session.Execute("SELECT * FROM system.local"), 6));
-                    Assert.False(host2.IsUp);
-                    Assert.AreEqual(1, downCounter.GetOrAdd(nodes[0].ContactPoint, 0));
-                    Assert.AreEqual(0, upCounter.GetOrAdd(nodes[0].ContactPoint, 0));
-                    Assert.AreEqual(1, downCounter.GetOrAdd(nodes[1].ContactPoint, 0));
-                    Assert.AreEqual(0, upCounter.GetOrAdd(nodes[1].ContactPoint, 0));
-                    Assert.False(host1.IsUp);
-                    Assert.False(host2.IsUp);
+                    Assert.That(host2.IsUp, Is.False);
+                    Assert.That(1, Is.EqualTo(downCounter.GetOrAdd(nodes[0].ContactPoint, 0)));
+                    Assert.That(0, Is.EqualTo(upCounter.GetOrAdd(nodes[0].ContactPoint, 0)));
+                    Assert.That(1, Is.EqualTo(downCounter.GetOrAdd(nodes[1].ContactPoint, 0)));
+                    Assert.That(0, Is.EqualTo(upCounter.GetOrAdd(nodes[1].ContactPoint, 0)));
+                    Assert.That(host1.IsUp, Is.False);
+                    Assert.That(host2.IsUp, Is.False);
                 }, 100, 100);
 
                 Trace.TraceInformation("Restarting node #1");
@@ -205,13 +205,13 @@ namespace Cassandra.IntegrationTests.Core
                 Trace.TraceInformation("Waiting for few more seconds");
                 TestHelper.RetryAssert(() =>
                 {
-                    Assert.True(host1.IsUp && host2.IsUp);
-                    Assert.True(host1.IsUp, "Host 1 should be UP after restarting");
-                    Assert.True(host2.IsUp, "Host 2 should be UP after restarting");
-                    Assert.AreEqual(1, downCounter.GetOrAdd(nodes[0].ContactPoint, 0));
-                    Assert.AreEqual(1, upCounter.GetOrAdd(nodes[0].ContactPoint, 0));
-                    Assert.AreEqual(1, downCounter.GetOrAdd(nodes[1].ContactPoint, 0));
-                    Assert.AreEqual(1, upCounter.GetOrAdd(nodes[1].ContactPoint, 0));
+                    Assert.That(host1.IsUp && host2.IsUp, Is.True);
+                    Assert.That(host1.IsUp, Is.True, "Host 1 should be UP after restarting");
+                    Assert.That(host2.IsUp, Is.True, "Host 2 should be UP after restarting");
+                    Assert.That(1, Is.EqualTo(downCounter.GetOrAdd(nodes[0].ContactPoint, 0)));
+                    Assert.That(1, Is.EqualTo(upCounter.GetOrAdd(nodes[0].ContactPoint, 0)));
+                    Assert.That(1, Is.EqualTo(downCounter.GetOrAdd(nodes[1].ContactPoint, 0)));
+                    Assert.That(1, Is.EqualTo(upCounter.GetOrAdd(nodes[1].ContactPoint, 0)));
                 }, 100, 200);
             }
         }
@@ -250,8 +250,8 @@ namespace Cassandra.IntegrationTests.Core
                     downCounter.AddOrUpdate(e.Address.ToString(), 1, (k, v) => ++v);
                 };
                 var nodes = _testCluster.GetNodes().ToList();
-                Assert.True(host1.IsUp);
-                Assert.True(host2.IsUp);
+                Assert.That(host1.IsUp, Is.True);
+                Assert.That(host2.IsUp, Is.True);
                 Trace.TraceInformation("Stopping node #1");
                 nodes[0].Stop().GetAwaiter().GetResult();
                 Trace.TraceInformation("Stopping node #2");
@@ -260,10 +260,10 @@ namespace Cassandra.IntegrationTests.Core
                 TestHelper.RetryAssert(() =>
                 {
                     Assert.Throws<NoHostAvailableException>(() => session1.Execute("SELECT * FROM system.local"));
-                    Assert.AreEqual(1, downCounter.GetOrAdd(nodes[0].ContactPoint, 0));
-                    Assert.AreEqual(0, upCounter.GetOrAdd(nodes[0].ContactPoint, 0));
-                    Assert.AreEqual(1, downCounter.GetOrAdd(nodes[1].ContactPoint, 0));
-                    Assert.AreEqual(0, upCounter.GetOrAdd(nodes[1].ContactPoint, 0));
+                    Assert.That(1, Is.EqualTo(downCounter.GetOrAdd(nodes[0].ContactPoint, 0)));
+                    Assert.That(0, Is.EqualTo(upCounter.GetOrAdd(nodes[0].ContactPoint, 0)));
+                    Assert.That(1, Is.EqualTo(downCounter.GetOrAdd(nodes[1].ContactPoint, 0)));
+                    Assert.That(0, Is.EqualTo(upCounter.GetOrAdd(nodes[1].ContactPoint, 0)));
                 }, 100, 200);
                 Trace.TraceInformation("Restarting node #1");
                 nodes[0].Start().GetAwaiter().GetResult();
@@ -272,19 +272,19 @@ namespace Cassandra.IntegrationTests.Core
                 Trace.TraceInformation("Waiting for few more seconds");
                 TestHelper.RetryAssert(() =>
                 {
-                    Assert.True(host1.IsUp);
-                    Assert.True(host2.IsUp);
-                    Assert.AreEqual(1, downCounter.GetOrAdd(nodes[0].ContactPoint, 0));
-                    Assert.AreEqual(1, upCounter.GetOrAdd(nodes[0].ContactPoint, 0));
-                    Assert.AreEqual(1, downCounter.GetOrAdd(nodes[1].ContactPoint, 0));
-                    Assert.AreEqual(1, upCounter.GetOrAdd(nodes[1].ContactPoint, 0));
+                    Assert.That(host1.IsUp, Is.True);
+                    Assert.That(host2.IsUp, Is.True);
+                    Assert.That(1, Is.EqualTo(downCounter.GetOrAdd(nodes[0].ContactPoint, 0)));
+                    Assert.That(1, Is.EqualTo(upCounter.GetOrAdd(nodes[0].ContactPoint, 0)));
+                    Assert.That(1, Is.EqualTo(downCounter.GetOrAdd(nodes[1].ContactPoint, 0)));
+                    Assert.That(1, Is.EqualTo(upCounter.GetOrAdd(nodes[1].ContactPoint, 0)));
                 }, 100, 200);
                 TestHelper.Invoke(() => session1.Execute("SELECT * FROM system.local"), 10);
                 TestHelper.Invoke(() => session2.Execute("SELECT * FROM system.local"), 10);
                 var pool1 = session1.GetOrCreateConnectionPool(host1, HostDistance.Local);
-                Assert.AreEqual(2, pool1.OpenConnections);
+                Assert.That(2, Is.EqualTo(pool1.OpenConnections));
                 var pool2 = session1.GetOrCreateConnectionPool(host2, HostDistance.Local);
-                Assert.AreEqual(2, pool2.OpenConnections);
+                Assert.That(2, Is.EqualTo(pool2.OpenConnections));
             }
         }
 
@@ -311,9 +311,9 @@ namespace Cassandra.IntegrationTests.Core
                 // Assert that there are 2 pools, one for each host
                 var hosts = session.Cluster.AllHosts().ToList();
                 var pool1 = session.GetExistingPool(hosts[0].Address);
-                Assert.AreEqual(2, pool1.OpenConnections);
+                Assert.That(2, Is.EqualTo(pool1.OpenConnections));
                 var pool2 = session.GetExistingPool(hosts[1].Address);
-                Assert.AreEqual(2, pool2.OpenConnections);
+                Assert.That(2, Is.EqualTo(pool2.OpenConnections));
 
                 // Assert that both hosts are used in queries
                 var set = new HashSet<IPEndPoint>();
@@ -322,7 +322,7 @@ namespace Cassandra.IntegrationTests.Core
                     var rs = session.Execute($"INSERT INTO test_table(id) VALUES ('{i}')");
                     set.Add(rs.Info.QueriedHost);
                 }
-                Assert.AreEqual(2, set.Count);
+                Assert.That(2, Is.EqualTo(set.Count));
                 
                 // Decommission node
                 if (!TestClusterManager.SupportsDecommissionForcefully())
@@ -342,7 +342,7 @@ namespace Cassandra.IntegrationTests.Core
                     var rs = session.Execute($"INSERT INTO test_table(id) VALUES ('{i}')");
                     set.Add(rs.Info.QueriedHost);
                 }
-                Assert.AreEqual(1, set.Count);
+                Assert.That(1, Is.EqualTo(set.Count));
 
                 var removedHost = hosts.Single(h => !h.Address.Equals(set.First()));
 
@@ -352,7 +352,7 @@ namespace Cassandra.IntegrationTests.Core
                 // Assert that there are 2 hosts
                 TestHelper.RetryAssert(() =>
                 {
-                    Assert.AreEqual(2, cluster.AllHosts().Count);
+                    Assert.That(2, Is.EqualTo(cluster.AllHosts().Count));
                 }, 1000, 180);
                 
                 // Assert that queries use both hosts again
@@ -362,14 +362,14 @@ namespace Cassandra.IntegrationTests.Core
                 {
                     var rs = session.Execute($"INSERT INTO test_table(id) VALUES ('{idx++}')");
                     set.Add(rs.Info.QueriedHost);
-                    Assert.AreEqual(2, set.Count);
+                    Assert.That(2, Is.EqualTo(set.Count));
                 }, 500, 240);
                 
                 TestHelper.RetryAssert(() =>
                 {
                     pool2 = session.GetExistingPool(removedHost.Address);
-                    Assert.IsNotNull(pool2);
-                    Assert.AreEqual(2, pool2.OpenConnections);
+                    Assert.That(pool2, Is.Not.Null);
+                    Assert.That(2, Is.EqualTo(pool2.OpenConnections));
                 }, 500, 60);
             }
         }
@@ -403,10 +403,10 @@ namespace Cassandra.IntegrationTests.Core
                 var session = (IInternalSession)cluster.Connect();
                 session.CreateKeyspaceIfNotExists("ks1");
                 var hosts = session.Cluster.AllHosts().OrderBy(h => h.Address.ToString()).ToArray();
-                Assert.AreEqual(3, hosts.Length);
-                Assert.AreEqual(3, session.GetPools().Count());
-                Assert.IsNotNull(session.GetExistingPool(oldEndPoint));
-                Assert.IsTrue(hosts.Select(h => h.Address.Address.ToString()).SequenceEqual(addresses));
+                Assert.That(3, Is.EqualTo(hosts.Length));
+                Assert.That(3, Is.EqualTo(session.GetPools().Count()));
+                Assert.That(session.GetExistingPool(oldEndPoint), Is.Not.Null);
+                Assert.That(hosts.Select(h => h.Address.Address.ToString()).SequenceEqual(addresses), Is.True);
                 var tokenMap = session.Cluster.Metadata.TokenToReplicasMap;
                 var oldHostTokens = tokenMap.GetByKeyspace("ks1")
                                      .Where(kvp =>
@@ -423,11 +423,11 @@ namespace Cassandra.IntegrationTests.Core
                 TestHelper.RetryAssert(
                     () =>
                     {
-                        Assert.AreEqual(1,
-                            session.Cluster.AllHosts()
-                                   .Count(h => h.Address.Address.ToString().Equals($"{_realCluster.Value.ClusterIpPrefix}4")),
+                        Assert.That(1,
+                            Is.EqualTo(session.Cluster.AllHosts()
+                                              .Count(h => h.Address.Address.ToString().Equals($"{_realCluster.Value.ClusterIpPrefix}4"))), 
                             string.Join(";", session.Cluster.AllHosts().Select(h => h.Address.Address.ToString())));
-                        Assert.AreNotSame(tokenMap, session.Cluster.Metadata.TokenToReplicasMap);
+                        Assert.That(tokenMap, Is.Not.SameAs(session.Cluster.Metadata.TokenToReplicasMap));
                     },
                     500,
                     100);
@@ -438,9 +438,9 @@ namespace Cassandra.IntegrationTests.Core
                                                 kvp.Value.First().Address.Address.ToString().Equals(newIp)).ToList();
 
                 hosts = session.Cluster.AllHosts().ToArray();
-                Assert.AreEqual(3, hosts.Length);
-                Assert.IsTrue(hosts.Select(h => h.Address.Address.ToString()).SequenceEqual(newAddresses));
-                Assert.IsTrue(newHostTokens.Select(h => h.Key).SequenceEqual(oldHostTokens.Select(h => h.Key)));
+                Assert.That(3, Is.EqualTo(hosts.Length));
+                Assert.That(hosts.Select(h => h.Address.Address.ToString()).SequenceEqual(newAddresses), Is.True);
+                Assert.That(newHostTokens.Select(h => h.Key).SequenceEqual(oldHostTokens.Select(h => h.Key)), Is.True);
 
                 // force session to open connection to the new node
                 foreach (var i in Enumerable.Range(0, 5))
@@ -448,9 +448,9 @@ namespace Cassandra.IntegrationTests.Core
                     session.Execute("SELECT * FROM system.local");
                 }
 
-                Assert.AreEqual(3, session.GetPools().Count());
-                Assert.IsNull(session.GetExistingPool(oldEndPoint));
-                Assert.IsNotNull(session.GetExistingPool(newEndPoint));
+                Assert.That(3, Is.EqualTo(session.GetPools().Count()));
+                Assert.That(session.GetExistingPool(oldEndPoint), Is.Null);
+                Assert.That(session.GetExistingPool(newEndPoint), Is.Not.Null);
             }
         }
     }

@@ -47,7 +47,7 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                       .ThenRowsSuccess(Movie.CreateRowsResult(_movieList)));
             var table = Session.GetTable<Movie>();
             var movies = async ? table.ExecuteAsync().GetAwaiter().GetResult().ToArray() : table.Execute().ToArray();
-            Assert.AreEqual(_movieList.Count, movies.Length);
+            Assert.That(_movieList.Count, Is.EqualTo(movies.Length));
         }
     }
 }

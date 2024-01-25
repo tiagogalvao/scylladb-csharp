@@ -24,6 +24,7 @@ using System.Numerics;
 using System.Reflection;
 using Cassandra.Serialization;
 using Cassandra.Serialization.Primitive;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests
 {
@@ -78,7 +79,7 @@ namespace Cassandra.Tests
                 foreach (var value in initialValues)
                 {
                     byte[] encoded = serializer.Serialize(value);
-                    Assert.AreEqual(value, serializer.Deserialize(encoded, serializer.GetCqlTypeForPrimitive(value.GetType()), null));
+                    Assert.That(value, Is.EqualTo(serializer.Deserialize(encoded, serializer.GetCqlTypeForPrimitive(value.GetType()), null)));
                 }
             }
         }
@@ -111,7 +112,7 @@ namespace Cassandra.Tests
                 {
                     byte[] encoded = serializer.Serialize(value[0]);
                     //Set object as the target CSharp type, it should get the default value
-                    Assert.AreEqual(value[0], serializer.Deserialize(encoded, (ColumnTypeCode)value[1], null));
+                    Assert.That(value[0], Is.EqualTo(serializer.Deserialize(encoded, (ColumnTypeCode)value[1], null)));
                 }   
             }
         }
@@ -139,7 +140,7 @@ namespace Cassandra.Tests
                     var valueToEncode = (IEnumerable)value[0];
                     var encoded = serializer.Serialize(valueToEncode);
                     var decoded = (IEnumerable)serializer.Deserialize(encoded, (ColumnTypeCode)value[1], (IColumnInfo)value[2]);
-                    Assert.IsInstanceOf<Array>(decoded);
+                    ClassicAssert.IsInstanceOf<Array>(decoded);
                     CollectionAssert.AreEqual(valueToEncode, decoded);
                 }
             }
@@ -203,7 +204,7 @@ namespace Cassandra.Tests
                 var valueToEncode = (IStructuralEquatable)value[0];
                 var encoded = serializer.Serialize(valueToEncode);
                 var decoded = (IStructuralEquatable)serializer.Deserialize(encoded, (ColumnTypeCode)value[1], (IColumnInfo)value[2]);
-                Assert.AreEqual(valueToEncode, decoded);
+                Assert.That(valueToEncode, Is.EqualTo(decoded));
             }
         }
 
@@ -231,7 +232,7 @@ namespace Cassandra.Tests
                 var valueToEncode = (IList)value[0];
                 var encoded = serializer.Serialize(valueToEncode);
                 var decoded = (IList)serializer.Deserialize(encoded, (ColumnTypeCode)value[1], (IColumnInfo)value[2]);
-                Assert.AreEqual(valueToEncode, decoded);
+                Assert.That(valueToEncode, Is.EqualTo(decoded));
             }
         }
 
@@ -252,7 +253,7 @@ namespace Cassandra.Tests
                     var valueToEncode = (IEnumerable)value[0];
                     var encoded = serializer.Serialize(valueToEncode);
                     var decoded = (IEnumerable)serializer.Deserialize(encoded, (ColumnTypeCode)value[1], (IColumnInfo)value[2]);
-                    Assert.IsInstanceOf(originalType, decoded);
+                    ClassicAssert.IsInstanceOf(originalType, decoded);
                     CollectionAssert.AreEqual(valueToEncode, decoded);
                 }
             }
@@ -310,7 +311,7 @@ namespace Cassandra.Tests
                     var valueToEncode = (IEnumerable)value[0];
                     var encoded = serializer.Serialize(valueToEncode);
                     var decoded = (IEnumerable)serializer.Deserialize(encoded, (ColumnTypeCode)value[1], (IColumnInfo)value[2]);
-                    Assert.IsInstanceOf(originalType, decoded);
+                    ClassicAssert.IsInstanceOf(originalType, decoded);
                     CollectionAssert.AreEqual(valueToEncode, decoded);
                 }
             }
@@ -334,7 +335,7 @@ namespace Cassandra.Tests
                 var encoded = serializer.Serialize(v.Item1);
                 CollectionAssert.AreEqual(encoded, new[] { v.Item2 });
                 var decoded = (sbyte)serializer.Deserialize(encoded, ColumnTypeCode.TinyInt, null);
-                Assert.AreEqual(v.Item1, decoded);
+                Assert.That(v.Item1, Is.EqualTo(decoded));
             }
         }
 
@@ -355,7 +356,7 @@ namespace Cassandra.Tests
             {
                 var encoded = serializer.Serialize(v);
                 var decoded = (LocalDate)serializer.Deserialize(encoded, ColumnTypeCode.Date, null);
-                Assert.AreEqual(v, decoded);
+                Assert.That(v, Is.EqualTo(decoded));
             }
         }
 
@@ -367,7 +368,7 @@ namespace Cassandra.Tests
             {
                 var encoded = serializer.Serialize(i);
                 var decoded = (short)serializer.Deserialize(encoded, ColumnTypeCode.SmallInt, null);
-                Assert.AreEqual(i, decoded);
+                Assert.That(i, Is.EqualTo(decoded));
                 if (i == Int16.MaxValue)
                 {
                     break;
@@ -423,7 +424,7 @@ namespace Cassandra.Tests
                 var encoded = serializer.Serialize(val.Item1);
                 CollectionAssert.AreEqual(val.Item2, encoded);
                 var padEncoded = new byte[] {0xFF, 0xFA}.Concat(encoded).ToArray();
-                Assert.AreEqual(val.Item1, serializer.Deserialize(padEncoded, 2, encoded.Length, serializer.GetCqlTypeForPrimitive(val.Item1.GetType()), null));
+                Assert.That(val.Item1, Is.EqualTo(serializer.Deserialize(padEncoded, 2, encoded.Length, serializer.GetCqlTypeForPrimitive(val.Item1.GetType()), null)));
             }
         }
 
@@ -439,10 +440,10 @@ namespace Cassandra.Tests
                     continue;
                 }
                 var type = serializer.GetClrType(typeCode, null);
-                Assert.NotNull(type);
+                Assert.That(type, Is.Not.Null);
                 if (type.GetTypeInfo().IsValueType)
                 {
-                    Assert.NotNull(serializer.Serialize(Activator.CreateInstance(type)));
+                    Assert.That(serializer.Serialize(Activator.CreateInstance(type)), Is.Not.Null);
                 }
             }
         }
@@ -465,7 +466,7 @@ namespace Cassandra.Tests
             foreach (var item in notPrimitive)
             {
                 var type = serializer.GetClrType(item.Item2, item.Item3);
-                Assert.AreEqual(item.Item1, type);
+                Assert.That(item.Item1, Is.EqualTo(type));
             }
         }
 
@@ -485,7 +486,7 @@ namespace Cassandra.Tests
             foreach (var v in values)
             {
                 var decimalValue = DecimalSerializer.ToDecimal(v.Item1, v.Item2);
-                Assert.AreEqual(v.Item3, decimalValue);
+                Assert.That(v.Item3, Is.EqualTo(decimalValue));
             }
         }
 

@@ -20,6 +20,7 @@ using Cassandra.IntegrationTests.TestBase;
 using Cassandra.IntegrationTests.TestClusterManagement;
 using Cassandra.Tests;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.DataStax.Auth
 {
@@ -79,7 +80,7 @@ namespace Cassandra.IntegrationTests.DataStax.Auth
 
             var session = _cluster.Connect();
             var rs = session.Execute("SELECT * FROM system.local");
-            Assert.Greater(rs.Count(), 0);
+            Assert.That(rs.Count(), Is.GreaterThan(0));
         }
 
         [Test, TestDseVersion(5, 0)]
@@ -91,9 +92,9 @@ namespace Cassandra.IntegrationTests.DataStax.Auth
                                  .Build())
             {
                 var ex = Assert.Throws<NoHostAvailableException>(() => cluster.Connect());
-                Assert.AreEqual(1, ex.Errors.Count);
-                Assert.IsTrue(ex.Message.Contains("Failed to login. Please re-try."), ex.Message);
-                Assert.IsInstanceOf<AuthenticationException>(ex.Errors.First().Value);
+                Assert.That(1, Is.EqualTo(ex.Errors.Count));
+                Assert.That(ex.Message.Contains("Failed to login. Please re-try."), Is.True, ex.Message);
+                ClassicAssert.IsInstanceOf<AuthenticationException>(ex.Errors.First().Value);
             }
         }
 
@@ -105,9 +106,9 @@ namespace Cassandra.IntegrationTests.DataStax.Auth
                                  .Build())
             {
                 var ex = Assert.Throws<NoHostAvailableException>(() => cluster.Connect());
-                Assert.AreEqual(1, ex.Errors.Count);
-                Assert.IsTrue(ex.Message.Contains("Failed to login. Please re-try."), ex.Message);
-                Assert.IsInstanceOf<AuthenticationException>(ex.Errors.First().Value);
+                Assert.That(1, Is.EqualTo(ex.Errors.Count));
+                Assert.That(ex.Message.Contains("Failed to login. Please re-try."), Is.True, ex.Message);
+                ClassicAssert.IsInstanceOf<AuthenticationException>(ex.Errors.First().Value);
             }
         }
     }

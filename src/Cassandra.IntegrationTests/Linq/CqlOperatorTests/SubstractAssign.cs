@@ -63,7 +63,7 @@ namespace Cassandra.IntegrationTests.Linq.CqlOperatorTests
         {
             var (table, expectedEntities) = EntityWithListType.GetDefaultTable(Session, _tableName);
             var singleEntity = expectedEntities.First();
-            Assert.AreEqual(1, singleEntity.ListType.Count); // make sure there's only one value in the list
+            Assert.That(1, Is.EqualTo(singleEntity.ListType.Count)); // make sure there's only one value in the list
             var indexToRemove = 0;
             singleEntity.ListType.AddRange(new[] { singleEntity.ListType[indexToRemove], singleEntity.ListType[indexToRemove], singleEntity.ListType[indexToRemove] });
 
@@ -153,7 +153,7 @@ namespace Cassandra.IntegrationTests.Linq.CqlOperatorTests
             var valsToDelete = new List<int>() { 9999 };
 
             // make sure this value is not in the list
-            Assert.IsFalse(singleEntity.ListType.Contains(valsToDelete.First()));
+            Assert.That(singleEntity.ListType.Contains(valsToDelete.First()), Is.False);
 
             // SubstractAssign the values
             table.Where(t => t.Id == singleEntity.Id)
@@ -230,7 +230,7 @@ namespace Cassandra.IntegrationTests.Linq.CqlOperatorTests
             var table = tupleArrayType.Item1;
             var expectedEntities = tupleArrayType.Item2;
             var singleEntity = expectedEntities.First();
-            Assert.AreEqual(1, singleEntity.ArrayType.Length); // make sure there's only one value in the list
+            Assert.That(1, Is.EqualTo(singleEntity.ArrayType.Length)); // make sure there's only one value in the list
             var indexToRemove = 0;
             singleEntity.ArrayType.ToList().AddRange(new[] { singleEntity.ArrayType[indexToRemove], singleEntity.ArrayType[indexToRemove], singleEntity.ArrayType[indexToRemove] });
 
@@ -335,8 +335,8 @@ namespace Cassandra.IntegrationTests.Linq.CqlOperatorTests
             string[] valsToDelete = { "9999" };
 
             // make sure this value is not in the array
-            Assert.AreEqual(1, singleEntity.ArrayType.Length);
-            Assert.AreNotEqual(valsToDelete[0], singleEntity.ArrayType[0]);
+            Assert.That(1, Is.EqualTo(singleEntity.ArrayType.Length));
+            Assert.That(valsToDelete[0], Is.Not.EqualTo(singleEntity.ArrayType[0]));
 
             // SubstractAssign the values
             table.Where(t => t.Id == singleEntity.Id)

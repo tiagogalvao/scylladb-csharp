@@ -189,7 +189,7 @@ namespace Cassandra.IntegrationTests.Core
             handle.WaitOne();
             //the end memory usage can not be greater than double the start memory
             //If there is a memory leak, it should be an order of magnitude greater...
-            Assert.Less(diff, start / 2);
+            Assert.That(diff, Is.LessThan(start / 2));
         }
 
         public Action GetInsertAction(ISession session, object bindableStatement, ConsistencyLevel consistency, int rowsPerId)

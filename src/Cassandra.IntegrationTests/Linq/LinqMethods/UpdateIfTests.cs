@@ -60,8 +60,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                 .Select(m => new Movie { MainActor = "Robin McLaurin Williams" })
                 .UpdateIf(m => m.Year == 1989)
                 .Execute();
-            Assert.True(appliedInfo.Applied);
-            Assert.Null(appliedInfo.Existing);
+            Assert.That(appliedInfo.Applied, Is.True);
+            Assert.That(appliedInfo.Existing, Is.Null);
 
             var existingMovie = new Movie
             {
@@ -87,8 +87,8 @@ namespace Cassandra.IntegrationTests.Linq.LinqMethods
                 .UpdateIf(m => m.Year == 1500);
 
             appliedInfo = updateIf.Execute();
-            Assert.False(appliedInfo.Applied);
-            Assert.AreEqual(1989, appliedInfo.Existing.Year);
+            Assert.That(appliedInfo.Applied, Is.False);
+            Assert.That(1989, Is.EqualTo(appliedInfo.Existing.Year));
         }
     }
 }

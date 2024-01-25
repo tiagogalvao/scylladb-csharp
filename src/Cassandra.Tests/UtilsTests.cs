@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cassandra.Collections;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests
 {
@@ -72,11 +73,11 @@ namespace Cassandra.Tests
             {
                 if (item.Item3)
                 {
-                    Assert.AreEqual(comparer.GetHashCode(item.Item1), comparer.GetHashCode(item.Item2));
+                    Assert.That(comparer.GetHashCode(item.Item1), Is.EqualTo(comparer.GetHashCode(item.Item2)));
                 }
                 else
                 {
-                    Assert.AreNotEqual(comparer.GetHashCode(item.Item1), comparer.GetHashCode(item.Item2), 
+                    Assert.That(comparer.GetHashCode(item.Item1), Is.EqualTo(comparer.GetHashCode(item.Item2)), 
                         "For value: " + string.Join(", ", item.Item1));
                 }
             }

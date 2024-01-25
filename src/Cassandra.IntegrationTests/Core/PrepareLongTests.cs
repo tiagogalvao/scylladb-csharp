@@ -38,21 +38,21 @@ namespace Cassandra.IntegrationTests.Core
                 var ps = session.Prepare("SELECT key FROM local");
                 var host = cluster.AllHosts().First();
                 var row = session.Execute(ps.Bind()).First();
-                Assert.NotNull(row.GetValue<string>("key"));
+                Assert.That(row.GetValue<string>("key"), Is.Not.Null);
 
                 // Stop the node
                 testCluster.Stop(1);
                 TestHelper.WaitUntil(() => !host.IsUp, 500, 40);
-                Assert.False(host.IsUp);
+                Assert.That(host.IsUp, Is.False);
 
                 // Restart the node
                 testCluster.Start(1);
                 TestHelper.WaitUntil(() => host.IsUp, 500, 40);
-                Assert.True(host.IsUp);
+                Assert.That(host.IsUp, Is.True);
 
                 // The same prepared statement should be valid
                 row = session.Execute(ps.Bind()).First();
-                Assert.NotNull(row.GetValue<string>("key"));
+                Assert.That(row.GetValue<string>("key"), Is.Not.Null);
             }
         }
     }

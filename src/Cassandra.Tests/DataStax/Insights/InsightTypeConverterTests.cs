@@ -48,14 +48,14 @@ namespace Cassandra.Tests.DataStax.Insights
         public void Should_ReturnTrue_When_InsightTypeEnumIsProvided()
         {
             var sut = new InsightTypeInsightsConverter();
-            Assert.IsTrue(sut.CanConvert(typeof(InsightType)));
+            Assert.That(sut.CanConvert(typeof(InsightType)), Is.True);
         }
 
         [Test]
         public void Should_ReturnFalse_When_EnumIsProvided()
         {
             var sut = new InsightTypeInsightsConverter();
-            Assert.IsFalse(sut.CanConvert(typeof(Enum)));
+            Assert.That(sut.CanConvert(typeof(Enum)), Is.False);
         }
     }
 }

@@ -25,6 +25,7 @@ using Cassandra.IntegrationTests.TestBase;
 using Cassandra.IntegrationTests.TestClusterManagement;
 using Cassandra.Tests;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -102,11 +103,11 @@ namespace Cassandra.IntegrationTests.Core
                                  .Build())
             {
                 var ex = Assert.Throws<NoHostAvailableException>(() => cluster.Connect());
-                Assert.AreEqual(1, ex.Errors.Count);
-                Assert.IsTrue(TestClusterManager.CassandraVersion.CompareTo(Version.Parse("3.1")) > 0
+                Assert.That(1, Is.EqualTo(ex.Errors.Count));
+                ClassicAssert.IsTrue(TestClusterManager.CassandraVersion.CompareTo(Version.Parse("3.1")) > 0
                     ? ex.Message.Contains("Provided username wrong_username and/or password are incorrect")
                     : ex.Message.Contains("Username and/or password are incorrect"));
-                Assert.IsInstanceOf<AuthenticationException>(ex.Errors.First().Value);
+                ClassicAssert.IsInstanceOf<AuthenticationException>(ex.Errors.First().Value);
             }
         }
 
@@ -121,7 +122,7 @@ namespace Cassandra.IntegrationTests.Core
             {
                 var session = cluster.Connect();
                 var rowSet = session.Execute("SELECT * FROM system.local");
-                Assert.Greater(rowSet.Count(), 0);
+                Assert.That(rowSet.Count(), Is.GreaterThan(0));
             }
         }
 
@@ -136,10 +137,10 @@ namespace Cassandra.IntegrationTests.Core
                                  .Build())
             {
                 var session = cluster.Connect();
-                Assert.True(testAuthProvider.NameBeforeNewAuthenticator);
-                Assert.AreEqual("org.apache.cassandra.auth.PasswordAuthenticator", testAuthProvider.Name);
+                Assert.That(testAuthProvider.NameBeforeNewAuthenticator, Is.True);
+                Assert.That("org.apache.cassandra.auth.PasswordAuthenticator", Is.EqualTo(testAuthProvider.Name));
                 var rowSet = session.Execute("SELECT * FROM system.local");
-                Assert.Greater(rowSet.Count(), 0);
+                Assert.That(rowSet.Count(), Is.GreaterThan(0));
             }
         }
 
@@ -153,7 +154,7 @@ namespace Cassandra.IntegrationTests.Core
             {
                 var session = cluster.Connect();
                 var rs = session.Execute("SELECT * FROM system.local");
-                Assert.Greater(rs.Count(), 0);
+                Assert.That(rs.Count(), Is.GreaterThan(0));
             }
         }
 
@@ -166,11 +167,11 @@ namespace Cassandra.IntegrationTests.Core
                                  .Build())
             {
                 var ex = Assert.Throws<NoHostAvailableException>(() => cluster.Connect());
-                Assert.AreEqual(1, ex.Errors.Count);
-                Assert.IsTrue(TestClusterManager.CassandraVersion.CompareTo(Version.Parse("3.1")) > 0
+                Assert.That(1, Is.EqualTo(ex.Errors.Count));
+                ClassicAssert.IsTrue(TestClusterManager.CassandraVersion.CompareTo(Version.Parse("3.1")) > 0
                     ? ex.Message.Contains("Provided username wrong_username and/or password are incorrect")
                     : ex.Message.Contains("Username and/or password are incorrect"));
-                Assert.IsInstanceOf<AuthenticationException>(ex.Errors.First().Value);
+                ClassicAssert.IsInstanceOf<AuthenticationException>(ex.Errors.First().Value);
             }
         }
 
@@ -182,9 +183,9 @@ namespace Cassandra.IntegrationTests.Core
                                  .Build())
             {
                 var ex = Assert.Throws<NoHostAvailableException>(() => cluster.Connect());
-                Assert.AreEqual(1, ex.Errors.Count);
-                Assert.IsTrue(ex.Message.Contains("requires authentication, but no authenticator found in Cluster configuration"));
-                Assert.IsInstanceOf<AuthenticationException>(ex.Errors.First().Value);
+                Assert.That(1, Is.EqualTo(ex.Errors.Count));
+                Assert.That(ex.Message.Contains("requires authentication, but no authenticator found in Cluster configuration"), Is.True);
+                ClassicAssert.IsInstanceOf<AuthenticationException>(ex.Errors.First().Value);
             }
         }
 

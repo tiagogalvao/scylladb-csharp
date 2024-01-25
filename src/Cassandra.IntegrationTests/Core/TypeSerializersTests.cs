@@ -27,6 +27,7 @@ using Cassandra.Tests;
 using Cassandra.Tests.Extensions.Serializers;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -93,8 +94,8 @@ namespace Cassandra.IntegrationTests.Core
                     session.Execute(ps.Bind(id, item[2].ToString(), item[1], item[2]));
                     var row = session.Execute(new SimpleStatement(DecimalSelectQuery, id)).First();
                     //it allows to retrieve only by 1 type
-                    Assert.AreEqual(row.GetValue<BigDecimal>("value1"), item[1]);
-                    Assert.AreEqual(row.GetValue<BigDecimal>("value2"), item[1]);
+                    Assert.That(row.GetValue<BigDecimal>("value1"), Is.EqualTo(item[1]));
+                    Assert.That(row.GetValue<BigDecimal>("value2"), Is.EqualTo(item[1]));
                 }
             }
         }
@@ -125,8 +126,8 @@ namespace Cassandra.IntegrationTests.Core
                     session.Execute(statement);
                     var row = session.Execute(new SimpleStatement(DecimalSelectQuery, id)).First();
                     //it allows to retrieve only by 1 type
-                    Assert.AreEqual(row.GetValue<BigDecimal>("value1"), item[1]);
-                    Assert.AreEqual(row.GetValue<BigDecimal>("value2"), item[1]);
+                    Assert.That(row.GetValue<BigDecimal>("value1"), Is.EqualTo(item[1]));
+                    Assert.That(row.GetValue<BigDecimal>("value2"), Is.EqualTo(item[1]));
                 }
             }
         }
@@ -160,8 +161,8 @@ namespace Cassandra.IntegrationTests.Core
                 {
                     var id = item[0];
                     var row = session.Execute(new SimpleStatement(DecimalSelectQuery, id)).First();
-                    Assert.AreEqual(row.GetValue<BigDecimal>("value1"), item[1]);
-                    Assert.AreEqual(row.GetValue<BigDecimal>("value2"), item[1]);
+                    Assert.That(row.GetValue<BigDecimal>("value1"), Is.EqualTo(item[1]));
+                    Assert.That(row.GetValue<BigDecimal>("value2"), Is.EqualTo(item[1]));
                 }
             }
         }
@@ -188,11 +189,11 @@ namespace Cassandra.IntegrationTests.Core
                 foreach (var v in values)
                 {
                     var statement = ps.Bind(v);
-                    Assert.NotNull(statement.RoutingKey);
+                    Assert.That(statement.RoutingKey, Is.Not.Null);
                     CollectionAssert.AreEqual(new BigDecimalSerializer().Serialize((ushort)session.BinaryProtocolVersion, v), statement.RoutingKey.RawRoutingKey);
                     session.Execute(statement);
                     var row = session.Execute(new SimpleStatement("SELECT * FROM tbl_decimal_key WHERE id = ?", v)).First();
-                    Assert.AreEqual(row.GetValue<BigDecimal>("id"), v);
+                    Assert.That(row.GetValue<BigDecimal>("id"), Is.EqualTo(v));
                 }
             }
         }
@@ -226,7 +227,7 @@ namespace Cassandra.IntegrationTests.Core
                     var customValue = (DummyCustomType)item[1];
                     session.Execute(ps.Bind(id, item[1]));
                     var row = session.Execute(new SimpleStatement(CustomSelectQuery, id)).First();
-                    Assert.AreEqual(row.GetValue<DummyCustomType>("value").Buffer, customValue.Buffer);
+                    Assert.That(row.GetValue<DummyCustomType>("value").Buffer, Is.EqualTo(customValue.Buffer));
                 }
             }
         }
@@ -253,21 +254,21 @@ namespace Cassandra.IntegrationTests.Core
                 IEnumerator<Row> ren = rs.GetRows().GetEnumerator();
                 ren.MoveNext();
                 Row r = ren.Current;
-                Assert.AreEqual(r.GetValue<int>("k"), 0);
-                Assert.AreEqual(r.GetValue<byte[]>("c"), serializeForDynamicType(12, 3));
-                Assert.AreEqual(r.GetValue<int>("v"), 3);
+                Assert.That(r.GetValue<int>("k"), Is.EqualTo(0));
+                Assert.That(r.GetValue<byte[]>("c"), Is.EqualTo(serializeForDynamicType(12, 3)));
+                Assert.That(r.GetValue<int>("v"), Is.EqualTo(3));
 
                 ren.MoveNext();
                 r = ren.Current;
-                Assert.AreEqual(r.GetValue<int>("k"), 0);
-                Assert.AreEqual(r.GetValue<byte[]>("c"), serializeForDynamicType(42));
-                Assert.AreEqual(r.GetValue<int>("v"), 2);
+                Assert.That(r.GetValue<int>("k"), Is.EqualTo(0));
+                Assert.That(r.GetValue<byte[]>("c"), Is.EqualTo(serializeForDynamicType(42)));
+                Assert.That(r.GetValue<int>("v"), Is.EqualTo(2));
 
                 ren.MoveNext();
                 r = ren.Current;
-                Assert.AreEqual(r.GetValue<int>("k"), 0);
-                Assert.AreEqual(r.GetValue<byte[]>("c"), serializeForDynamicType("foo", 32));
-                Assert.AreEqual(r.GetValue<int>("v"), 1);
+                Assert.That(r.GetValue<int>("k"), Is.EqualTo(0));
+                Assert.That(r.GetValue<byte[]>("c"), Is.EqualTo(serializeForDynamicType("foo", 32)));
+                Assert.That(r.GetValue<int>("v"), Is.EqualTo(1));
             }
         }
 

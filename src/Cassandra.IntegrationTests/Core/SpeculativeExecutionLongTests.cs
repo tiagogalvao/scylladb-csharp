@@ -114,7 +114,7 @@ namespace Cassandra.IntegrationTests.Core
                 Task.WaitAll(tasks.Select(t => (Task)t).ToArray());
                 _testCluster.ResumeNode(1);
                 //There shouldn't be any query using node1 as coordinator passed the threshold.
-                Assert.AreEqual(0, tasks.Skip(pauseThreshold).Count(t => t.Result.Equals(_addressNode1)));
+                Assert.That(0, Is.EqualTo(tasks.Skip(pauseThreshold).Count(t => t.Result.Equals(_addressNode1))));
                 Thread.Sleep(1000);
             }
             finally

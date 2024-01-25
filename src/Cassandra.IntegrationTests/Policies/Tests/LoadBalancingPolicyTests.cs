@@ -166,7 +166,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
             catch (ArgumentException e)
             {
                 string expectedErrMsg = "Datacenter dc2 does not match any of the nodes, available datacenters: datacenter1.";
-                Assert.IsTrue(e.Message.Contains(expectedErrMsg));
+                Assert.That(e.Message.Contains(expectedErrMsg), Is.True);
             }
         }
 

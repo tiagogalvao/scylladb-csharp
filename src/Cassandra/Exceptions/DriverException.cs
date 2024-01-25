@@ -34,11 +34,5 @@ namespace Cassandra
             : base(message, innerException)
         {
         }
-        
-        protected DriverException(SerializationInfo info, StreamingContext context) :
-            base(info, context)
-        {
-            
-        }
     }
 }

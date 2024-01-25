@@ -67,12 +67,12 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                     }
                     finally
                     {
-                        Assert.NotNull(throwedException);
-                        Assert.AreEqual(throwedException.GetType(), exceptionType);
-                        Assert.AreEqual(1, Interlocked.Read(ref extendedRetryPolicy.RequestErrorConter));
-                        Assert.AreEqual(0, Interlocked.Read(ref extendedRetryPolicy.ReadTimeoutCounter));
-                        Assert.AreEqual(0, Interlocked.Read(ref extendedRetryPolicy.WriteTimeoutCounter));
-                        Assert.AreEqual(0, Interlocked.Read(ref extendedRetryPolicy.UnavailableCounter));
+                        Assert.That(throwedException, Is.Not.Null);
+                        Assert.That(throwedException.GetType(), Is.EqualTo(exceptionType));
+                        Assert.That(1, Is.EqualTo(Interlocked.Read(ref extendedRetryPolicy.RequestErrorConter)));
+                        Assert.That(0, Is.EqualTo(Interlocked.Read(ref extendedRetryPolicy.ReadTimeoutCounter)));
+                        Assert.That(0, Is.EqualTo(Interlocked.Read(ref extendedRetryPolicy.WriteTimeoutCounter)));
+                        Assert.That(0, Is.EqualTo(Interlocked.Read(ref extendedRetryPolicy.UnavailableCounter)));
                     }
                 }
             }
@@ -132,10 +132,10 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                     var allQueries = new { First = queriesFirstNodeString, Second = queriesSecondNodeString, Third = queriesThirdNodeString };
                     var allQueriesString = JsonConvert.SerializeObject(allQueries);
 
-                    Assert.AreEqual(0, currentHostRetryPolicy.RequestErrorCounter, allQueriesString);
-                    Assert.AreEqual(0, queriesFirstNode.Count, allQueriesString);
-                    Assert.AreEqual(1, queriesSecondNode.Count, allQueriesString);
-                    Assert.AreEqual(0, queriesThirdNode.Count, allQueriesString);
+                    Assert.That(0, Is.EqualTo(currentHostRetryPolicy.RequestErrorCounter), allQueriesString);
+                    Assert.That(0, Is.EqualTo(queriesFirstNode.Count), allQueriesString);
+                    Assert.That(1, Is.EqualTo(queriesSecondNode.Count), allQueriesString);
+                    Assert.That(0, Is.EqualTo(queriesThirdNode.Count), allQueriesString);
                 }
             }
         }
@@ -181,10 +181,10 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                         Assert.Throws<OverloadedException>(() => session.Execute(new SimpleStatement(cql).SetConsistencyLevel(ConsistencyLevel.One)));
                     }
 
-                    Assert.AreEqual(11, currentHostRetryPolicy.RequestErrorCounter);
-                    Assert.AreEqual(12, (await nodes[0].GetQueriesAsync(cql).ConfigureAwait(false)).Count);
-                    Assert.AreEqual(0, (await nodes[1].GetQueriesAsync(cql).ConfigureAwait(false)).Count);
-                    Assert.AreEqual(0, (await nodes[2].GetQueriesAsync(cql).ConfigureAwait(false)).Count);
+                    Assert.That(11, Is.EqualTo(currentHostRetryPolicy.RequestErrorCounter));
+                    Assert.That(12, Is.EqualTo((await nodes[0].GetQueriesAsync(cql).ConfigureAwait(false)).Count));
+                    Assert.That(0, Is.EqualTo((await nodes[1].GetQueriesAsync(cql).ConfigureAwait(false)).Count));
+                    Assert.That(0, Is.EqualTo((await nodes[2].GetQueriesAsync(cql).ConfigureAwait(false)).Count));
                 }
             }
         }

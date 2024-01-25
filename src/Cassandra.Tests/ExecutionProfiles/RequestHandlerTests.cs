@@ -86,20 +86,20 @@ namespace Cassandra.Tests.ExecutionProfiles
             await mockResult.RequestHandler.SendAsync().ConfigureAwait(false);
             
             var results = mockResult.SendResults.ToArray();
-            Assert.GreaterOrEqual(results.Length, 1);
+            Assert.That(results.Length, Is.GreaterThanOrEqualTo(1));
             var timeouts = results.Select(r => r.TimeoutMillis).ToList();
-            Assert.Greater(results.Length, 0);
-            Assert.AreEqual(ConsistencyLevel.EachQuorum, GetConsistencyLevels(requestType, results).Distinct().Single());
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, GetSerialConsistencyLevels(requestType, results).Distinct().Single());
-            Assert.AreEqual(400, timeouts.Distinct().Single());
+            Assert.That(results.Length, Is.GreaterThan(0));
+            Assert.That(ConsistencyLevel.EachQuorum, Is.EqualTo(GetConsistencyLevels(requestType, results).Distinct().Single()));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(GetSerialConsistencyLevels(requestType, results).Distinct().Single()));
+            Assert.That(400, Is.EqualTo(timeouts.Distinct().Single()));
 
-            Assert.Greater(Interlocked.Read(ref lbp.Count), 0);
-            Assert.Greater(Interlocked.Read(ref sep.Count), 0);
-            Assert.Greater(Interlocked.Read(ref rpStatement.Count), 0);
-            Assert.AreEqual(0, Interlocked.Read(ref lbpCluster.Count));
-            Assert.AreEqual(0, Interlocked.Read(ref sepCluster.Count));
-            Assert.AreEqual(0, Interlocked.Read(ref rpCluster.Count));
-            Assert.AreEqual(0, Interlocked.Read(ref rp.Count));
+            Assert.That(Interlocked.Read(ref lbp.Count), Is.GreaterThan(0));
+            Assert.That(Interlocked.Read(ref sep.Count), Is.GreaterThan(0));
+            Assert.That(Interlocked.Read(ref rpStatement.Count), Is.GreaterThan(0));
+            Assert.That(0, Is.EqualTo(Interlocked.Read(ref lbpCluster.Count)));
+            Assert.That(0, Is.EqualTo(Interlocked.Read(ref sepCluster.Count)));
+            Assert.That(0, Is.EqualTo(Interlocked.Read(ref rpCluster.Count)));
+            Assert.That(0, Is.EqualTo(Interlocked.Read(ref rp.Count)));
         }
 
         [Test]
@@ -141,19 +141,19 @@ namespace Cassandra.Tests.ExecutionProfiles
             await mockResult.RequestHandler.SendAsync().ConfigureAwait(false);
             
             var results = mockResult.SendResults.ToArray();
-            Assert.GreaterOrEqual(results.Length, 1);
+            Assert.That(results.Length, Is.GreaterThanOrEqualTo(1));
             var timeouts = results.Select(r => r.TimeoutMillis).ToList();
-            Assert.Greater(results.Length, 0);
-            Assert.AreEqual(ConsistencyLevel.All, GetConsistencyLevels(requestType, results).Distinct().Single());
-            Assert.AreEqual(ConsistencyLevel.Serial, GetSerialConsistencyLevels(requestType, results).Distinct().Single());
-            Assert.AreEqual(50, timeouts.Distinct().Single());
+            Assert.That(results.Length, Is.GreaterThan(0));
+            Assert.That(ConsistencyLevel.All, Is.EqualTo(GetConsistencyLevels(requestType, results).Distinct().Single()));
+            Assert.That(ConsistencyLevel.Serial, Is.EqualTo(GetSerialConsistencyLevels(requestType, results).Distinct().Single()));
+            Assert.That(50, Is.EqualTo(timeouts.Distinct().Single()));
 
-            Assert.Greater(Interlocked.Read(ref lbp.Count), 0);
-            Assert.Greater(Interlocked.Read(ref sep.Count), 0);
-            Assert.Greater(Interlocked.Read(ref rp.Count), 0);
-            Assert.AreEqual(0, Interlocked.Read(ref lbpCluster.Count));
-            Assert.AreEqual(0, Interlocked.Read(ref sepCluster.Count));
-            Assert.AreEqual(0, Interlocked.Read(ref rpCluster.Count));
+            Assert.That(Interlocked.Read(ref lbp.Count), Is.GreaterThan(0));
+            Assert.That(Interlocked.Read(ref sep.Count), Is.GreaterThan(0));
+            Assert.That(Interlocked.Read(ref rp.Count), Is.GreaterThan(0));
+            Assert.That(0, Is.EqualTo(Interlocked.Read(ref lbpCluster.Count)));
+            Assert.That(0, Is.EqualTo(Interlocked.Read(ref sepCluster.Count)));
+            Assert.That(0, Is.EqualTo(Interlocked.Read(ref rpCluster.Count)));
         }
         
         [Test]
@@ -187,18 +187,18 @@ namespace Cassandra.Tests.ExecutionProfiles
             await mockResult.RequestHandler.SendAsync().ConfigureAwait(false);
 
             var results = mockResult.SendResults.ToArray();
-            Assert.GreaterOrEqual(results.Length, 1);
+            Assert.That(results.Length, Is.GreaterThanOrEqualTo(1));
             var timeouts = results.Select(r => r.TimeoutMillis).ToList();
-            Assert.Greater(results.Length, 0);
-            Assert.AreEqual(ConsistencyLevel.LocalOne, GetConsistencyLevels(requestType, results).Distinct().Single());
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, GetSerialConsistencyLevels(requestType, results).Distinct().Single());
-            Assert.AreEqual(10, timeouts.Distinct().Single());
-            Assert.Greater(Interlocked.Read(ref lbpCluster.Count), 0);
-            Assert.Greater(Interlocked.Read(ref sepCluster.Count), 0);
-            Assert.Greater(Interlocked.Read(ref rpCluster.Count), 0);
-            Assert.AreEqual(0, Interlocked.Read(ref lbp.Count));
-            Assert.AreEqual(0, Interlocked.Read(ref sep.Count));
-            Assert.AreEqual(0, Interlocked.Read(ref rp.Count));
+            Assert.That(results.Length, Is.GreaterThan(0));
+            Assert.That(ConsistencyLevel.LocalOne, Is.EqualTo(GetConsistencyLevels(requestType, results).Distinct().Single()));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(GetSerialConsistencyLevels(requestType, results).Distinct().Single()));
+            Assert.That(10, Is.EqualTo(timeouts.Distinct().Single()));
+            Assert.That(Interlocked.Read(ref lbpCluster.Count), Is.GreaterThan(0));
+            Assert.That(Interlocked.Read(ref sepCluster.Count), Is.GreaterThan(0));
+            Assert.That(Interlocked.Read(ref rpCluster.Count), Is.GreaterThan(0));
+            Assert.That(0, Is.EqualTo(Interlocked.Read(ref lbp.Count)));
+            Assert.That(0, Is.EqualTo(Interlocked.Read(ref sep.Count)));
+            Assert.That(0, Is.EqualTo(Interlocked.Read(ref rp.Count)));
         }
 
         private IEnumerable<ConsistencyLevel> GetConsistencyLevels(RequestTypeTestCase testCase, ConnectionSendResult[] results)

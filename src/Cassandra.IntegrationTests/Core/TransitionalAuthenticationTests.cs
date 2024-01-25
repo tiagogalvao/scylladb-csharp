@@ -69,7 +69,7 @@ namespace Cassandra.IntegrationTests.Core
             {
                 var session = cluster.Connect();
                 var rs = session.Execute("SELECT * FROM system.local");
-                Assert.Greater(rs.Count(), 0);
+                Assert.That(rs.Count(), Is.GreaterThan(0));
             }
         }
 
@@ -82,7 +82,7 @@ namespace Cassandra.IntegrationTests.Core
             {
                 var session = cluster.Connect();
                 var rs = session.Execute("SELECT * FROM system.local");
-                Assert.Greater(rs.Count(), 0);
+                Assert.That(rs.Count(), Is.GreaterThan(0));
             }
         }
 
@@ -96,7 +96,7 @@ namespace Cassandra.IntegrationTests.Core
             {
                 var session = cluster.Connect();
                 var rs = session.Execute("SELECT * FROM system.local");
-                Assert.Greater(rs.Count(), 0);
+                Assert.That(rs.Count(), Is.GreaterThan(0));
             }
         }
 
@@ -110,7 +110,7 @@ namespace Cassandra.IntegrationTests.Core
             {
                 var session = cluster.Connect();
                 var rs = session.Execute("SELECT * FROM system.local");
-                Assert.Greater(rs.Count(), 0);
+                Assert.That(rs.Count(), Is.GreaterThan(0));
             }
         }
     }
