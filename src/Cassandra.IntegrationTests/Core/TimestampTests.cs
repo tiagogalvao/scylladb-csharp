@@ -43,7 +43,7 @@ namespace Cassandra.IntegrationTests.Core
                 var session = cluster.Connect();
                 TestHelper.ParallelInvoke(() => session.Execute("SELECT * FROM system.local"), 10);
                 // The driver should use the generator against C* 2.1+
-                Assert.AreEqual(GetProtocolVersion() < ProtocolVersion.V3 ? 0 : 10, generator.GetCounter());
+                Assert.That(GetProtocolVersion() < ProtocolVersion.V3 ? 0 : 10, Is.EqualTo(generator.GetCounter()));
             }
         }
 
@@ -68,7 +68,7 @@ namespace Cassandra.IntegrationTests.Core
                     session.Execute(stmt);
                 }
                 // The driver should use the generator against C* 2.1+
-                Assert.AreEqual(0, generator.GetCounter());
+                Assert.That(0, Is.EqualTo(generator.GetCounter()));
             }
         }
 
@@ -108,9 +108,9 @@ namespace Cassandra.IntegrationTests.Core
                     var rs1 = session.Execute($"SELECT WRITETIME(random_value) FROM {table} WHERE id = {1}");
                     var rs2 = session.Execute($"SELECT WRITETIME(random_value) FROM {table} WHERE id = {2}");
 
-                    Assert.AreEqual(6, generator.GetCounter()); // 2x selects, 1x insert (the other has a statement timestamp), create keyspace, use keyspace, create table
-                    Assert.AreEqual(ticksStmt1, rs1.Single().GetValue<long>(0));
-                    Assert.AreEqual((dt - unixEpochStart).Ticks / 10, rs2.Single().GetValue<long>(0));
+                    Assert.That(6, Is.EqualTo(generator.GetCounter())); // 2x selects, 1x insert (the other has a statement timestamp), create keyspace, use keyspace, create table
+                    Assert.That(ticksStmt1, Is.EqualTo(rs1.Single().GetValue<long>(0)));
+                    Assert.That((dt - unixEpochStart).Ticks / 10, Is.EqualTo(rs2.Single().GetValue<long>(0)));
                 }
             }
         }

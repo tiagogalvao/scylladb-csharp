@@ -126,9 +126,9 @@ namespace Cassandra.Tests.Connections.Control
                       _serializer).ConfigureAwait(false);
 
 
-            Assert.AreEqual(TopologyRefresherTests.LocalQuery, fakeRequestHandler.Requests.First().CqlQuery);
-            Assert.AreEqual(TopologyRefresherTests.PeersV2Query, fakeRequestHandler.Requests.ElementAt(1).CqlQuery);
-            Assert.AreEqual(TopologyRefresherTests.PeersQuery, fakeRequestHandler.Requests.Last().CqlQuery);
+            Assert.That(TopologyRefresherTests.LocalQuery, Is.EqualTo(fakeRequestHandler.Requests.First().CqlQuery));
+            Assert.That(TopologyRefresherTests.PeersV2Query, Is.EqualTo(fakeRequestHandler.Requests.ElementAt(1).CqlQuery));
+            Assert.That(TopologyRefresherTests.PeersQuery, Is.EqualTo(fakeRequestHandler.Requests.Last().CqlQuery));
         }
         
         [Test]
@@ -149,8 +149,8 @@ namespace Cassandra.Tests.Connections.Control
                       connection, 
                       _serializer).ConfigureAwait(false);
 
-            Assert.AreEqual(TopologyRefresherTests.LocalQuery, fakeRequestHandler.Requests.First().CqlQuery);
-            Assert.AreEqual(TopologyRefresherTests.PeersV2Query, fakeRequestHandler.Requests.Last().CqlQuery);
+            Assert.That(TopologyRefresherTests.LocalQuery, Is.EqualTo(fakeRequestHandler.Requests.First().CqlQuery));
+            Assert.That(TopologyRefresherTests.PeersV2Query, Is.EqualTo(fakeRequestHandler.Requests.Last().CqlQuery));
         }
         
         [Test]
@@ -171,9 +171,9 @@ namespace Cassandra.Tests.Connections.Control
                       connection, 
                       _serializer).ConfigureAwait(false);
 
-            Assert.AreEqual(2, fakeRequestHandler.Requests.Count);
-            Assert.AreEqual(TopologyRefresherTests.LocalQuery, fakeRequestHandler.Requests.First().CqlQuery);
-            Assert.AreEqual(TopologyRefresherTests.PeersV2Query, fakeRequestHandler.Requests.ElementAt(1).CqlQuery);
+            Assert.That(2, Is.EqualTo(fakeRequestHandler.Requests.Count));
+            Assert.That(TopologyRefresherTests.LocalQuery, Is.EqualTo(fakeRequestHandler.Requests.First().CqlQuery));
+            Assert.That(TopologyRefresherTests.PeersV2Query, Is.EqualTo(fakeRequestHandler.Requests.ElementAt(1).CqlQuery));
             
             await topologyRefresher
                   .RefreshNodeListAsync(
@@ -181,9 +181,9 @@ namespace Cassandra.Tests.Connections.Control
                       connection, 
                       _serializer).ConfigureAwait(false);
             
-            Assert.AreEqual(4, fakeRequestHandler.Requests.Count);
-            Assert.AreEqual(TopologyRefresherTests.LocalQuery, fakeRequestHandler.Requests.ElementAt(2).CqlQuery);
-            Assert.AreEqual(TopologyRefresherTests.PeersV2Query, fakeRequestHandler.Requests.ElementAt(3).CqlQuery);
+            Assert.That(4, Is.EqualTo(fakeRequestHandler.Requests.Count));
+            Assert.That(TopologyRefresherTests.LocalQuery, Is.EqualTo(fakeRequestHandler.Requests.ElementAt(2).CqlQuery));
+            Assert.That(TopologyRefresherTests.PeersV2Query, Is.EqualTo(fakeRequestHandler.Requests.ElementAt(3).CqlQuery));
         }
 
         [Test]
@@ -201,10 +201,10 @@ namespace Cassandra.Tests.Connections.Control
                       connection, 
                       _serializer).ConfigureAwait(false);
             
-            Assert.AreEqual(3, fakeRequestHandler.Requests.Count);
-            Assert.AreEqual(TopologyRefresherTests.LocalQuery, fakeRequestHandler.Requests.First().CqlQuery);
-            Assert.AreEqual(TopologyRefresherTests.PeersV2Query, fakeRequestHandler.Requests.ElementAt(1).CqlQuery);
-            Assert.AreEqual(TopologyRefresherTests.PeersQuery, fakeRequestHandler.Requests.ElementAt(2).CqlQuery);
+            Assert.That(3, Is.EqualTo(fakeRequestHandler.Requests.Count));
+            Assert.That(TopologyRefresherTests.LocalQuery, Is.EqualTo(fakeRequestHandler.Requests.First().CqlQuery));
+            Assert.That(TopologyRefresherTests.PeersV2Query, Is.EqualTo(fakeRequestHandler.Requests.ElementAt(1).CqlQuery));
+            Assert.That(TopologyRefresherTests.PeersQuery, Is.EqualTo(fakeRequestHandler.Requests.ElementAt(2).CqlQuery));
             
             await topologyRefresher
                   .RefreshNodeListAsync(
@@ -212,9 +212,9 @@ namespace Cassandra.Tests.Connections.Control
                       connection, 
                       _serializer).ConfigureAwait(false);
             
-            Assert.AreEqual(5, fakeRequestHandler.Requests.Count);
-            Assert.AreEqual(TopologyRefresherTests.LocalQuery, fakeRequestHandler.Requests.ElementAt(3).CqlQuery);
-            Assert.AreEqual(TopologyRefresherTests.PeersQuery, fakeRequestHandler.Requests.ElementAt(4).CqlQuery);
+            Assert.That(5, Is.EqualTo(fakeRequestHandler.Requests.Count));
+            Assert.That(TopologyRefresherTests.LocalQuery, Is.EqualTo(fakeRequestHandler.Requests.ElementAt(3).CqlQuery));
+            Assert.That(TopologyRefresherTests.PeersQuery, Is.EqualTo(fakeRequestHandler.Requests.ElementAt(4).CqlQuery));
         }
 
         [Test]
@@ -226,7 +226,7 @@ namespace Cassandra.Tests.Connections.Control
             await topologyRefresher.RefreshNodeListAsync(
                 new FakeConnectionEndPoint("127.0.0.1", 9042), connection, _serializer).ConfigureAwait(false);
 
-            Assert.AreEqual("ut-cluster", _metadata.ClusterName);
+            Assert.That("ut-cluster", Is.EqualTo(_metadata.ClusterName));
         }
 
         [Test]
@@ -246,18 +246,18 @@ namespace Cassandra.Tests.Connections.Control
                                        new FakeConnectionEndPoint("127.0.0.1", 9042), Mock.Of<IConnection>(), _serializer)
                                    .ConfigureAwait(false);
 
-            Assert.AreEqual(3, _metadata.AllHosts().Count);
+            Assert.That(3, Is.EqualTo(_metadata.AllHosts().Count));
             //using rpc_address
             var host2 = _metadata.GetHost(new IPEndPoint(hostAddress2, ProtocolOptions.DefaultPort));
-            Assert.NotNull(host2);
-            Assert.AreEqual("ut-dc2", host2.Datacenter);
-            Assert.AreEqual("ut-rack2", host2.Rack);
+            Assert.That(host2, Is.Not.Null);
+            Assert.That("ut-dc2", Is.EqualTo(host2.Datacenter));
+            Assert.That("ut-rack2", Is.EqualTo(host2.Rack));
             //with rpc_address = 0.0.0.0, use peer
             var host3 = _metadata.GetHost(new IPEndPoint(hostAddress3, ProtocolOptions.DefaultPort));
-            Assert.NotNull(host3);
-            Assert.AreEqual("ut-dc3", host3.Datacenter);
-            Assert.AreEqual("ut-rack3", host3.Rack);
-            Assert.AreEqual(Version.Parse("2.1.5"), host3.CassandraVersion);
+            Assert.That(host3, Is.Not.Null);
+            Assert.That("ut-dc3", Is.EqualTo(host3.Datacenter));
+            Assert.That("ut-rack3", Is.EqualTo(host3.Rack));
+            Assert.That(Version.Parse("2.1.5"), Is.EqualTo(host3.CassandraVersion));
         }
 
         [Test]
@@ -274,7 +274,7 @@ namespace Cassandra.Tests.Connections.Control
                                    .ConfigureAwait(false);
 
             //Only local host present
-            Assert.AreEqual(1, _metadata.AllHosts().Count);
+            Assert.That(1, Is.EqualTo(_metadata.AllHosts().Count));
         }
 
         [Test]
@@ -297,8 +297,8 @@ namespace Cassandra.Tests.Connections.Control
                                        new FakeConnectionEndPoint("127.0.0.1", 9042, false), Mock.Of<IConnection>(), _serializer)
                                    .ConfigureAwait(false);
 
-            Assert.AreEqual(2, _metadata.AllHosts().Count);
-            Assert.AreEqual(1, _metadata.AllHosts().Count(h => h.Address.Address.ToString() == "127.0.0.9"));
+            Assert.That(2, Is.EqualTo(_metadata.AllHosts().Count));
+            Assert.That(1, Is.EqualTo(_metadata.AllHosts().Count(h => h.Address.Address.ToString() == "127.0.0.9")));
         }
         
         [Test]
@@ -321,8 +321,8 @@ namespace Cassandra.Tests.Connections.Control
                                        new FakeConnectionEndPoint("127.0.0.1", 9042, false), Mock.Of<IConnection>(), _serializer)
                                    .ConfigureAwait(false);
 
-            Assert.AreEqual(2, _metadata.AllHosts().Count);
-            Assert.AreEqual(1, _metadata.AllHosts().Count(h => h.Address.Address.ToString() == "127.0.0.10"));
+            Assert.That(2, Is.EqualTo(_metadata.AllHosts().Count));
+            Assert.That(1, Is.EqualTo(_metadata.AllHosts().Count(h => h.Address.Address.ToString() == "127.0.0.10")));
         }
 
         [Test]
@@ -358,12 +358,12 @@ namespace Cassandra.Tests.Connections.Control
                                        new FakeConnectionEndPoint("127.0.0.1", 9042), Mock.Of<IConnection>(), _serializer)
                                    .ConfigureAwait(false);
 
-            Assert.AreEqual(3, metadata.AllHosts().Count);
-            Assert.AreEqual(2, invokedEndPoints.Count);
-            Assert.AreEqual(hostAddress2, invokedEndPoints[0].Address);
-            Assert.AreEqual(portNumber, invokedEndPoints[0].Port);
-            Assert.AreEqual(hostAddress3, invokedEndPoints[1].Address);
-            Assert.AreEqual(portNumber, invokedEndPoints[1].Port);
+            Assert.That(3, Is.EqualTo(metadata.AllHosts().Count));
+            Assert.That(2, Is.EqualTo(invokedEndPoints.Count));
+            Assert.That(hostAddress2, Is.EqualTo(invokedEndPoints[0].Address));
+            Assert.That(portNumber, Is.EqualTo(invokedEndPoints[0].Port));
+            Assert.That(hostAddress3, Is.EqualTo(invokedEndPoints[1].Address));
+            Assert.That(portNumber, Is.EqualTo(invokedEndPoints[1].Port));
         }
     }
 }

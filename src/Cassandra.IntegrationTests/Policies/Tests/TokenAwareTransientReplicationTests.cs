@@ -62,15 +62,15 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                 }
 
                 var fullReplicas = new HashSet<string>(traces.Select(t => t.Coordinator.ToString()));
-                Assert.AreEqual(2, fullReplicas.Count);
+                Assert.That(2, Is.EqualTo(fullReplicas.Count));
 
                 //Check that there weren't any hops
                 foreach (var t in traces)
                 {
                     //The full replicas (2) must be the only ones present in the trace.
-                    Assert.True(t.Events.All(e => fullReplicas.Contains(e.Source.ToString())),
+                    Assert.That(t.Events.All(e => fullReplicas.Contains(e.Source.ToString())), Is.True,
                         "There were trace events from another host for coordinator " + t.Coordinator);
-                    Assert.LessOrEqual(t.Events.Select(e => e.Source.ToString()).Distinct().Count(), fullReplicas.Count,
+                    Assert.That(t.Events.Select(e => e.Source.ToString()).Distinct().Count(), Is.LessThanOrEqualTo(fullReplicas.Count),
                         "Only both full replicas should have trace events which wasn't the case for coordinator " + t.Coordinator);
                 }
             }

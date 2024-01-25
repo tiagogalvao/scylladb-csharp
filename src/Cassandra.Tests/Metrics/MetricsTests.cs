@@ -34,10 +34,10 @@ namespace Cassandra.Tests.Metrics
             IMetric metric = nodeMetric;
             IMetric metric2 = nodeMetric;
 
-            Assert.IsTrue(nodeMetric.Equals(metric));
-            Assert.IsTrue(metric.Equals(nodeMetric));
-            Assert.IsTrue(metric.Equals(metric2));
-            Assert.IsTrue(nodeMetric.Equals(NodeMetric.Counters.AuthenticationErrors));
+            Assert.That(nodeMetric.Equals(metric), Is.True);
+            Assert.That(metric.Equals(nodeMetric), Is.True);
+            Assert.That(metric.Equals(metric2), Is.True);
+            Assert.That(nodeMetric.Equals(NodeMetric.Counters.AuthenticationErrors), Is.True);
         }
         
         [Test]
@@ -47,10 +47,10 @@ namespace Cassandra.Tests.Metrics
             IMetric metric = sessionMetric;
             IMetric metric2 = sessionMetric;
 
-            Assert.IsTrue(sessionMetric.Equals(metric));
-            Assert.IsTrue(metric.Equals(sessionMetric));
-            Assert.IsTrue(metric.Equals(metric2));
-            Assert.IsTrue(sessionMetric.Equals(SessionMetric.Counters.CqlClientTimeouts));
+            Assert.That(sessionMetric.Equals(metric), Is.True);
+            Assert.That(metric.Equals(sessionMetric), Is.True);
+            Assert.That(metric.Equals(metric2), Is.True);
+            Assert.That(sessionMetric.Equals(SessionMetric.Counters.CqlClientTimeouts), Is.True);
         }
 
         [Test]
@@ -64,32 +64,32 @@ namespace Cassandra.Tests.Metrics
             IMetric nodeMetricBase = nodeMetric;
             IMetric nodeMetricBase2 = nodeMetric;
             
-            Assert.IsFalse(nodeMetric.Equals(sessionMetric));
-            Assert.IsFalse(sessionMetric.Equals(nodeMetric));
+            Assert.That(nodeMetric.Equals(sessionMetric), Is.False);
+            Assert.That(sessionMetric.Equals(nodeMetric), Is.False);
 
-            Assert.IsFalse(nodeMetric.Equals(sessionMetricBase));
-            Assert.IsFalse(sessionMetricBase.Equals(nodeMetric));
+            Assert.That(nodeMetric.Equals(sessionMetricBase), Is.False);
+            Assert.That(sessionMetricBase.Equals(nodeMetric), Is.False);
 
-            Assert.IsFalse(nodeMetric.Equals(sessionMetricBase2));
-            Assert.IsFalse(sessionMetricBase2.Equals(nodeMetric));
+            Assert.That(nodeMetric.Equals(sessionMetricBase2), Is.False);
+            Assert.That(sessionMetricBase2.Equals(nodeMetric), Is.False);
             
-            Assert.IsFalse(nodeMetricBase.Equals(sessionMetric));
-            Assert.IsFalse(sessionMetric.Equals(nodeMetricBase));
+            Assert.That(nodeMetricBase.Equals(sessionMetric), Is.False);
+            Assert.That(sessionMetric.Equals(nodeMetricBase), Is.False);
 
-            Assert.IsFalse(nodeMetricBase.Equals(sessionMetricBase));
-            Assert.IsFalse(sessionMetricBase.Equals(nodeMetricBase));
+            Assert.That(nodeMetricBase.Equals(sessionMetricBase), Is.False);
+            Assert.That(sessionMetricBase.Equals(nodeMetricBase), Is.False);
 
-            Assert.IsFalse(nodeMetricBase.Equals(sessionMetricBase2));
-            Assert.IsFalse(sessionMetricBase2.Equals(nodeMetricBase));
+            Assert.That(nodeMetricBase.Equals(sessionMetricBase2), Is.False);
+            Assert.That(sessionMetricBase2.Equals(nodeMetricBase), Is.False);
             
-            Assert.IsFalse(nodeMetricBase2.Equals(sessionMetric));
-            Assert.IsFalse(sessionMetric.Equals(nodeMetricBase2));
+            Assert.That(nodeMetricBase2.Equals(sessionMetric), Is.False);
+            Assert.That(sessionMetric.Equals(nodeMetricBase2), Is.False);
 
-            Assert.IsFalse(nodeMetricBase2.Equals(sessionMetricBase));
-            Assert.IsFalse(sessionMetricBase.Equals(nodeMetricBase2));
+            Assert.That(nodeMetricBase2.Equals(sessionMetricBase), Is.False);
+            Assert.That(sessionMetricBase.Equals(nodeMetricBase2), Is.False);
 
-            Assert.IsFalse(nodeMetricBase2.Equals(sessionMetricBase2));
-            Assert.IsFalse(sessionMetricBase2.Equals(nodeMetricBase2));
+            Assert.That(nodeMetricBase2.Equals(sessionMetricBase2), Is.False);
+            Assert.That(sessionMetricBase2.Equals(nodeMetricBase2), Is.False);
         }
         
         [Test]
@@ -103,32 +103,32 @@ namespace Cassandra.Tests.Metrics
             IMetric testMetricBase = testMetric;
             IMetric testMetricBase2 = testMetric;
             
-            Assert.IsFalse(testMetric.Equals(sessionMetric));
-            Assert.IsFalse(sessionMetric.Equals(testMetric));
+            Assert.That(testMetric.Equals(sessionMetric), Is.False);
+            Assert.That(sessionMetric.Equals(testMetric), Is.False);
 
-            Assert.IsFalse(testMetric.Equals(sessionMetricBase));
-            Assert.IsFalse(sessionMetricBase.Equals(testMetric));
+            Assert.That(testMetric.Equals(sessionMetricBase), Is.False);
+            Assert.That(sessionMetricBase.Equals(testMetric), Is.False);
 
-            Assert.IsFalse(testMetric.Equals(sessionMetricBase2));
-            Assert.IsFalse(sessionMetricBase2.Equals(testMetric));
+            Assert.That(testMetric.Equals(sessionMetricBase2), Is.False);
+            Assert.That(sessionMetricBase2.Equals(testMetric), Is.False);
             
-            Assert.IsFalse(testMetricBase.Equals(sessionMetric));
-            Assert.IsFalse(sessionMetric.Equals(testMetricBase));
+            Assert.That(testMetricBase.Equals(sessionMetric), Is.False);
+            Assert.That(sessionMetric.Equals(testMetricBase), Is.False);
 
-            Assert.IsFalse(testMetricBase.Equals(sessionMetricBase));
-            Assert.IsFalse(sessionMetricBase.Equals(testMetricBase));
+            Assert.That(testMetricBase.Equals(sessionMetricBase), Is.False);
+            Assert.That(sessionMetricBase.Equals(testMetricBase), Is.False);
 
-            Assert.IsFalse(testMetricBase.Equals(sessionMetricBase2));
-            Assert.IsFalse(sessionMetricBase2.Equals(testMetricBase));
+            Assert.That(testMetricBase.Equals(sessionMetricBase2), Is.False);
+            Assert.That(sessionMetricBase2.Equals(testMetricBase), Is.False);
             
-            Assert.IsFalse(testMetricBase2.Equals(sessionMetric));
-            Assert.IsFalse(sessionMetric.Equals(testMetricBase2));
+            Assert.That(testMetricBase2.Equals(sessionMetric), Is.False);
+            Assert.That(sessionMetric.Equals(testMetricBase2), Is.False);
 
-            Assert.IsFalse(testMetricBase2.Equals(sessionMetricBase));
-            Assert.IsFalse(sessionMetricBase.Equals(testMetricBase2));
+            Assert.That(testMetricBase2.Equals(sessionMetricBase), Is.False);
+            Assert.That(sessionMetricBase.Equals(testMetricBase2), Is.False);
 
-            Assert.IsFalse(testMetricBase2.Equals(sessionMetricBase2));
-            Assert.IsFalse(sessionMetricBase2.Equals(testMetricBase2));
+            Assert.That(testMetricBase2.Equals(sessionMetricBase2), Is.False);
+            Assert.That(sessionMetricBase2.Equals(testMetricBase2), Is.False);
         }
         
         [Test]
@@ -142,32 +142,32 @@ namespace Cassandra.Tests.Metrics
             IMetric testMetricBase = testMetric;
             IMetric testMetricBase2 = testMetric;
             
-            Assert.IsFalse(testMetric.Equals(nodeMetric));
-            Assert.IsFalse(nodeMetric.Equals(testMetric));
+            Assert.That(testMetric.Equals(nodeMetric), Is.False);
+            Assert.That(nodeMetric.Equals(testMetric), Is.False);
 
-            Assert.IsFalse(testMetric.Equals(nodeMetricBase));
-            Assert.IsFalse(nodeMetricBase.Equals(testMetric));
+            Assert.That(testMetric.Equals(nodeMetricBase), Is.False);
+            Assert.That(nodeMetricBase.Equals(testMetric), Is.False);
 
-            Assert.IsFalse(testMetric.Equals(nodeMetricBase2));
-            Assert.IsFalse(nodeMetricBase2.Equals(testMetric));
+            Assert.That(testMetric.Equals(nodeMetricBase2), Is.False);
+            Assert.That(nodeMetricBase2.Equals(testMetric), Is.False);
             
-            Assert.IsFalse(testMetricBase.Equals(nodeMetric));
-            Assert.IsFalse(nodeMetric.Equals(testMetricBase));
+            Assert.That(testMetricBase.Equals(nodeMetric), Is.False);
+            Assert.That(nodeMetric.Equals(testMetricBase), Is.False);
 
-            Assert.IsFalse(testMetricBase.Equals(nodeMetricBase));
-            Assert.IsFalse(nodeMetricBase.Equals(testMetricBase));
+            Assert.That(testMetricBase.Equals(nodeMetricBase), Is.False);
+            Assert.That(nodeMetricBase.Equals(testMetricBase), Is.False);
 
-            Assert.IsFalse(testMetricBase.Equals(nodeMetricBase2));
-            Assert.IsFalse(nodeMetricBase2.Equals(testMetricBase));
+            Assert.That(testMetricBase.Equals(nodeMetricBase2), Is.False);
+            Assert.That(nodeMetricBase2.Equals(testMetricBase), Is.False);
             
-            Assert.IsFalse(testMetricBase2.Equals(nodeMetric));
-            Assert.IsFalse(nodeMetric.Equals(testMetricBase2));
+            Assert.That(testMetricBase2.Equals(nodeMetric), Is.False);
+            Assert.That(nodeMetric.Equals(testMetricBase2), Is.False);
 
-            Assert.IsFalse(testMetricBase2.Equals(nodeMetricBase));
-            Assert.IsFalse(nodeMetricBase.Equals(testMetricBase2));
+            Assert.That(testMetricBase2.Equals(nodeMetricBase), Is.False);
+            Assert.That(nodeMetricBase.Equals(testMetricBase2), Is.False);
 
-            Assert.IsFalse(testMetricBase2.Equals(nodeMetricBase2));
-            Assert.IsFalse(nodeMetricBase2.Equals(testMetricBase2));
+            Assert.That(testMetricBase2.Equals(nodeMetricBase2), Is.False);
+            Assert.That(nodeMetricBase2.Equals(testMetricBase2), Is.False);
         }
     }
 }

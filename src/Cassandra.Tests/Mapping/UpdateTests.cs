@@ -176,12 +176,12 @@ namespace Cassandra.Tests.Mapping
             var mapper = GetMappingClient(sessionMock, new MappingConfiguration()
                 .Define(new Map<Song>().PartitionKey(s => s.Title)));
             mapper.Update(song, new CqlQueryOptions().SetConsistencyLevel(ConsistencyLevel.LocalQuorum));
-            Assert.AreEqual(ConsistencyLevel.LocalQuorum, consistency);
-            Assert.AreEqual(ConsistencyLevel.Any, serialConsistency);
+            Assert.That(ConsistencyLevel.LocalQuorum, Is.EqualTo(consistency));
+            Assert.That(ConsistencyLevel.Any, Is.EqualTo(serialConsistency));
             mapper.Update(song,
                 new CqlQueryOptions().SetConsistencyLevel(ConsistencyLevel.Two).SetSerialConsistencyLevel(ConsistencyLevel.LocalSerial));
-            Assert.AreEqual(ConsistencyLevel.Two, consistency);
-            Assert.AreEqual(ConsistencyLevel.LocalSerial, serialConsistency);
+            Assert.That(ConsistencyLevel.Two, Is.EqualTo(consistency));
+            Assert.That(ConsistencyLevel.LocalSerial, Is.EqualTo(serialConsistency));
             sessionMock.Verify();
         }
 
@@ -197,7 +197,7 @@ namespace Cassandra.Tests.Mapping
             }, new RowSet());
             var mapper = new Mapper(session, new MappingConfiguration());
             mapper.Update<Song>(Cql.New("SET title = ? WHERE id = ?", "White Room"));
-            Assert.AreEqual("UPDATE Song SET title = ? WHERE id = ?", query);
+            Assert.That("UPDATE Song SET title = ? WHERE id = ?", Is.EqualTo(query));
         }
 
         [Test]
@@ -230,8 +230,8 @@ namespace Cassandra.Tests.Mapping
                 new [] {"id"}, new object[] {"Ramble On", new DateTime(1969, 1, 1), updateGuid, "Led Zeppelin"},
                 parameters, "IF artist = ?");
 
-            Assert.True(appliedInfo.Applied);
-            Assert.Null(appliedInfo.Existing);
+            Assert.That(appliedInfo.Applied, Is.True);
+            Assert.That(appliedInfo.Existing, Is.Null);
         }
 
         [Test]
@@ -262,9 +262,9 @@ namespace Cassandra.Tests.Mapping
             TestHelper.VerifyUpdateCqlColumns("Song", query, new []{"title", "releasedate"},
                 new [] {"id"}, new object[] {"Kashmir", new DateTime(1975, 1, 1), id, "Led Zeppelin"},
                 parameters, "IF artist = ?");
-            Assert.False(appliedInfo.Applied);
-            Assert.NotNull(appliedInfo.Existing);
-            Assert.AreEqual("Jimmy Page", appliedInfo.Existing.Artist);
+            Assert.That(appliedInfo.Applied, Is.False);
+            Assert.That(appliedInfo.Existing, Is.Not.Null);
+            Assert.That("Jimmy Page", Is.EqualTo(appliedInfo.Existing.Artist));
         }
 
         [Test]
@@ -292,14 +292,14 @@ namespace Cassandra.Tests.Mapping
             var song = new Song { Id = Guid.NewGuid(), Title = "t2", ReleaseDate = DateTimeOffset.Now };
             var timestamp = DateTimeOffset.Now.Subtract(TimeSpan.FromDays(1));
             mapper.Update(song);
-            Assert.Null(statement.Timestamp);
+            Assert.That(statement.Timestamp, Is.Null);
             mapper.Update(song, CqlQueryOptions.New().SetTimestamp(timestamp));
-            Assert.AreEqual(timestamp, statement.Timestamp);
+            Assert.That(timestamp, Is.EqualTo(statement.Timestamp));
             timestamp = DateTimeOffset.Now.Subtract(TimeSpan.FromHours(10));
             mapper.UpdateIf<Song>(Cql.New("UPDATE tbl1 SET t1 = ? WHERE id = ?",
                 new object[] {1, 2},
                 CqlQueryOptions.New().SetTimestamp(timestamp)));
-            Assert.AreEqual(timestamp, statement.Timestamp);
+            Assert.That(timestamp, Is.EqualTo(statement.Timestamp));
         }
 
         [Test]
@@ -315,10 +315,10 @@ namespace Cassandra.Tests.Mapping
             var expectedCollection = collectionValues.Select(x => (int) x).ToArray();
             mapper.Update<PocoWithEnumCollections>("UPDATE tbl1 SET list1 = ? WHERE id = ?",
                 mapper.ConvertCqlArgument<IEnumerable<HairColor>, IEnumerable<int>>(collectionValues), 3L);
-            Assert.AreEqual(new object[]{ expectedCollection, 3L }, parameters);
+            Assert.That(new object[]{ expectedCollection, 3L }, Is.EqualTo(parameters));
             mapper.Update<PocoWithEnumCollections>("UPDATE tbl1 SET list1 = ? WHERE id = ?",
                 mapper.ConvertCqlArgument<HairColor[], IEnumerable<int>>(collectionValues), 3L);
-            Assert.AreEqual(new object[]{ expectedCollection, 3L }, parameters);
+            Assert.That(new object[]{ expectedCollection, 3L }, Is.EqualTo(parameters));
         }
     }
 }

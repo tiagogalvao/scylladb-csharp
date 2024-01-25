@@ -24,6 +24,7 @@ using Cassandra.Mapping;
 using Cassandra.Tests;
 using Cassandra.Tests.Mapping.Pocos;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Mapping.Tests
 {
@@ -71,7 +72,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             _mapper.Update(movieToUpdate);
 
             List<Movie> actualMovieList = _movieTable.Execute().ToList();
-            Assert.AreEqual(_movieList.Count, actualMovieList.Count());
+            Assert.That(_movieList.Count, Is.EqualTo(actualMovieList.Count()));
             Movie.AssertListContains(actualMovieList, movieToUpdate);
         }
 
@@ -91,10 +92,10 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             _mapper.Update(expectedMovie);
 
             List<Movie> actualMovieList = _movieTable.Execute().ToList();
-            Assert.AreEqual(_movieList.Count, actualMovieList.Count());
-            Assert.IsFalse(Movie.ListContains(_movieList, expectedMovie));
+            Assert.That(_movieList.Count, Is.EqualTo(actualMovieList.Count()));
+            Assert.That(Movie.ListContains(_movieList, expectedMovie), Is.False);
             Movie.AssertListContains(actualMovieList, expectedMovie);
-            Assert.IsFalse(Movie.ListContains(actualMovieList, movieToUpdate));
+            Assert.That(Movie.ListContains(actualMovieList, movieToUpdate), Is.False);
         }
 
         [Test]
@@ -110,14 +111,14 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             mapper.Insert(song);
             const string query = "SET artist = ?, title = ? WHERE id = ? IF releasedate = ?";
             var appliedInfo = mapper.UpdateIf<Song>(Cql.New(query, song.Artist, "Crossroad2", song.Id, song.ReleaseDate));
-            Assert.True(appliedInfo.Applied);
-            Assert.Null(appliedInfo.Existing);
+            Assert.That(appliedInfo.Applied, Is.True);
+            Assert.That(appliedInfo.Existing, Is.Null);
             //Following times, it should not apply the mutation as the condition is not valid
             appliedInfo = mapper.UpdateIf<Song>(Cql.New(query, song.Artist, "Crossroad3", song.Id, DateTimeOffset.Now));
-            Assert.False(appliedInfo.Applied);
-            Assert.NotNull(appliedInfo.Existing);
-            Assert.AreEqual(song.ReleaseDate, appliedInfo.Existing.ReleaseDate);
-            Assert.AreEqual("Crossroad2", mapper.First<Song>("WHERE id = ?", song.Id).Title);
+            Assert.That(appliedInfo.Applied);
+            Assert.That(appliedInfo.Existing, Is.Not.Null);
+            Assert.That(song.ReleaseDate, Is.EqualTo(appliedInfo.Existing.ReleaseDate));
+            Assert.That("Crossroad2", Is.EqualTo(mapper.First<Song>("WHERE id = ?", song.Id).Title));
         }
 
         /// <summary>
@@ -185,7 +186,7 @@ namespace Cassandra.IntegrationTests.Mapping.Tests
             var statement = new SimpleStatement("SELECT * FROM tbl_with_enum_collections WHERE id = ?", pocoToUpdate.Id);
             
             var row = _session.Execute(statement).First();
-            Assert.AreEqual(pocoToUpdate.Id, row.GetValue<long>("id"));
+            Assert.That(pocoToUpdate.Id, Is.EqualTo(row.GetValue<long>("id")));
             CollectionAssert.AreEquivalent(pocoToUpdate.List1.Select(x => (int)x).ToList(), row.GetValue<IEnumerable<int>>("list1"));
             CollectionAssert.AreEquivalent(pocoToUpdate.List2.Select(x => (int)x).ToList(), row.GetValue<IEnumerable<int>>("list2"));
             CollectionAssert.AreEquivalent(pocoToUpdate.Array1.Select(x => (int)x).ToArray(), row.GetValue<IEnumerable<int>>("array1"));

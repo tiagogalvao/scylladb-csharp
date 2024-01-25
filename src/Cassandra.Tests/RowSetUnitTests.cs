@@ -26,6 +26,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using Cassandra.Metrics.Internal;
 using Moq;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests
 {
@@ -39,10 +40,10 @@ namespace Cassandra.Tests
             var row = rs.First();
             //Use Linq's IEnumerable ToList: it iterates and maps to a list
             var cellValues = row.ToList();
-            Assert.AreEqual("row_0_col_0", cellValues[0]);
-            Assert.AreEqual("row_0_col_1", cellValues[1]);
-            Assert.AreEqual("row_0_col_2", cellValues[2]);
-            Assert.AreEqual("row_0_col_3", cellValues[3]);
+            Assert.That("row_0_col_0", Is.EqualTo(cellValues[0]));
+            Assert.That("row_0_col_1", Is.EqualTo(cellValues[1]));
+            Assert.That("row_0_col_2", Is.EqualTo(cellValues[2]));
+            Assert.That("row_0_col_3", Is.EqualTo(cellValues[3]));
         }
 
         /// <summary>
@@ -56,17 +57,17 @@ namespace Cassandra.Tests
             var value00 = row[0];
             var value01 = row.GetValue<object>(0);
             var value02 = row.GetValue(typeof(object), 0);
-            Assert.True(value00.Equals(value01) && value01.Equals(value02), "Row values do not match");
+            Assert.That(value00.Equals(value01) && value01.Equals(value02), Is.True, "Row values do not match");
 
             var value10 = (string)row[1];
             var value11 = row.GetValue<string>(1);
             var value12 = (string)row.GetValue(typeof(string), 1);
-            Assert.True(value10.Equals(value11) && value11.Equals(value12), "Row values do not match");
+            Assert.That(value10.Equals(value11) && value11.Equals(value12), Is.True, "Row values do not match");
 
             var value20 = (string)row["col_2"];
             var value21 = row.GetValue<string>("col_2");
             var value22 = (string)row.GetValue(typeof(string), "col_2");
-            Assert.True(value20.Equals(value21) && value21.Equals(value22), "Row values do not match");
+            Assert.That(value20.Equals(value21) && value21.Equals(value22), Is.True, "Row values do not match");
         }
 
         [Test]
@@ -76,10 +77,10 @@ namespace Cassandra.Tests
 
             //Use Linq's IEnumerable ToList to iterate and map it to a list
             var rowList = rs.ToList();
-            Assert.AreEqual(3, rowList.Count);
-            Assert.AreEqual("row_0_col_0", rowList[0].GetValue<string>("col_0"));
-            Assert.AreEqual("row_1_col_1", rowList[1].GetValue<string>("col_1"));
-            Assert.AreEqual("row_2_col_0", rowList[2].GetValue<string>("col_0"));
+            Assert.That(3, Is.EqualTo(rowList.Count));
+            Assert.That("row_0_col_0", Is.EqualTo(rowList[0].GetValue<string>("col_0")));
+            Assert.That("row_1_col_1", Is.EqualTo(rowList[1].GetValue<string>("col_1")));
+            Assert.That("row_2_col_0", Is.EqualTo(rowList[2].GetValue<string>("col_0")));
         }
 
         [Test]
@@ -87,7 +88,7 @@ namespace Cassandra.Tests
         {
             //Create a rowset with 1 row
             var rs = CreateStringsRowset(1, 1, "a_");
-            Assert.True(rs.AutoPage);
+            Assert.That(rs.AutoPage, Is.True);
             //It has paging state, stating that there are more pages
             rs.PagingState = new byte[] { 0 };
             //Add a handler to fetch next
@@ -95,9 +96,9 @@ namespace Cassandra.Tests
 
             //use linq to iterate and map it to a list
             var rowList = rs.ToList();
-            Assert.AreEqual(2, rowList.Count);
-            Assert.AreEqual("a_row_0_col_0", rowList[0].GetValue<string>("col_0"));
-            Assert.AreEqual("b_row_0_col_0", rowList[1].GetValue<string>("col_0"));
+            Assert.That(2, Is.EqualTo(rowList.Count));
+            Assert.That("a_row_0_col_0", Is.EqualTo(rowList[0].GetValue<string>("col_0")));
+            Assert.That("b_row_0_col_0", Is.EqualTo(rowList[1].GetValue<string>("col_0")));
         }
 
         [Test]
@@ -119,8 +120,8 @@ namespace Cassandra.Tests
 
             //use linq to iterate and map it to a list
             var rowList = rs.ToList();
-            Assert.False(called);
-            Assert.AreEqual(1, rowList.Count);
+            Assert.That(called, Is.False);
+            Assert.That(1, Is.EqualTo(rowList.Count));
         }
 
         /// <summary>
@@ -144,7 +145,7 @@ namespace Cassandra.Tests
             //The row set should throw an exception when getting the next page.
             Assert.Throws<TestException>(() => rs.ToList());
             Assert.Throws<TestException>(() => rs.ToList());
-            Assert.AreEqual(2, counter);
+            Assert.That(2, Is.EqualTo(counter));
         }
 
         /// <summary>
@@ -162,16 +163,16 @@ namespace Cassandra.Tests
             });
             //Use Linq to iterate
             var rowsFirstIteration = rs.ToList();
-            Assert.AreEqual(rowLength, rowsFirstIteration.Count);
+            Assert.That(rowLength, Is.EqualTo(rowsFirstIteration.Count));
 
             //Following iterations must yield 0 rows
             var rowsSecondIteration = rs.ToList();
             var rowsThridIteration = rs.ToList();
-            Assert.AreEqual(0, rowsSecondIteration.Count);
-            Assert.AreEqual(0, rowsThridIteration.Count);
+            Assert.That(0, Is.EqualTo(rowsSecondIteration.Count));
+            Assert.That(0, Is.EqualTo(rowsThridIteration.Count));
 
-            Assert.IsTrue(rs.IsExhausted());
-            Assert.IsTrue(rs.IsFullyFetched);
+            Assert.That(rs.IsExhausted(), Is.True);
+            Assert.That(rs.IsFullyFetched, Is.True);
         }
 
         /// <summary>
@@ -207,12 +208,12 @@ namespace Cassandra.Tests
             Parallel.Invoke(iteration, iteration, iteration, iteration, iteration, iteration, iteration, iteration, iteration, iteration, iteration, iteration, iteration, iteration, iteration);
 
             //Assert that the fetch was called just 1 time
-            Assert.AreEqual(1, fetchCounter);
+            Assert.That(1, Is.EqualTo(fetchCounter));
 
             //Sum all rows dequeued from the different threads 
             var totalRows = counterList.Sum();
             //Check that the total amount of rows dequeued are the same as pageSize * number of pages. 
-            Assert.AreEqual(pageSize * 2, totalRows);
+            Assert.That(pageSize * 2, Is.EqualTo(totalRows));
         }
 
         /// <summary>
@@ -245,10 +246,10 @@ namespace Cassandra.Tests
             Interlocked.Add(ref counter, rs.Count());
 
             //Assert that the fetch was called just 1 time
-            Assert.AreEqual(pages - 1, fetchCounter);
+            Assert.That(pages - 1, Is.EqualTo(fetchCounter));
 
             //Check that the total amount of rows dequeued are the same as pageSize * number of pages. 
-            Assert.AreEqual(pageSize * pages, Volatile.Read(ref counter));
+            Assert.That(pageSize * pages, Is.EqualTo(Volatile.Read(ref counter)));
         }
 
         [Test]
@@ -269,15 +270,15 @@ namespace Cassandra.Tests
             //Use Linq to iterate
             var rows = rs.ToList();
 
-            Assert.AreEqual(3, fetchCounter, "Fetch must have been called 3 times");
+            Assert.That(3, Is.EqualTo(fetchCounter), "Fetch must have been called 3 times");
 
-            Assert.AreEqual(rows.Count, rowLength * 4, "RowSet must contain 4 pages in total");
+            Assert.That(rows.Count, Is.EqualTo(rowLength * 4), "RowSet must contain 4 pages in total");
 
             //Check the values are in the correct order
-            Assert.AreEqual(rows[0].GetValue<string>(0), "page_0_row_0_col_0");
-            Assert.AreEqual(rows[rowLength].GetValue<string>(0), "page_1_row_0_col_0");
-            Assert.AreEqual(rows[rowLength * 2].GetValue<string>(0), "page_2_row_0_col_0");
-            Assert.AreEqual(rows[rowLength * 3].GetValue<string>(0), "page_3_row_0_col_0");
+            Assert.That(rows[0].GetValue<string>(0), Is.EqualTo("page_0_row_0_col_0"));
+            Assert.That(rows[rowLength].GetValue<string>(0), Is.EqualTo("page_1_row_0_col_0"));
+            Assert.That(rows[rowLength * 2].GetValue<string>(0), Is.EqualTo("page_2_row_0_col_0"));
+            Assert.That(rows[rowLength * 3].GetValue<string>(0), Is.EqualTo("page_3_row_0_col_0"));
         }
 
         [Test]
@@ -307,24 +308,24 @@ namespace Cassandra.Tests
                 }
                 return pageRowSet;
             });
-            Assert.AreEqual(rowLength * 1, rs.InnerQueueCount);
+            Assert.That(rowLength * 1, Is.EqualTo(rs.InnerQueueCount));
             rs.FetchMoreResults();
-            Assert.AreEqual(rowLength * 2, rs.InnerQueueCount);
+            Assert.That(rowLength * 2, Is.EqualTo(rs.InnerQueueCount));
             rs.FetchMoreResults();
-            Assert.AreEqual(rowLength * 3, rs.InnerQueueCount);
+            Assert.That(rowLength * 3, Is.EqualTo(rs.InnerQueueCount));
             rs.FetchMoreResults();
-            Assert.AreEqual(rowLength * 4, rs.InnerQueueCount);
+            Assert.That(rowLength * 4, Is.EqualTo(rs.InnerQueueCount));
 
             //Use Linq to iterate: 
             var rows = rs.ToList();
 
-            Assert.AreEqual(rows.Count, rowLength * 4, "RowSet must contain 4 pages in total");
+            Assert.That(rows.Count, Is.EqualTo(rowLength * 4), "RowSet must contain 4 pages in total");
 
             //Check the values are in the correct order
-            Assert.AreEqual(rows[0].GetValue<string>(0), "page_0_row_0_col_0");
-            Assert.AreEqual(rows[rowLength].GetValue<string>(0), "page_1_row_0_col_0");
-            Assert.AreEqual(rows[rowLength * 2].GetValue<string>(0), "page_2_row_0_col_0");
-            Assert.AreEqual(rows[rowLength * 3].GetValue<string>(0), "page_3_row_0_col_0");
+            Assert.That(rows[0].GetValue<string>(0), Is.EqualTo("page_0_row_0_col_0"));
+            Assert.That(rows[rowLength].GetValue<string>(0), Is.EqualTo("page_1_row_0_col_0"));
+            Assert.That(rows[rowLength * 2].GetValue<string>(0), Is.EqualTo("page_2_row_0_col_0"));
+            Assert.That(rows[rowLength * 3].GetValue<string>(0), Is.EqualTo("page_3_row_0_col_0"));
         }
 
         [Test]
@@ -341,7 +342,7 @@ namespace Cassandra.Tests
         {
             //Row with all null values
             var row = CreateSampleRowSet().Last();
-            Assert.IsNull(row.GetValue<string>("text_sample"));
+            Assert.That(row.GetValue<string>("text_sample"), Is.Null);
             Assert.Throws<NullReferenceException>(() => row.GetValue<int>("int_sample"));
             Assert.DoesNotThrow(() => row.GetValue<int?>("int_sample"));
         }
@@ -361,8 +362,8 @@ namespace Cassandra.Tests
 
             var rs = mock.Object;
             var rowArray = rs.ToArray();
-            Assert.AreEqual(rowArray.Length, 1);
-            Assert.AreEqual(rowArray[0].GetValue<int>("int_value"), 100);
+            Assert.That(rowArray.Length, Is.EqualTo(1));
+            Assert.That(rowArray[0].GetValue<int>("int_value"), Is.EqualTo(100));
         }
 
         /// <summary>
@@ -432,16 +433,16 @@ namespace Cassandra.Tests
         public void RowSet_Empty_Returns_Iterable_Instace()
         {
             var rs = RowSet.Empty();
-            Assert.AreEqual(0, rs.Columns.Length);
-            Assert.True(rs.IsExhausted());
-            Assert.True(rs.IsFullyFetched);
-            Assert.AreEqual(0, rs.Count());
+            Assert.That(0, Is.EqualTo(rs.Columns.Length));
+            Assert.That(rs.IsExhausted(), Is.True);
+            Assert.That(rs.IsFullyFetched, Is.True);
+            Assert.That(0, Is.EqualTo(rs.Count()));
             //iterate a second time
-            Assert.AreEqual(0, rs.Count());
+            Assert.That(0, Is.EqualTo(rs.Count()));
             //Different instances
-            Assert.AreNotSame(RowSet.Empty(), rs);
+            Assert.That(RowSet.Empty(), Is.Not.SameAs(rs));
             Assert.DoesNotThrow(() => rs.FetchMoreResults());
-            Assert.AreEqual(0, rs.GetAvailableWithoutFetching());
+            Assert.That(0, Is.EqualTo(rs.GetAvailableWithoutFetching()));
         }
 
         public void RowSet_Empty_Call_AddRow_Throws()
@@ -465,7 +466,7 @@ namespace Cassandra.Tests
             foreach (var item in values)
             {
                 var value = Row.TryConvertToType(item[0], (CqlColumn)item[1], (Type)item[2]);
-                Assert.AreEqual(item.Length > 3 ? item[3] : item[2], value.GetType());
+                Assert.That(item.Length > 3 ? item[3] : item[2], Is.EqualTo(value.GetType()));
             }
         }
 
@@ -489,7 +490,7 @@ namespace Cassandra.Tests
             foreach (var item in values)
             {
                 var value = Row.TryConvertToType(item[0], (CqlColumn)item[1], (Type)item[2]);
-                Assert.AreEqual(item.Length > 3 ? item[3] : item[2], value.GetType());
+                Assert.That(item.Length > 3 ? item[3] : item[2], Is.EqualTo(value.GetType()));
                 CollectionAssert.AreEqual((int[])item[0], (IEnumerable<int>)value);
             }
         }
@@ -515,7 +516,7 @@ namespace Cassandra.Tests
             foreach (var item in values)
             {
                 var value = Row.TryConvertToType(item[0], (CqlColumn)item[1], (Type)item[2]);
-                Assert.AreEqual(item.Length > 3 ? item[3] : item[2], value.GetType());
+                Assert.That(item.Length > 3 ? item[3] : item[2], Is.EqualTo(value.GetType()));
                 CollectionAssert.AreEqual((int[]) item[0], (IEnumerable<int>) value);
             }
         }
@@ -549,10 +550,10 @@ namespace Cassandra.Tests
             foreach (var item in values)
             {
                 var value = Row.TryConvertToType(item.Item1, item.Item2, item.Item3);
-                Assert.True(item.Item3.GetTypeInfo().IsInstanceOfType(value), "{0} is not assignable from {1}",
+                ClassicAssert.True(item.Item3.GetTypeInfo().IsInstanceOfType(value), "{0} is not assignable from {1}",
                     item.Item3, value.GetType());
-                Assert.AreEqual(item.Item1.First().ToString(),
-                    (from object v in (IEnumerable)value select v.ToString()).FirstOrDefault());
+                Assert.That(item.Item1.First().ToString(),
+                    Is.EqualTo((from object v in (IEnumerable)value select v.ToString()).FirstOrDefault()));
             }
         }
 
@@ -590,9 +591,9 @@ namespace Cassandra.Tests
             foreach (var item in values)
             {
                 var value = Row.TryConvertToType(item.Item1, item.Item2, item.Item3);
-                Assert.True(item.Item3.GetTypeInfo().IsInstanceOfType(value), "{0} is not assignable from {1}",
+                ClassicAssert.True(item.Item3.GetTypeInfo().IsInstanceOfType(value), "{0} is not assignable from {1}",
                     item.Item3, value.GetType());
-                Assert.AreEqual(TestHelper.FirstString(item.Item1), TestHelper.FirstString((IEnumerable) value));
+                Assert.That(TestHelper.FirstString(item.Item1), Is.EqualTo(TestHelper.FirstString((IEnumerable) value)));
             }
         }
 
@@ -627,9 +628,9 @@ namespace Cassandra.Tests
             foreach (var item in values)
             {
                 var value = Row.TryConvertToType(item.Item1, item.Item2, item.Item3);
-                Assert.True(item.Item3.GetTypeInfo().IsInstanceOfType(value), "{0} is not assignable from {1}",
+                ClassicAssert.True(item.Item3.GetTypeInfo().IsInstanceOfType(value), "{0} is not assignable from {1}",
                     item.Item3, value.GetType());
-                Assert.AreEqual(TestHelper.FirstString(item.Item1), TestHelper.FirstString((IEnumerable)value));
+                Assert.That(TestHelper.FirstString(item.Item1), Is.EqualTo(TestHelper.FirstString((IEnumerable)value)));
             }
         }
 
@@ -664,10 +665,10 @@ namespace Cassandra.Tests
             foreach (var item in values)
             {
                 var value = Row.TryConvertToType(item.Item1, item.Item2, item.Item3);
-                Assert.True(item.Item3.GetTypeInfo().IsInstanceOfType(value), "{0} is not assignable from {1}",
+                ClassicAssert.True(item.Item3.GetTypeInfo().IsInstanceOfType(value), "{0} is not assignable from {1}",
                     item.Item3, value.GetType());
-                Assert.AreEqual(item.Item1.First().Ticks,
-                    (from object v in (IEnumerable)value select (v is DateTime ? ((DateTime)v).Ticks : ((DateTimeOffset)v).Ticks)).FirstOrDefault());
+                Assert.That(item.Item1.First().Ticks,
+                    Is.EqualTo((from object v in (IEnumerable)value select (v is DateTime ? ((DateTime)v).Ticks : ((DateTimeOffset)v).Ticks)).FirstOrDefault()));
             }
         }
 

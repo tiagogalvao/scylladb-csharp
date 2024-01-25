@@ -71,7 +71,7 @@ namespace Cassandra.IntegrationTests.CqlFunctions.Tests
             {
                 var whereQuery = _tableEntityWithTimeUuid.Where(s => CqlFunction.Token(s.StringType) == CqlFunction.Token(singleEntity.StringType));
                 List<EntityWithTimeUuid> objectsReturned1 = whereQuery.ExecuteAsync().Result.ToList();
-                Assert.AreEqual(1, objectsReturned1.Count);
+                Assert.That(1, Is.EqualTo(objectsReturned1.Count));
                 EntityWithTimeUuid.AssertEquals(singleEntity, objectsReturned1.First());
 
                 foreach (var actualObj in objectsReturned1)
@@ -81,7 +81,7 @@ namespace Cassandra.IntegrationTests.CqlFunctions.Tests
             // change to query that returns nothing 
             var whereQueryReturnsNothing =_tableEntityWithTimeUuid.Where(s => CqlFunction.Token(s.StringType) == CqlFunction.Token(Guid.NewGuid().ToString()));
             List<EntityWithTimeUuid> objectsReturned2 = whereQueryReturnsNothing.ExecuteAsync().Result.ToList();
-            Assert.AreEqual(0, objectsReturned2.Count);
+            Assert.That(0, Is.EqualTo(objectsReturned2.Count));
         }
 
         /// <summary>
@@ -93,13 +93,13 @@ namespace Cassandra.IntegrationTests.CqlFunctions.Tests
         {
             EntityWithTimeUuid.SetupEntity(_tableEntityWithTimeUuid, _expectedTimeUuidObjectList);
             List<EntityWithTimeUuid> listAsTheyAreInCassandra = _tableEntityWithTimeUuid.Execute().ToList();
-            Assert.AreEqual(_expectedTimeUuidObjectList.Count, listAsTheyAreInCassandra.Count);
+            Assert.That(_expectedTimeUuidObjectList.Count, Is.EqualTo(listAsTheyAreInCassandra.Count));
             for (int i = 0; i < listAsTheyAreInCassandra.Count; i++)
             {
                 EntityWithTimeUuid singleEntity = listAsTheyAreInCassandra[i];
                 var whereQuery = _tableEntityWithTimeUuid.Where(s => CqlFunction.Token(s.StringType) < CqlFunction.Token(singleEntity.StringType));
                 List<EntityWithTimeUuid> objectsReturned1 = whereQuery.ExecuteAsync().Result.ToList();
-                Assert.AreEqual(i, objectsReturned1.Count);
+                Assert.That(i, Is.EqualTo(objectsReturned1.Count));
 
                 foreach (var actualObj in objectsReturned1)
                     EntityWithTimeUuid.AssertListContains(_expectedTimeUuidObjectList, actualObj);
@@ -116,14 +116,14 @@ namespace Cassandra.IntegrationTests.CqlFunctions.Tests
         {
             EntityWithTimeUuid.SetupEntity(_tableEntityWithTimeUuid, _expectedTimeUuidObjectList);
             List<EntityWithTimeUuid> listAsTheyAreInCassandra = _tableEntityWithTimeUuid.Execute().ToList();
-            Assert.AreEqual(_expectedTimeUuidObjectList.Count, listAsTheyAreInCassandra.Count);
+            Assert.That(_expectedTimeUuidObjectList.Count, Is.EqualTo(listAsTheyAreInCassandra.Count));
             int independentInterator = 5;
             for (int i = 0; i < listAsTheyAreInCassandra.Count; i++)
             {
                 EntityWithTimeUuid singleEntity = listAsTheyAreInCassandra[i];
                 var whereQuery = _tableEntityWithTimeUuid.Where(s => CqlFunction.Token(s.StringType) > CqlFunction.Token(singleEntity.StringType));
                 List<EntityWithTimeUuid> objectsReturned1 = whereQuery.ExecuteAsync().Result.ToList();
-                Assert.AreEqual(independentInterator, objectsReturned1.Count);
+                Assert.That(independentInterator, Is.EqualTo(objectsReturned1.Count));
 
                 foreach (var actualObj in objectsReturned1)
                     EntityWithTimeUuid.AssertListContains(_expectedTimeUuidObjectList, actualObj);

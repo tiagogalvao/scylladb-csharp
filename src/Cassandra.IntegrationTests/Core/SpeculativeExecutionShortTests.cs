@@ -101,7 +101,7 @@ namespace Cassandra.IntegrationTests.Core
             TestHelper.ParallelInvoke(() =>
             {
                 var rs = session.Execute(new SimpleStatement(QueryLocal).SetIdempotence(true));
-                Assert.AreNotEqual(_addressNode2, rs.Info.QueriedHost.Address);
+                Assert.That(_addressNode2, Is.Not.EqualTo(rs.Info.QueriedHost.Address));
             }, 10);
         }
 
@@ -119,7 +119,7 @@ namespace Cassandra.IntegrationTests.Core
             var rs = await session.ExecuteAsync(new SimpleStatement(QueryLocal).SetIdempotence(false)).ConfigureAwait(false);
 
             // Used the first host in the query plan
-            Assert.AreEqual(TestCluster.GetNode(1).IpEndPoint, rs.Info.QueriedHost);
+            Assert.That(TestCluster.GetNode(1).IpEndPoint, Is.EqualTo(rs.Info.QueriedHost));
         }
 
         [Test]
@@ -134,7 +134,7 @@ namespace Cassandra.IntegrationTests.Core
                 session.Execute(new SimpleStatement(QueryLocal).SetIdempotence(true));
                 semaphore.Release();
             }, 512);
-            Assert.AreEqual(0, policy.ScheduledExecutions.Count(e => e > 1), "Scheduled more than once: [" + String.Join(", ", policy.ScheduledExecutions.Where(e => e > 1).Select(x => x.ToString())) + "]");
+            Assert.That(0, Is.EqualTo(policy.ScheduledExecutions.Count(e => e > 1)), "Scheduled more than once: [" + String.Join(", ", policy.ScheduledExecutions.Where(e => e > 1).Select(x => x.ToString())) + "]");
         }
 
         [Test]
@@ -162,8 +162,8 @@ namespace Cassandra.IntegrationTests.Core
                     semaphore.Release();
                 }
             }, numberOfRequests);
-            Assert.AreEqual(0, policy.ScheduledExecutions.Count(e => e > 1), "Scheduled more than once: [" + String.Join(", ", policy.ScheduledExecutions.Where(e => e > 1).Select(x => x.ToString())) + "]");
-            Assert.AreEqual(64, policy.ScheduledExecutions.Count(e => e == 1));
+            Assert.That(0, Is.EqualTo(policy.ScheduledExecutions.Count(e => e > 1)), "Scheduled more than once: [" + String.Join(", ", policy.ScheduledExecutions.Where(e => e > 1).Select(x => x.ToString())) + "]");
+            Assert.That(64, Is.EqualTo(policy.ScheduledExecutions.Count(e => e == 1)));
         }
 
         [Test]
@@ -191,8 +191,8 @@ namespace Cassandra.IntegrationTests.Core
                     semaphore.Release();
                 }
             }, numberOfRequests);
-            Assert.AreEqual(0, policy.ScheduledExecutions.Count(e => e > 1), "Scheduled more than once: [" + String.Join(", ", policy.ScheduledExecutions.Where(e => e > 1).Select(x => x.ToString())) + "]");
-            Assert.AreEqual(64, policy.ScheduledExecutions.Count(e => e == 1));
+            Assert.That(0, Is.EqualTo(policy.ScheduledExecutions.Count(e => e > 1)), "Scheduled more than once: [" + String.Join(", ", policy.ScheduledExecutions.Where(e => e > 1).Select(x => x.ToString())) + "]");
+            Assert.That(64, Is.EqualTo(policy.ScheduledExecutions.Count(e => e == 1)));
         }
 
         private class LoggedSpeculativeExecutionPolicy : ISpeculativeExecutionPolicy

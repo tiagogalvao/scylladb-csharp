@@ -18,6 +18,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -29,7 +30,7 @@ namespace Cassandra.IntegrationTests.Core
             var task = Session.ExecuteAsync(new SimpleStatement("SELECT * FROM system.local"));
             //forcing it to execute sync for testing purposes
             var rowset = task.Result;
-            Assert.True(rowset.Any(), "Returned result should contain rows.");
+            Assert.That(rowset.Any(), Is.True, "Returned result should contain rows.");
         }
 
         [Test]
@@ -45,7 +46,7 @@ namespace Cassandra.IntegrationTests.Core
             var task = Session.ExecuteAsync(statement.Bind("local"));
             //forcing it to execute sync for testing purposes
             var rowset = task.Result;
-            Assert.True(rowset.Any(), "Returned result should contain rows.");
+            Assert.That(rowset.Any(), Is.True, "Returned result should contain rows.");
         }
 
         [Test]
@@ -59,7 +60,7 @@ namespace Cassandra.IntegrationTests.Core
             var task = Session.ExecuteAsync(new SimpleStatement("SELECT WILL FAIL"));
             task.ContinueWith(t =>
             {
-                Assert.NotNull(t.Exception);
+                Assert.That(t.Exception, Is.Not.Null);
             }, TaskContinuationOptions.OnlyOnFaulted);
 
             task.ContinueWith(t =>
@@ -76,9 +77,9 @@ namespace Cassandra.IntegrationTests.Core
             {
                 exThrown = ex;
             }
-            Assert.NotNull(exThrown);
-            Assert.IsInstanceOf<AggregateException>(exThrown);
-            Assert.IsInstanceOf<SyntaxError>(((AggregateException)exThrown).InnerExceptions.First());
+            Assert.That(exThrown, Is.Not.Null);
+            ClassicAssert.IsInstanceOf<AggregateException>(exThrown);
+            ClassicAssert.IsInstanceOf<SyntaxError>(((AggregateException)exThrown).InnerExceptions.First());
         }
 
         [Test]
@@ -89,9 +90,9 @@ namespace Cassandra.IntegrationTests.Core
             var task3 = Session.ExecuteAsync(new SimpleStatement("select tokens from system.local"));
             //forcing the calling thread to wait for all the parallel task to finish
             Task.WaitAll(task1, task2, task3);
-            Assert.NotNull(task1.Result.First().GetValue<string>("key"));
-            Assert.NotNull(task2.Result.First().GetValue<string>("key"));
-            Assert.NotNull(task3.Result.First().GetValue<string[]>("tokens"));
+            Assert.That(task1.Result.First().GetValue<string>("key"), Is.Not.Null);
+            Assert.That(task2.Result.First().GetValue<string>("key"), Is.Not.Null);
+            Assert.That(task3.Result.First().GetValue<string[]>("tokens"), Is.Not.Null);
         }
     }
 }

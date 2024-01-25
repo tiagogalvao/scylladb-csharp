@@ -42,7 +42,7 @@ namespace Cassandra.IntegrationTests.TestBase
         internal static void valueComparator(RowSet rawrowset, List<object[]> insertedRows)
         {
             List<Row> rowset = rawrowset.GetRows().ToList();
-            Assert.True(rowset.Count == insertedRows.Count,
+            Assert.That(rowset.Count == insertedRows.Count, Is.True,
                         string.Format(
                             "Returned rows count is not equal with the count of rows that were inserted! \n Returned: {0} \n Expected: {1} \n",
                             rowset.Count, insertedRows.Count));
@@ -52,7 +52,7 @@ namespace Cassandra.IntegrationTests.TestBase
                 if (row.Any(col => col.GetType() == typeof (byte[])))
                     for (int j = 0; j < row.Length; j++)
                     {
-                        Assert.AreEqual(insertedRows[i][j], row[j]);
+                        Assert.That(insertedRows[i][j], Is.EqualTo(row[j]));
                     }
                 else
                 {
@@ -64,7 +64,7 @@ namespace Cassandra.IntegrationTests.TestBase
                             if (!row[m].Equals(insertedRows[i][m]))
                                 insertedRows.Reverse();
                         }
-                        Assert.AreEqual(insertedRows[i][m], row[m], "Inserted data does not match with returned data.");
+                        Assert.That(insertedRows[i][m], Is.EqualTo(row[m]), "Inserted data does not match with returned data.");
                     }
                 }
                 i++;

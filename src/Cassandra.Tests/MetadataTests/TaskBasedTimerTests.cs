@@ -50,9 +50,9 @@ namespace Cassandra.Tests.MetadataTests
             WrapExclusiveScheduler(() => target.Change(() => Interlocked.Increment(ref _counter), TimeSpan.FromMilliseconds(60000)));
             WrapExclusiveScheduler(() => target.Change(() => Interlocked.Increment(ref _counter), TimeSpan.FromMilliseconds(1)));
 
-            TestHelper.RetryAssert(() => Assert.AreEqual(1, Interlocked.Read(ref _counter)));
+            TestHelper.RetryAssert(() => Assert.That(1, Is.EqualTo(Interlocked.Read(ref _counter))));
             await Task.Delay(100).ConfigureAwait(false);
-            Assert.AreEqual(1, Interlocked.Read(ref _counter));
+            Assert.That(1, Is.EqualTo(Interlocked.Read(ref _counter)));
         }
         
         [Test]
@@ -64,7 +64,7 @@ namespace Cassandra.Tests.MetadataTests
             WrapExclusiveScheduler(() => target.Cancel());
 
             await Task.Delay(1000).ConfigureAwait(false);
-            Assert.AreEqual(0, Interlocked.Read(ref _counter));
+            Assert.That(0, Is.EqualTo(Interlocked.Read(ref _counter)));
         }
         
         [Test]
@@ -75,7 +75,7 @@ namespace Cassandra.Tests.MetadataTests
             WrapExclusiveScheduler(() => target.Change(() => Interlocked.Increment(ref _counter), TimeSpan.FromMilliseconds(100)));
 
             await Task.Delay(500).ConfigureAwait(false);
-            Assert.AreEqual(1, Interlocked.Read(ref _counter));
+            Assert.That(1, Is.EqualTo(Interlocked.Read(ref _counter)));
         }
         
         [Test]
@@ -96,7 +96,7 @@ namespace Cassandra.Tests.MetadataTests
                 }
 
                 target.Dispose();
-                Assert.AreEqual(0, listener.Messages.Values.Count(m => m.Contains("Exception thrown in TaskBasedTimer")));
+                Assert.That(0, Is.EqualTo(listener.Messages.Values.Count(m => m.Contains("Exception thrown in TaskBasedTimer"))));
             }
             finally
             {
@@ -120,8 +120,8 @@ namespace Cassandra.Tests.MetadataTests
                 TestHelper.RetryAssert(
                     () =>
                     {
-                        Assert.AreEqual(1,
-                            listener.Messages.Values.Count(m => m.Contains("Exception thrown in TaskBasedTimer") && m.Contains("123")));
+                        Assert.That(1,
+                            Is.EqualTo(listener.Messages.Values.Count(m => m.Contains("Exception thrown in TaskBasedTimer") && m.Contains("123"))));
                     }, 10, 100);
                 target.Dispose();
             }

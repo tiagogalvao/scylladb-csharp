@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests
 {
@@ -41,7 +42,7 @@ namespace Cassandra.Tests
             {
                 var id = TimeUuid.NewId(date);
                 var dateObtained = id.GetDate();
-                Assert.AreEqual(date, dateObtained);
+                Assert.That(date, Is.EqualTo(dateObtained));
             }
         }
 
@@ -55,23 +56,23 @@ namespace Cassandra.Tests
             var id2 = TimeUuid.NewId(node1, clock1, date);
             var id3 = TimeUuid.NewId(new byte[] { 0, 0, 0, 0, 0, 0 }, new byte[] { 0xff, 0x02 }, date);
             var id4 = TimeUuid.NewId(node1, clock1, new DateTimeOffset());
-            Assert.AreEqual(id1, id2);
-            Assert.True(id1 == id2);
-            Assert.IsTrue(id1.Equals(id2));
-            Assert.IsTrue(id1.Equals((object)id2));
-            Assert.IsFalse(id1.Equals(string.Empty));
-            Assert.IsFalse(id1.Equals(null));
-            Assert.AreNotEqual(id1, id3);
-            Assert.True(id1 != id3);
-            Assert.AreNotEqual(id1, id4);
-            Assert.True(id1 != id4);
-            Assert.AreNotEqual(id3, id4);
-            Assert.True(id3 != id4);
+            Assert.That(id1, Is.EqualTo(id2));
+            Assert.That(id1 == id2, Is.True);
+            Assert.That(id1.Equals(id2), Is.True);
+            Assert.That(id1.Equals((object)id2), Is.True);
+            Assert.That(id1.Equals(string.Empty), Is.False);
+            Assert.That(id1.Equals(null), Is.False);
+            Assert.That(id1, Is.Not.EqualTo(id3));
+            Assert.That(id1 != id3, Is.True);
+            Assert.That(id1, Is.Not.EqualTo(id4));
+            Assert.That(id1 != id4, Is.True);
+            Assert.That(id3, Is.Not.EqualTo(id4));
+            Assert.That(id3 != id4, Is.True);
             //Check implicit conversion operators
             var id4Id = (Guid)id4;
             var id4TimeId = (TimeUuid)id4Id;
-            Assert.AreEqual(id4, id4TimeId);
-            Assert.AreEqual(id4.ToByteArray(), id4Id.ToByteArray());
+            Assert.That(id4, Is.EqualTo(id4TimeId));
+            Assert.That(id4.ToByteArray(), Is.EqualTo(id4Id.ToByteArray()));
         }
         
         [Test]
@@ -83,7 +84,7 @@ namespace Cassandra.Tests
             {
                 //The node id and clock id should be pseudo random
                 var id = TimeUuid.NewId(date).ToString();
-                Assert.False(values.ContainsKey(id), "TimeUuid collision at position {0}", i);
+                ClassicAssert.False(values.ContainsKey(id), "TimeUuid collision at position {0}", i);
                 values.Add(id, true);
             }
         }
@@ -100,7 +101,7 @@ namespace Cassandra.Tests
                 {
                     //The node id and clock id should be pseudo random
                     var id = TimeUuid.NewId(date).ToString();
-                    Assert.False(values.ContainsKey(id), "TimeUuid collided");
+                    Assert.That(values.ContainsKey(id), Is.False, "TimeUuid collided");
                     values.AddOrUpdate(id, true, (k, o) => true);
                 };
                 actions.Add(a);
@@ -129,7 +130,7 @@ namespace Cassandra.Tests
             for (var i = 1; i < 50 * 1000; i += 100)
             {
                 var id = TimeUuid.NewId(date.AddTicks(i));
-                Assert.AreEqual(1, id.CompareTo(previousId), id.GetDate().Ticks + " greater than " + previousId.GetDate().Ticks + "?");
+                Assert.That(1, Is.EqualTo(id.CompareTo(previousId)), id.GetDate().Ticks + " greater than " + previousId.GetDate().Ticks + "?");
 
                 previousId = id;
             }
@@ -156,9 +157,9 @@ namespace Cassandra.Tests
         {
             const string stringUuid = "3d555680-9886-11e4-8101-010101010101";
             var timeuuid = TimeUuid.Parse(stringUuid);
-            Assert.AreEqual(TimeUuid.Parse(stringUuid), timeuuid);
-            Assert.AreEqual(DateTimeOffset.Parse("2015-01-10 5:05:05 +0"), timeuuid.GetDate());
-            Assert.AreEqual(stringUuid, timeuuid.ToString());
+            Assert.That(TimeUuid.Parse(stringUuid), Is.EqualTo(timeuuid));
+            Assert.That(DateTimeOffset.Parse("2015-01-10 5:05:05 +0"), Is.EqualTo(timeuuid.GetDate()));
+            Assert.That(stringUuid, Is.EqualTo(timeuuid.ToString()));
         }
 
         [Test]
@@ -166,9 +167,9 @@ namespace Cassandra.Tests
         {
             var timestamp = DateTimeOffset.Now;
             var timeuuid = TimeUuid.Min(timestamp);
-            Assert.AreEqual(timestamp, timeuuid.GetDate());
-            Assert.AreEqual(new byte[] {0x80, 0x80}, timeuuid.ToByteArray().Skip(8).Take(2));
-            Assert.AreEqual(new byte[] {0x80, 0x80, 0x80, 0x80, 0x80, 0x80}, timeuuid.ToByteArray().Skip(10).Take(6));
+            Assert.That(timestamp, Is.EqualTo(timeuuid.GetDate()));
+            Assert.That(new byte[] {0x80, 0x80}, Is.EqualTo(timeuuid.ToByteArray().Skip(8).Take(2)));
+            Assert.That(new byte[] {0x80, 0x80, 0x80, 0x80, 0x80, 0x80}, Is.EqualTo(timeuuid.ToByteArray().Skip(10).Take(6)));
         }
 
         [Test]
@@ -176,10 +177,10 @@ namespace Cassandra.Tests
         {
             var timestamp = DateTimeOffset.Now;
             var timeuuid = TimeUuid.Max(timestamp);
-            Assert.AreEqual(timestamp, timeuuid.GetDate());
+            Assert.That(timestamp, Is.EqualTo(timeuuid.GetDate()));
             // Variant Byte at index 8: 0x7f is changed into 0xbf
-            Assert.AreEqual(new byte[] {0xbf, 0x7f}, timeuuid.ToByteArray().Skip(8).Take(2));
-            Assert.AreEqual(new byte[] {0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f}, timeuuid.ToByteArray().Skip(10).Take(6));
+            Assert.That(new byte[] {0xbf, 0x7f}, Is.EqualTo(timeuuid.ToByteArray().Skip(8).Take(2)));
+            Assert.That(new byte[] {0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f}, Is.EqualTo(timeuuid.ToByteArray().Skip(10).Take(6)));
         }
     }
 }

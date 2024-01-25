@@ -55,12 +55,12 @@ namespace Cassandra.Tests
             using (var cluster = Cluster.BuildFrom(initializer, new[] { "127.0.0.1" }, config))
             {
                 var target = cluster.Connect();
-                Assert.IsTrue(sessionNames.TryDequeue(out var sessionId));
+                Assert.That(sessionNames.TryDequeue(out var sessionId), Is.True);
                 var newTarget = cluster.Connect();
-                Assert.IsTrue(sessionNames.TryDequeue(out var newSessionId));
-                Assert.AreEqual(0, sessionNames.Count);
-                Assert.AreNotEqual(Guid.Empty, sessionId);
-                Assert.AreNotEqual(sessionId, newSessionId);
+                Assert.That(sessionNames.TryDequeue(out var newSessionId), Is.True);
+                Assert.That(0, Is.EqualTo(sessionNames.Count));
+                Assert.That(Guid.Empty, Is.Not.EqualTo(sessionId));
+                Assert.That(sessionId, Is.Not.EqualTo(newSessionId));
             }
         }
     }

@@ -23,6 +23,7 @@ using Cassandra.SessionManagement;
 using Cassandra.Tests.ExecutionProfiles;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.Tests
 {
@@ -57,7 +58,7 @@ namespace Cassandra.Tests
         public void SimpleStatement_Constructor_No_Values()
         {
             var stmt = new SimpleStatement(Query);
-            Assert.AreEqual(null, stmt.QueryValues);
+            Assert.That(null, Is.EqualTo(stmt.QueryValues));
         }
 
         [Test]
@@ -65,7 +66,7 @@ namespace Cassandra.Tests
         {
 #pragma warning disable 618
             var stmt = new SimpleStatement(Query).Bind();
-            Assert.AreEqual(Array.Empty<object>(), stmt.QueryValues);
+            Assert.That(Array.Empty<object>(), Is.EqualTo(stmt.QueryValues));
 #pragma warning restore 618
         }
 
@@ -75,17 +76,17 @@ namespace Cassandra.Tests
             var values = new { Name = "Futurama", Description = "In Stereo where available", Time = DateTimeOffset.Parse("1963-08-28") };
             var stmt = new SimpleStatement(Query, values);
             var actualValues = new Dictionary<string, object>();
-            Assert.AreEqual(3, stmt.QueryValueNames.Count);
-            Assert.AreEqual(3, stmt.QueryValues.Length);
+            Assert.That(3, Is.EqualTo(stmt.QueryValueNames.Count));
+            Assert.That(3, Is.EqualTo(stmt.QueryValues.Length));
             //Order is not guaranteed
             for (var i = 0; i < stmt.QueryValueNames.Count; i++)
             {
                 actualValues[stmt.QueryValueNames[i]] = stmt.QueryValues[i];
             }
             //Lowercased
-            Assert.AreEqual(values.Name, actualValues["name"]);
-            Assert.AreEqual(values.Description, actualValues["description"]);
-            Assert.AreEqual(values.Time, actualValues["time"]);
+            Assert.That(values.Name, Is.EqualTo(actualValues["name"]));
+            Assert.That(values.Description, Is.EqualTo(actualValues["description"]));
+            Assert.That(values.Time, Is.EqualTo(actualValues["time"]));
         }
 
         [Test]
@@ -99,17 +100,17 @@ namespace Cassandra.Tests
             };
             var stmt = new SimpleStatement(valuesDictionary, Query);
             var actualValues = new Dictionary<string, object>();
-            Assert.AreEqual(3, stmt.QueryValueNames.Count);
-            Assert.AreEqual(3, stmt.QueryValues.Length);
+            Assert.That(3, Is.EqualTo(stmt.QueryValueNames.Count));
+            Assert.That(3, Is.EqualTo(stmt.QueryValues.Length));
             //Order is not guaranteed
             for (var i = 0; i < stmt.QueryValueNames.Count; i++)
             {
                 actualValues[stmt.QueryValueNames[i]] = stmt.QueryValues[i];
             }
             //Lowercased
-            Assert.AreEqual(valuesDictionary["Name"], actualValues["name"]);
-            Assert.AreEqual(valuesDictionary["Description"], actualValues["description"]);
-            Assert.AreEqual(valuesDictionary["Time"], actualValues["time"]);
+            Assert.That(valuesDictionary["Name"], Is.EqualTo(actualValues["name"]));
+            Assert.That(valuesDictionary["Description"], Is.EqualTo(actualValues["description"]));
+            Assert.That(valuesDictionary["Time"], Is.EqualTo(actualValues["time"]));
         }
 
         [Test]
@@ -120,37 +121,37 @@ namespace Cassandra.Tests
             var stmt = new SimpleStatement(Query).Bind(values);
 #pragma warning restore 618
             var actualValues = new Dictionary<string, object>();
-            Assert.AreEqual(3, stmt.QueryValueNames.Count);
-            Assert.AreEqual(3, stmt.QueryValues.Length);
+            Assert.That(3, Is.EqualTo(stmt.QueryValueNames.Count));
+            Assert.That(3, Is.EqualTo(stmt.QueryValues.Length));
             //Order is not guaranteed
             for (var i = 0; i < stmt.QueryValueNames.Count; i++)
             {
                 actualValues[stmt.QueryValueNames[i]] = stmt.QueryValues[i];
             }
             //Lowercased
-            Assert.AreEqual(values.Name, actualValues["name"]);
-            Assert.AreEqual(values.Description, actualValues["description"]);
-            Assert.AreEqual(values.Time, actualValues["time"]);
+            Assert.That(values.Name, Is.EqualTo(actualValues["name"]));
+            Assert.That(values.Description, Is.EqualTo(actualValues["description"]));
+            Assert.That(values.Time, Is.EqualTo(actualValues["time"]));
         }
 
         [Test]
         public void Statement_SetPagingState_Disables_AutoPage()
         {
             var statement = new SimpleStatement();
-            Assert.True(statement.AutoPage);
+            Assert.That(statement.AutoPage, Is.True);
             statement.SetPagingState(new byte[] { 1, 2, 3, 4, 5, 6 });
-            Assert.False(statement.AutoPage);
-            Assert.NotNull(statement.PagingState);
+            Assert.That(statement.AutoPage, Is.False);
+            Assert.That(statement.PagingState, Is.Not.Null);
         }
 
         [Test]
         public void Statement_SetPagingState_Null_Does_Not_Disable_AutoPage()
         {
             var statement = new SimpleStatement();
-            Assert.True(statement.AutoPage);
+            Assert.That(statement.AutoPage, Is.True);
             statement.SetPagingState(null);
-            Assert.True(statement.AutoPage);
-            Assert.Null(statement.PagingState);
+            Assert.That(statement.AutoPage, Is.True);
+            Assert.That(statement.PagingState, Is.Null);
         }
 
         [Test]
@@ -168,9 +169,9 @@ namespace Cassandra.Tests
             ps.SetPartitionKeys(new[] { new TableColumn() { Name = "id" } });
             //The routing key is at position 1
             CollectionAssert.AreEqual(new[] { 1 }, ps.RoutingIndexes);
-            Assert.Null(ps.RoutingKey);
+            Assert.That(ps.RoutingKey, Is.Null);
             var bound = ps.Bind("dummy name", 1000);
-            Assert.NotNull(bound.RoutingKey);
+            Assert.That(bound.RoutingKey, Is.Not.Null);
             CollectionAssert.AreEqual(new SerializerManager(ProtocolVersion.MaxSupported).GetCurrentSerializer().Serialize(1000), bound.RoutingKey.RawRoutingKey);
         }
 
@@ -180,10 +181,10 @@ namespace Cassandra.Tests
             var ps = GetPrepared("SELECT * FROM tbl1 WHERE name = ? and id = ?");
             ps.SetIdempotence(true);
             var bound = ps.Bind("dummy name 1", 1000);
-            Assert.True(bound.IsIdempotent ?? false);
+            Assert.That(bound.IsIdempotent ?? false, Is.True);
             ps.SetIdempotence(false);
             bound = ps.Bind("dummy name 2", 1000);
-            Assert.False(bound.IsIdempotent ?? true);
+            Assert.That(bound.IsIdempotent ?? true, Is.False);
         }
 
         [Test]
@@ -201,9 +202,9 @@ namespace Cassandra.Tests
             ps.SetPartitionKeys(new[] { new TableColumn() { Name = "id1" }, new TableColumn() { Name = "id2" } });
             //The routing key is formed by the parameters at position 1 and 0
             CollectionAssert.AreEqual(new[] { 1, 0 }, ps.RoutingIndexes);
-            Assert.Null(ps.RoutingKey);
+            Assert.That(ps.RoutingKey, Is.Null);
             var bound = ps.Bind(2001, 1001);
-            Assert.NotNull(bound.RoutingKey);
+            Assert.That(bound.RoutingKey, Is.Not.Null);
             var serializer = new SerializerManager(ProtocolVersion.MaxSupported).GetCurrentSerializer();
             var expectedRoutingKey = Array.Empty<byte>()
                                           .Concat(new byte[] {0, 4})
@@ -219,7 +220,7 @@ namespace Cassandra.Tests
         public void SimpleStatement_Bind_SetsRoutingValues_Single()
         {
             var stmt = new SimpleStatement(Query, "id1");
-            Assert.Null(stmt.RoutingKey);
+            Assert.That(stmt.RoutingKey, Is.Null);
             stmt.SetRoutingValues("id1");
             stmt.Serializer = new SerializerManager(ProtocolVersion.MaxSupported).GetCurrentSerializer();
             CollectionAssert.AreEqual(stmt.Serializer.Serialize("id1"), stmt.RoutingKey.RawRoutingKey);
@@ -229,7 +230,7 @@ namespace Cassandra.Tests
         public void SimpleStatement_Bind_SetsRoutingValues_Multiple()
         {
             var stmt = new SimpleStatement(Query, "id1", "id2", "val1");
-            Assert.Null(stmt.RoutingKey);
+            Assert.That(stmt.RoutingKey, Is.Null);
             stmt.SetRoutingValues("id1", "id2");
             stmt.Serializer = new SerializerManager(ProtocolVersion.MaxSupported).GetCurrentSerializer();
             var expectedRoutingKey = Array.Empty<byte>()
@@ -246,7 +247,7 @@ namespace Cassandra.Tests
         public void BatchStatement_Bind_SetsRoutingValues_Single()
         {
             var batch = new BatchStatement();
-            Assert.Null(batch.RoutingKey);
+            Assert.That(batch.RoutingKey, Is.Null);
             batch.SetRoutingValues("id1-value");
             batch.Serializer = new SerializerManager(ProtocolVersion.MaxSupported).GetCurrentSerializer();
             CollectionAssert.AreEqual(batch.Serializer.Serialize("id1-value"), batch.RoutingKey.RawRoutingKey);
@@ -256,7 +257,7 @@ namespace Cassandra.Tests
         public void BatchStatement_Bind_SetsRoutingValues_Multiple()
         {
             var batch = new BatchStatement();
-            Assert.Null(batch.RoutingKey);
+            Assert.That(batch.RoutingKey, Is.Null);
             batch.SetRoutingValues("id11", "id22");
             batch.Serializer = new SerializerManager(ProtocolVersion.MaxSupported).GetCurrentSerializer();
             var expectedRoutingKey = Array.Empty<byte>()
@@ -298,8 +299,8 @@ namespace Cassandra.Tests
             var s1 = new SimpleStatement("Q1").SetRoutingKey(new RoutingKey(rawRoutingKey));
             var s2 = new SimpleStatement("Q2").SetRoutingKey(new RoutingKey(new byte[] { 100, 101, 102 }));
             var batch = new BatchStatement().Add(s1).Add(s2);
-            Assert.AreEqual(BitConverter.ToString(rawRoutingKey),
-                BitConverter.ToString(batch.RoutingKey.RawRoutingKey));
+            Assert.That(BitConverter.ToString(rawRoutingKey),
+                Is.EqualTo(BitConverter.ToString(batch.RoutingKey.RawRoutingKey)));
         }
 
         [Test]
@@ -319,14 +320,14 @@ namespace Cassandra.Tests
             s2Mock.Setup(s => s.Keyspace).Returns((string)null).Callback(() => s2MockCalledKeyspace++);
 
             var batch = new BatchStatement().Add(s1Mock.Object).Add(s2Mock.Object);
-            Assert.AreEqual(BitConverter.ToString(rawRoutingKey),
-                BitConverter.ToString(batch.RoutingKey.RawRoutingKey));
-            Assert.AreEqual("ks1", batch.Keyspace);
+            Assert.That(BitConverter.ToString(rawRoutingKey),
+                Is.EqualTo(BitConverter.ToString(batch.RoutingKey.RawRoutingKey)));
+            Assert.That("ks1", Is.EqualTo(batch.Keyspace));
 
-            Assert.AreEqual(1, s1MockCalled);
-            Assert.AreEqual(0, s2MockCalled);
-            Assert.AreEqual(1, s1MockCalledKeyspace);
-            Assert.AreEqual(0, s2MockCalledKeyspace);
+            Assert.That(1, Is.EqualTo(s1MockCalled));
+            Assert.That(0, Is.EqualTo(s2MockCalled));
+            Assert.That(1, Is.EqualTo(s1MockCalledKeyspace));
+            Assert.That(0, Is.EqualTo(s2MockCalledKeyspace));
         }
 
         [Test]

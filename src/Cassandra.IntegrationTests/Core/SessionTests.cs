@@ -61,8 +61,8 @@ namespace Cassandra.IntegrationTests.Core
                 {
                     // Its OK to have a failed task
                 }
-                Assert.False(taskList.Any(t => t.Status == TaskStatus.WaitingForActivation), "No more task should be pending");
-                Assert.True(taskList.All(t => t.Status == TaskStatus.RanToCompletion || t.Status == TaskStatus.Faulted), "All task should be completed or faulted");
+                Assert.That(taskList.Any(t => t.Status == TaskStatus.WaitingForActivation), Is.False, "No more task should be pending");
+                Assert.That(taskList.All(t => t.Status == TaskStatus.RanToCompletion || t.Status == TaskStatus.Faulted), Is.False, "All task should be completed or faulted");
             }
         }
 
@@ -71,7 +71,7 @@ namespace Cassandra.IntegrationTests.Core
         {
             var localCluster = GetNewTemporaryCluster();
             var ex = Assert.Throws<InvalidQueryException>(() => localCluster.Connect("THIS_KEYSPACE_DOES_NOT_EXIST"));
-            Assert.True(ex.Message.ToLower().Contains("keyspace"));
+            Assert.That(ex.Message.ToLower().Contains("keyspace"), Is.True);
 
         }
 
@@ -92,7 +92,7 @@ namespace Cassandra.IntegrationTests.Core
             var localCluster = GetNewTemporaryCluster();
             var localSession = localCluster.Connect();
             var ex = Assert.Throws<InvalidQueryException>(() => localSession.ChangeKeyspace("THIS_KEYSPACE_DOES_NOT_EXIST_EITHER"));
-            Assert.True(ex.Message.ToLower().Contains("keyspace"));
+            Assert.That(ex.Message.ToLower().Contains("keyspace"), Is.True);
         }
         
         [Test]
@@ -102,10 +102,10 @@ namespace Cassandra.IntegrationTests.Core
             var localSession = localCluster.Connect();
             localSession.CreateKeyspace(KeyspaceName, null, false);
             localSession = localCluster.Connect();
-            Assert.IsNull(localSession.Keyspace);
+            Assert.That(localSession.Keyspace, Is.Null);
             localSession.ChangeKeyspace(KeyspaceName);
-            Assert.IsNotNull(localSession.Keyspace);
-            Assert.AreEqual(KeyspaceName, localSession.Keyspace);
+            Assert.That(localSession.Keyspace, Is.Not.Null);
+            Assert.That(KeyspaceName, Is.EqualTo(localSession.Keyspace));
         }
 
         [Test]
@@ -181,7 +181,7 @@ namespace Cassandra.IntegrationTests.Core
 
             var localSession1 = (IInternalSession)localCluster1.Connect();
             var hosts1 = localCluster1.AllHosts().ToList();
-            Assert.AreEqual(3, hosts1.Count);
+            Assert.That(3, Is.EqualTo(hosts1.Count));
             //Execute multiple times a query on the newly created keyspace
             for (var i = 0; i < 12; i++)
             {
@@ -201,7 +201,7 @@ namespace Cassandra.IntegrationTests.Core
             {
                 var localSession2 = (IInternalSession)localCluster2.Connect();
                 var hosts2 = localCluster2.AllHosts().ToList();
-                Assert.AreEqual(3, hosts2.Count);
+                Assert.That(3, Is.EqualTo(hosts2.Count));
                 //Execute multiple times a query on the newly created keyspace
                 for (var i = 0; i < 6; i++)
                 {
@@ -347,12 +347,12 @@ namespace Cassandra.IntegrationTests.Core
             session1.Dispose();
 
             // All nodes should be up
-            Assert.AreEqual(cluster.AllHosts().Count, cluster.AllHosts().Count(h => h.IsUp));
+            Assert.That(cluster.AllHosts().Count, Is.EqualTo(cluster.AllHosts().Count(h => h.IsUp)));
             // And session2 should be queryable
             await TestHelper.TimesLimit(() => session2.ExecuteAsync(new SimpleStatement(query)), 100, 32).ConfigureAwait(false);
-            Assert.AreEqual(cluster.AllHosts().Count, cluster.AllHosts().Count(h => h.IsUp));
+            Assert.That(cluster.AllHosts().Count, Is.EqualTo(cluster.AllHosts().Count(h => h.IsUp)));
             cluster.Dispose();
-            Assert.AreEqual(0, Volatile.Read(ref isDown));
+            Assert.That(0, Is.EqualTo(Volatile.Read(ref isDown)));
         }
 
         [Test]
@@ -383,7 +383,7 @@ namespace Cassandra.IntegrationTests.Core
         {
             using (var dummyCluster = ClusterBuilder().AddContactPoint("0.0.0.0").Build())
             {
-                Assert.AreNotEqual(dummyCluster.Configuration.ClientOptions.QueryAbortTimeout, Timeout.Infinite);
+                Assert.That(dummyCluster.Configuration.ClientOptions.QueryAbortTimeout, Is.Not.EqualTo(Timeout.Infinite));
             }
 
             using (var localCluster = ClusterBuilder()
@@ -439,10 +439,10 @@ namespace Cassandra.IntegrationTests.Core
             localSession.Execute("CREATE TABLE test (k int PRIMARY KEY, v int)");
 
             var rowSet = localSession.Execute("INSERT INTO test (k, v) VALUES (0, 0)");
-            Assert.True(rowSet.IsExhausted());
-            Assert.True(rowSet.IsFullyFetched);
-            Assert.AreEqual(0, rowSet.Count());
-            Assert.AreEqual(0, rowSet.GetAvailableWithoutFetching());
+            Assert.That(rowSet.IsExhausted(), Is.True);
+            Assert.That(rowSet.IsFullyFetched, Is.True);
+            Assert.That(0, Is.EqualTo(rowSet.Count()));
+            Assert.That(0, Is.EqualTo(rowSet.GetAvailableWithoutFetching()));
         }
 
         [Test]

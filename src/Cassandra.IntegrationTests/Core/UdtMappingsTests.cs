@@ -23,6 +23,7 @@ using System.Threading.Tasks;
 using Cassandra.IntegrationTests.TestBase;
 using Cassandra.IntegrationTests.TestDataTypes;
 using Cassandra.Tests;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -66,12 +67,12 @@ namespace Cassandra.IntegrationTests.Core
             var rs = localSession.Execute("SELECT * FROM users WHERE id = 1");
             var row = rs.First();
             var value = row.GetValue<Phone>("main_phone");
-            Assert.NotNull(value);
-            Assert.AreEqual("home phone", value.Alias);
-            Assert.AreEqual("123", value.Number);
-            Assert.AreEqual(34, value.CountryCode);
-            Assert.AreEqual(date, value.VerifiedAt);
-            Assert.AreEqual(PhoneType.Home, value.PhoneType);
+            Assert.That(value, Is.Not.Null);
+            Assert.That("home phone", Is.EqualTo(value.Alias));
+            Assert.That("123", Is.EqualTo(value.Number));
+            Assert.That(34, Is.EqualTo(value.CountryCode));
+            Assert.That(date, Is.EqualTo(value.VerifiedAt));
+            Assert.That(PhoneType.Home, Is.EqualTo(value.PhoneType));
         }
 
         [Test]
@@ -88,10 +89,10 @@ namespace Cassandra.IntegrationTests.Core
             var rs = localSession.Execute("SELECT * FROM users WHERE id = 1");
             var row = rs.First();
             var value = row.GetValue<Phone>("main_phone");
-            Assert.NotNull(value);
-            Assert.AreEqual("home phone", value.Alias);
-            Assert.AreEqual("123", value.Number);
-            Assert.AreEqual(34, value.CountryCode);
+            Assert.That(value, Is.Not.Null);
+            Assert.That("home phone", Is.EqualTo(value.Alias));
+            Assert.That("123", Is.EqualTo(value.Number));
+            Assert.That(34, Is.EqualTo(value.CountryCode));
         }
         
         [Test]
@@ -141,8 +142,8 @@ namespace Cassandra.IntegrationTests.Core
             row = rs.First();
             var value2 = row.GetValue<Phone2>("main_phone");
 
-            Assert.AreEqual(phone, value);
-            Assert.AreEqual(phone2, value2);
+            Assert.That(phone, Is.EqualTo(value));
+            Assert.That(phone2, Is.EqualTo(value2));
         }
 
         [Test]
@@ -192,7 +193,7 @@ namespace Cassandra.IntegrationTests.Core
             var rs = localSession.Execute("SELECT * FROM users WHERE id = 1");
             var row = rs.First();
             var value = row.GetValue<Phone>("main_phone");
-            Assert.AreEqual(phone, value);
+            Assert.That(phone, Is.EqualTo(value));
         }
 
         [Test]
@@ -209,25 +210,25 @@ namespace Cassandra.IntegrationTests.Core
             localSession.Execute("INSERT INTO users (id, main_phone) values (1, {alias: 'empty phone'})");
             var row = localSession.Execute("SELECT * FROM users WHERE id = 1").First();
             var value = row.GetValue<Phone>("main_phone");
-            Assert.NotNull(value);
-            Assert.AreEqual("empty phone", value.Alias);
+            Assert.That(value, Is.Not.Null);
+            Assert.That("empty phone", Is.EqualTo(value.Alias));
             //Default
-            Assert.IsNull(value.Number);
+            Assert.That(value.Number, Is.Null);
             //Default
-            Assert.AreEqual(0, value.CountryCode);
+            Assert.That(0, Is.EqualTo(value.CountryCode));
 
             //column value is null
             localSession.Execute("INSERT INTO users (id, main_phone) values (2, null)");
             row = localSession.Execute("SELECT * FROM users WHERE id = 2").First();
-            Assert.IsNull(row.GetValue<Phone>("main_phone"));
+            Assert.That(row.GetValue<Phone>("main_phone"), Is.Null);
 
             //first values are null
             localSession.Execute("INSERT INTO users (id, main_phone) values (3, {country_code: 34})");
             row = localSession.Execute("SELECT * FROM users WHERE id = 3").First();
-            Assert.IsNotNull(row.GetValue<Phone>("main_phone"));
-            Assert.AreEqual(34, row.GetValue<Phone>("main_phone").CountryCode);
-            Assert.IsNull(row.GetValue<Phone>("main_phone").Alias);
-            Assert.IsNull(row.GetValue<Phone>("main_phone").Number);
+            Assert.That(row.GetValue<Phone>("main_phone"), Is.Not.Null);
+            Assert.That(34, Is.EqualTo(row.GetValue<Phone>("main_phone").CountryCode));
+            Assert.That(row.GetValue<Phone>("main_phone").Alias, Is.Null);
+            Assert.That(row.GetValue<Phone>("main_phone").Number, Is.Null);
         }
 
         [Test]
@@ -241,11 +242,11 @@ namespace Cassandra.IntegrationTests.Core
             var rs = localSession.Execute("SELECT * FROM users WHERE id = 1");
             var row = rs.First();
             var value = row.GetValue<Phone>("main_phone");
-            Assert.NotNull(value);
-            Assert.AreEqual("home phone", value.Alias);
-            Assert.AreEqual("123", value.Number);
+            Assert.That(value, Is.Not.Null);
+            Assert.That("home phone", Is.EqualTo(value.Alias));
+            Assert.That("123", Is.EqualTo(value.Number));
             //The property and the field names don't match
-            Assert.AreEqual(0, value.CountryCode);
+            Assert.That(0, Is.EqualTo(value.CountryCode));
         }
 
         [Test]
@@ -288,10 +289,10 @@ namespace Cassandra.IntegrationTests.Core
             var row = rs.First();
 
             var contacts = row.GetValue<List<Contact>>("contacts");
-            Assert.NotNull(contacts);
-            Assert.AreEqual(2, contacts.Count);
-            Assert.AreEqual(insertedContacts[0], contacts[0]);
-            Assert.AreEqual(insertedContacts[1], contacts[1]);
+            Assert.That(contacts, Is.Not.Null);
+            Assert.That(2, Is.EqualTo(contacts.Count));
+            Assert.That(insertedContacts[0], Is.EqualTo(contacts[0]));
+            Assert.That(insertedContacts[1], Is.EqualTo(contacts[1]));
         }
 
         [Test]
@@ -310,10 +311,10 @@ namespace Cassandra.IntegrationTests.Core
             var rs = localSession.Execute("SELECT * FROM users WHERE id = 101");
             var row = rs.First();
             var value = row.GetValue<Phone>("main_phone");
-            Assert.NotNull(value);
-            Assert.AreEqual("home phone", value.Alias);
-            Assert.AreEqual("123", value.Number);
-            Assert.AreEqual(34, value.CountryCode);
+            Assert.That(value, Is.Not.Null);
+            Assert.That("home phone", Is.EqualTo(value.Alias));
+            Assert.That("123", Is.EqualTo(value.Number));
+            Assert.That(34, Is.EqualTo(value.CountryCode));
 
             Assert.Throws<InvalidTypeException>(() => localSession.UserDefinedTypes.Define(
                 //The name should be forced to be case sensitive
@@ -356,21 +357,21 @@ namespace Cassandra.IntegrationTests.Core
             var phone = new Phone();
             localSession.Execute(new SimpleStatement(insertQuery, id, phone));
             var rs = localSession.Execute(new SimpleStatement("SELECT * FROM users WHERE id = ?", id));
-            Assert.AreEqual(phone, rs.First().GetValue<Phone>("main_phone"));
+            Assert.That(phone, Is.EqualTo(rs.First().GetValue<Phone>("main_phone")));
 
             //Some fields null and others with value
             id = 202;
             phone = new Phone() {Alias = "Home phone"};
             localSession.Execute(new SimpleStatement(insertQuery, id, phone));
             rs = localSession.Execute(new SimpleStatement("SELECT * FROM users WHERE id = ?", id));
-            Assert.AreEqual(phone, rs.First().GetValue<Phone>("main_phone"));
+            Assert.That(phone, Is.EqualTo(rs.First().GetValue<Phone>("main_phone")));
 
             //All fields filled in
             id = 203;
             phone = new Phone() { Alias = "Mobile phone", CountryCode = 54, Number = "1234567"};
             localSession.Execute(new SimpleStatement(insertQuery, id, phone));
             rs = localSession.Execute(new SimpleStatement("SELECT * FROM users WHERE id = ?", id));
-            Assert.AreEqual(phone, rs.First().GetValue<Phone>("main_phone"));
+            Assert.That(phone, Is.EqualTo(rs.First().GetValue<Phone>("main_phone")));
         }
 
         [Test]
@@ -404,7 +405,7 @@ namespace Cassandra.IntegrationTests.Core
             var insert = new SimpleStatement("INSERT INTO users_contacts (id, contacts) values (?, ?)", id, contacts);
             localSession.Execute(insert);
             var rs = localSession.Execute(new SimpleStatement("SELECT * FROM users_contacts WHERE id = ?", id));
-            Assert.AreEqual(contacts, rs.First().GetValue<List<Contact>>("contacts"));
+            Assert.That(contacts, Is.EqualTo(rs.First().GetValue<List<Contact>>("contacts")));
         }
 
         /// <summary>
@@ -424,14 +425,14 @@ namespace Cassandra.IntegrationTests.Core
 
             var row = localSession.Execute("SELECT * from temp_table").First();
 
-            Assert.IsNotNull(row.GetValue<object>("sample_udt"));
-            Assert.IsInstanceOf<byte[]>(row.GetValue<object>("sample_udt"));
+            Assert.That(row.GetValue<object>("sample_udt"), Is.Not.Null);
+            ClassicAssert.IsInstanceOf<byte[]>(row.GetValue<object>("sample_udt"));
 
-            Assert.IsNotNull(row.GetValue<object>("sample_udt_list"));
-            Assert.IsInstanceOf<IEnumerable<byte[]>>(row.GetValue<object>("sample_udt_list"));
+            Assert.That(row.GetValue<object>("sample_udt_list"), Is.Not.Null);
+            ClassicAssert.IsInstanceOf<IEnumerable<byte[]>>(row.GetValue<object>("sample_udt_list"));
 
             row = localSession.Execute("SELECT id, sample_udt.text_sample from temp_table").First();
-            Assert.AreEqual("one", row.GetValue<string>("sample_udt.text_sample"));
+            Assert.That("one", Is.EqualTo(row.GetValue<string>("sample_udt.text_sample")));
 
             //Trying to encode an unmapped type should throw
             var statement = new SimpleStatement("INSERT INTO temp_table (id, sample_udt) VALUES (?, ?)", 2, new DummyClass());
@@ -460,29 +461,29 @@ namespace Cassandra.IntegrationTests.Core
 
             void AssertAreEqualPhone(Phone v)
             {
-                Assert.AreEqual("home phone", v.Alias);
-                Assert.AreEqual("123", v.Number);
-                Assert.AreEqual(34, v.CountryCode);
-                Assert.AreEqual(date, v.VerifiedAt);
-                Assert.AreEqual(PhoneType.Home, v.PhoneType);
+                Assert.That("home phone", Is.EqualTo(v.Alias));
+                Assert.That("123", Is.EqualTo(v.Number));
+                Assert.That(34, Is.EqualTo(v.CountryCode));
+                Assert.That(date, Is.EqualTo(v.VerifiedAt));
+                Assert.That(PhoneType.Home, Is.EqualTo(v.PhoneType));
             }
 
             var value = row.GetValue<Phone>("main_phone");
-            Assert.NotNull(value);
+            Assert.That(value, Is.Not.Null);
             AssertAreEqualPhone(value);
             
             var valueChild = row.GetValue<Phone2>("main_phone");
-            Assert.NotNull(valueChild);
+            Assert.That(valueChild, Is.Not.Null);
             AssertAreEqualPhone(valueChild);
 
             var valueList = row.GetValue<IEnumerable<Phone>>("phones");
             var valueInsideList = valueList.Single();
-            Assert.NotNull(valueInsideList);
+            Assert.That(valueInsideList, Is.Not.Null);
             AssertAreEqualPhone(valueInsideList);
             
             var valueListChild = row.GetValue<IEnumerable<Phone2>>("phones");
             var valueInsideListChild = valueListChild.Single();
-            Assert.NotNull(valueInsideListChild);
+            Assert.That(valueInsideListChild, Is.Not.Null);
             AssertAreEqualPhone(value);
         }
 
@@ -540,22 +541,22 @@ namespace Cassandra.IntegrationTests.Core
 
             var rs = localSession.Execute(new SimpleStatement("SELECT * FROM table_udt_collections WHERE id = ?", 1)).ToList();
             CollectionAssert.AreEqual(udtList, rs.Single().GetValue<List<UdtWithCollections>>("udt_list"));
-            Assert.AreEqual(udtList[0], rs.Single().GetValue<UdtWithCollections>("udt"));
-            Assert.AreEqual(100, rs.Single().GetValue<int?>("nullable_id"));
+            Assert.That(udtList[0], Is.EqualTo(rs.Single().GetValue<UdtWithCollections>("udt")));
+            Assert.That(100, Is.EqualTo(rs.Single().GetValue<int?>("nullable_id")));
 
             var ps = localSession.Prepare("SELECT * FROM table_udt_collections WHERE id = ?");
             rs = localSession.Execute(ps.Bind(2)).ToList();
             CollectionAssert.AreEqual(udtList, rs.Single().GetValue<List<UdtWithCollections>>("udt_list"));
-            Assert.AreEqual(udtList[1], rs.Single().GetValue<UdtWithCollections>("udt"));
-            Assert.IsNull(rs.Single().GetValue<int?>("nullable_id"));
+            Assert.That(udtList[1], Is.EqualTo(rs.Single().GetValue<UdtWithCollections>("udt")));
+            Assert.That(rs.Single().GetValue<int?>("nullable_id"), Is.Null);
 
             rs = localSession.Execute(ps.Bind(3)).ToList();
             CollectionAssert.AreEqual(udtList, rs.Single().GetValue<List<UdtWithCollections>>("udt_list"));
-            Assert.AreEqual(udtList[2], rs.Single().GetValue<UdtWithCollections>("udt"));
+            Assert.That(udtList[2], Is.EqualTo(rs.Single().GetValue<UdtWithCollections>("udt")));
 
             rs = localSession.Execute(ps.Bind(4)).ToList();
-            Assert.IsNull(rs.Single().GetValue<List<UdtWithCollections>>("udt_list"));
-            Assert.IsNull(rs.Single().GetValue<UdtWithCollections>("udt"));
+            Assert.That(rs.Single().GetValue<List<UdtWithCollections>>("udt_list"), Is.Null);
+            Assert.That(rs.Single().GetValue<UdtWithCollections>("udt"), Is.Null);
         }
 
         [Test]

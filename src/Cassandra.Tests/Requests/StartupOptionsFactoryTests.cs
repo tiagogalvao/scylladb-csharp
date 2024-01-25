@@ -32,28 +32,28 @@ namespace Cassandra.Tests.Requests
 
             var options = factory.CreateStartupOptions(new ProtocolOptions().SetNoCompact(true).SetCompression(CompressionType.Snappy));
 
-            Assert.AreEqual(6, options.Count);
-            Assert.AreEqual("snappy", options["COMPRESSION"]);
-            Assert.AreEqual("true", options["NO_COMPACT"]);
+            Assert.That(6, Is.EqualTo(options.Count));
+            Assert.That("snappy", Is.EqualTo(options["COMPRESSION"]));
+            Assert.That("true", Is.EqualTo(options["NO_COMPACT"]));
             var driverName = options["DRIVER_NAME"];
-            Assert.True(driverName.Contains("DataStax") && driverName.Contains("C# Driver"), driverName);
-            Assert.AreEqual("3.0.0", options["CQL_VERSION"]);
+            Assert.That(driverName.Contains("DataStax") && driverName.Contains("C# Driver"), Is.True, driverName);
+            Assert.That("3.0.0", Is.EqualTo(options["CQL_VERSION"]));
 
             var assemblyVersion = AssemblyHelpers.GetAssembly(typeof(Cluster)).GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
-            Assert.AreEqual(assemblyVersion, options["DRIVER_VERSION"]);
+            Assert.That(assemblyVersion, Is.EqualTo(options["DRIVER_VERSION"]));
             var indexOfVersionSuffix = assemblyVersion.IndexOf('-');
             var versionPrefix = indexOfVersionSuffix == -1 ? assemblyVersion : assemblyVersion.Substring(0, indexOfVersionSuffix);
             var version = Version.Parse(versionPrefix);
-            Assert.Greater(version, new Version(1, 0));
+            Assert.That(version, Is.GreaterThan(new Version(1, 0)));
 
             //// commented this so it doesn't break when version is bumped, tested this with and without suffix
             //// with suffix
-            //Assert.AreEqual("3.8.0", versionPrefix);
-            //Assert.AreEqual("3.8.0-alpha2", assemblyVersion);
+            //Assert.That("3.8.0", versionPrefix);
+            //Assert.That("3.8.0-alpha2", assemblyVersion);
             ////
             //// without suffix
-            // Assert.AreEqual("3.8.0", versionPrefix);
-            // Assert.AreEqual("3.8.0", assemblyVersion);
+            // Assert.That("3.8.0", versionPrefix);
+            // Assert.That("3.8.0", assemblyVersion);
         }
         
         [Test]
@@ -66,23 +66,23 @@ namespace Cassandra.Tests.Requests
 
             var options = factory.CreateStartupOptions(new ProtocolOptions().SetNoCompact(true).SetCompression(CompressionType.Snappy));
 
-            Assert.AreEqual(8, options.Count);
-            Assert.AreEqual("snappy", options["COMPRESSION"]);
-            Assert.AreEqual("true", options["NO_COMPACT"]);
+            Assert.That(8, Is.EqualTo(options.Count));
+            Assert.That("snappy", Is.EqualTo(options["COMPRESSION"]));
+            Assert.That("true", Is.EqualTo(options["NO_COMPACT"]));
             var driverName = options["DRIVER_NAME"];
-            Assert.True(driverName.Contains("DataStax") && driverName.Contains("C# Driver"), driverName);
-            Assert.AreEqual("3.0.0", options["CQL_VERSION"]);
+            Assert.That(driverName.Contains("DataStax") && driverName.Contains("C# Driver"), Is.True, driverName);
+            Assert.That("3.0.0", Is.EqualTo(options["CQL_VERSION"]));
 
             var assemblyVersion = AssemblyHelpers.GetAssembly(typeof(Cluster)).GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
-            Assert.AreEqual(assemblyVersion, options["DRIVER_VERSION"]);
+            Assert.That(assemblyVersion, Is.EqualTo(options["DRIVER_VERSION"]));
             var indexOfVersionSuffix = assemblyVersion.IndexOf('-');
             var versionPrefix = indexOfVersionSuffix == -1 ? assemblyVersion : assemblyVersion.Substring(0, indexOfVersionSuffix);
             var version = Version.Parse(versionPrefix);
-            Assert.Greater(version, new Version(1, 0));
+            Assert.That(version, Is.GreaterThan(new Version(1, 0)));
 
-            Assert.AreEqual(appName, options["APPLICATION_NAME"]);
-            Assert.AreEqual(appVersion, options["APPLICATION_VERSION"]);
-            Assert.AreEqual(clusterId.ToString(), options["CLIENT_ID"]);
+            Assert.That(appName, Is.EqualTo(options["APPLICATION_NAME"]));
+            Assert.That(appVersion, Is.EqualTo(options["APPLICATION_VERSION"]));
+            Assert.That(clusterId.ToString(), Is.EqualTo(options["CLIENT_ID"]));
         }
 
         [Test]
@@ -93,9 +93,9 @@ namespace Cassandra.Tests.Requests
 
             var options = factory.CreateStartupOptions(new ProtocolOptions().SetNoCompact(true).SetCompression(CompressionType.Snappy));
 
-            Assert.AreEqual(6, options.Count);
-            Assert.IsFalse(options.ContainsKey("APPLICATION_NAME"));
-            Assert.IsFalse(options.ContainsKey("APPLICATION_VERSION"));
+            Assert.That(6, Is.EqualTo(options.Count));
+            Assert.That(options.ContainsKey("APPLICATION_NAME"), Is.False);
+            Assert.That(options.ContainsKey("APPLICATION_VERSION"), Is.False);
         }
     }
 }

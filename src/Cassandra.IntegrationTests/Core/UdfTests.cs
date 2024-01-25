@@ -22,7 +22,9 @@ using System.Threading.Tasks;
 using Cassandra.IntegrationTests.TestBase;
 using Cassandra.IntegrationTests.TestClusterManagement;
 using Cassandra.Tests;
+using Cassandra.Tests.TestHelpers;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Core
 {
@@ -112,49 +114,49 @@ namespace Cassandra.IntegrationTests.Core
         {
             var cluster = GetCluster(metadataSync);
             var ks = cluster.Metadata.GetKeyspace("ks_udf");
-            Assert.NotNull(ks);
+            Assert.That(ks, Is.Not.Null);
             var func = ks.GetFunction("plus", new [] {"int", "int"});
             if (metadataSync)
             {
                 //it is the same as retrieving from Metadata, it gets cached
-                Assert.AreEqual(func, cluster.Metadata.GetFunction("ks_udf", "plus", new [] {"int", "int"}));
+                Assert.That(func, Is.EqualTo(cluster.Metadata.GetFunction("ks_udf", "plus", new [] {"int", "int"})));
             }
             else
             {
-                Assert.AreNotEqual(func, cluster.Metadata.GetFunction("ks_udf", "plus", new [] {"int", "int"}));
+                Assert.That(func, Is.Not.EqualTo(cluster.Metadata.GetFunction("ks_udf", "plus", new [] {"int", "int"})));
             }
-            Assert.NotNull(func);
-            Assert.AreEqual("plus", func.Name);
-            Assert.AreEqual("ks_udf", func.KeyspaceName);
+            Assert.That(func, Is.Not.Null);
+            Assert.That("plus", Is.EqualTo(func.Name));
+            Assert.That("ks_udf", Is.EqualTo(func.KeyspaceName));
             CollectionAssert.AreEqual(new [] {"s", "v"}, func.ArgumentNames);
-            Assert.AreEqual(2, func.ArgumentTypes.Length);
-            Assert.AreEqual(ColumnTypeCode.Int, func.ArgumentTypes[0].TypeCode);
-            Assert.AreEqual(ColumnTypeCode.Int, func.ArgumentTypes[1].TypeCode);
-            Assert.AreEqual("return s+v;", func.Body);
-            Assert.AreEqual("java", func.Language);
-            Assert.AreEqual(ColumnTypeCode.Int, func.ReturnType.TypeCode);
-            Assert.AreEqual(false, func.CalledOnNullInput);
+            Assert.That(2, Is.EqualTo(func.ArgumentTypes.Length));
+            Assert.That(ColumnTypeCode.Int, Is.EqualTo(func.ArgumentTypes[0].TypeCode));
+            Assert.That(ColumnTypeCode.Int, Is.EqualTo(func.ArgumentTypes[1].TypeCode));
+            Assert.That("return s+v;", Is.EqualTo(func.Body));
+            Assert.That("java", Is.EqualTo(func.Language));
+            Assert.That(ColumnTypeCode.Int, Is.EqualTo(func.ReturnType.TypeCode));
+            Assert.That(false, Is.EqualTo(func.CalledOnNullInput));
         }
 
         [Test, TestCase(true), TestCase(false), TestCassandraVersion(2, 2)]
         public void GetFunction_Should_Retrieve_Metadata_Of_Cql_Function_Without_Parameters(bool metadataSync)
         {
             var ks = GetCluster(metadataSync).Metadata.GetKeyspace("ks_udf");
-            Assert.NotNull(ks);
+            Assert.That(ks, Is.Not.Null);
             var func = ks.GetFunction("return_one", Array.Empty<string>());
-            Assert.NotNull(func);
-            Assert.AreEqual("return_one", func.Name);
-            Assert.AreEqual("ks_udf", func.KeyspaceName);
-            Assert.AreEqual(0, func.ArgumentNames.Length);
-            Assert.AreEqual(0, func.ArgumentTypes.Length);
-            Assert.AreEqual(0, func.Signature.Length);
-            Assert.AreEqual("return 1;", func.Body);
-            Assert.AreEqual("java", func.Language);
-            Assert.AreEqual(ColumnTypeCode.Int, func.ReturnType.TypeCode);
-            Assert.AreEqual(false, func.CalledOnNullInput);
-            Assert.False(func.Monotonic);
-            Assert.False(func.Deterministic);
-            Assert.AreEqual(func.MonotonicOn, Array.Empty<string>());
+            Assert.That(func, Is.Not.Null);
+            Assert.That("return_one", Is.EqualTo(func.Name));
+            Assert.That("ks_udf", Is.EqualTo(func.KeyspaceName));
+            Assert.That(0, Is.EqualTo(func.ArgumentNames.Length));
+            Assert.That(0, Is.EqualTo(func.ArgumentTypes.Length));
+            Assert.That(0, Is.EqualTo(func.Signature.Length));
+            Assert.That("return 1;", Is.EqualTo(func.Body));
+            Assert.That("java", Is.EqualTo(func.Language));
+            Assert.That(ColumnTypeCode.Int, Is.EqualTo(func.ReturnType.TypeCode));
+            Assert.That(false, Is.EqualTo(func.CalledOnNullInput));
+            Assert.That(func.Monotonic, Is.False);
+            Assert.That(func.Deterministic, Is.False);
+            Assert.That(func.MonotonicOn, Is.EqualTo(Array.Empty<string>()));
         }
 
         [Test, TestCase(true), TestCase(false), TestCassandraVersion(2, 2)]
@@ -162,36 +164,36 @@ namespace Cassandra.IntegrationTests.Core
         {
             var cluster = GetCluster(metadataSync);
             var ks = cluster.Metadata.GetKeyspace("ks_udf");
-            Assert.NotNull(ks);
-            Assert.NotNull(ks.GetFunction("plus", new[] { "bigint", "bigint" }));
-            Assert.Null(ks.GetFunction("PLUS", new[] { "bigint", "bigint" }));
-            Assert.Null(ks.GetFunction("plus", new[] { "BIGINT", "bigint" }));
+            Assert.That(ks, Is.Not.Null);
+            Assert.That(ks.GetFunction("plus", new[] { "bigint", "bigint" }), Is.Not.Null);
+            Assert.That(ks.GetFunction("PLUS", new[] { "bigint", "bigint" }), Is.Null);
+            Assert.That(ks.GetFunction("plus", new[] { "BIGINT", "bigint" }), Is.Null);
         }
 
         [Test, TestCase(true), TestCase(false), TestCassandraVersion(2, 2)]
         public void GetFunction_Should_Return_Null_When_Not_Found(bool metadataSync)
         {
             var ks = GetCluster(metadataSync).Metadata.GetKeyspace("ks_udf");
-            Assert.NotNull(ks);
+            Assert.That(ks, Is.Not.Null);
             var func = ks.GetFunction("func_does_not_exists", Array.Empty<string>());
-            Assert.Null(func);
+            Assert.That(func, Is.Null);
         }
 
         [Test, TestCase(true), TestCase(false), TestCassandraVersion(2, 2)]
         public void GetFunction_Should_Return_Null_When_Not_Found_By_Signature(bool metadataSync)
         {
             var ks = GetCluster(metadataSync).Metadata.GetKeyspace("ks_udf");
-            Assert.NotNull(ks);
+            Assert.That(ks, Is.Not.Null);
             var func = ks.GetFunction("plus", new[] { "text", "text" });
-            Assert.Null(func);
+            Assert.That(func, Is.Null);
         }
 
         [Test, TestCase(true), TestCase(false), TestCassandraVersion(2, 2)]
         public void GetFunction_Should_Cache_The_Metadata(bool metadataSync)
         {
             var ks = GetCluster(metadataSync).Metadata.GetKeyspace("ks_udf");
-            Assert.NotNull(ks);
-            Assert.AreEqual(ks.GetFunction("plus", new[] { "text", "text" }), ks.GetFunction("plus", new[] { "text", "text" }));
+            Assert.That(ks, Is.Not.Null);
+            ClassicAssert.Equals(ks.GetFunction("plus", new[] { "text", "text" }), ks.GetFunction("plus", new[] { "text", "text" }));
         }
 
         [Test, TestCase(true), TestCase(false), TestCassandraVersion(2, 2)]
@@ -209,18 +211,18 @@ namespace Cassandra.IntegrationTests.Core
                                 .Value
                                 .GetFunction("stringify", new[] { "int" });
             var ks = cluster.Metadata.GetKeyspace("ks_udf");
-            Assert.NotNull(ks);
+            Assert.That(ks, Is.Not.Null);
             var func = cluster.Metadata.GetFunction("ks_udf", "stringify", new[] { "int" });
-            Assert.NotNull(func);
-            Assert.AreEqual("return Integer.toString(i);", func.Body);
+            Assert.That(func, Is.Not.Null);
+            Assert.That("return Integer.toString(i);", Is.EqualTo(func.Body));
             session.Execute("CREATE OR REPLACE FUNCTION stringify(i int) RETURNS NULL ON NULL INPUT RETURNS text LANGUAGE java AS 'return Integer.toString(i) + \"hello\";'");
             if (metadataSync)
             {
                 TestHelper.RetryAssert(() =>
                 {
                     func = cluster2.Metadata.GetFunction("ks_udf", "stringify", new[] { "int" });
-                    Assert.NotNull(func);
-                    Assert.AreEqual("return Integer.toString(i) + \"hello\";", func.Body);
+                    Assert.That(func, Is.Not.Null);
+                    Assert.That("return Integer.toString(i) + \"hello\";", Is.EqualTo(func.Body));
                 }, 100, 100);
             }
             else
@@ -230,8 +232,8 @@ namespace Cassandra.IntegrationTests.Core
                                .Single(kvp => kvp.Key == "ks_udf")
                                .Value
                                .GetFunction("stringify", new[] { "int" });
-                Assert.IsNotNull(func);
-                Assert.AreEqual("return Integer.toString(i);", func.Body); // event wasnt processed
+                Assert.That(func, Is.Not.Null);
+                Assert.That("return Integer.toString(i);", Is.EqualTo(func.Body)); // event wasnt processed
             }
         }
 
@@ -240,19 +242,19 @@ namespace Cassandra.IntegrationTests.Core
         {
             var cluster = GetCluster(metadataSync);
             var ks = cluster.Metadata.GetKeyspace("ks_udf");
-            Assert.NotNull(ks);
+            Assert.That(ks, Is.Not.Null);
             var aggregate = ks.GetAggregate("sum", new[] { "bigint" });
-            Assert.NotNull(aggregate);
-            Assert.AreEqual("sum", aggregate.Name);
-            Assert.AreEqual("ks_udf", aggregate.KeyspaceName);
-            Assert.AreEqual(1, aggregate.ArgumentTypes.Length);
+            Assert.That(aggregate, Is.Not.Null);
+            Assert.That("sum", Is.EqualTo(aggregate.Name));
+            Assert.That("ks_udf", Is.EqualTo(aggregate.KeyspaceName));
+            Assert.That(1, Is.EqualTo(aggregate.ArgumentTypes.Length));
             CollectionAssert.AreEqual(new[] { "bigint" }, aggregate.Signature);
-            Assert.AreEqual(ColumnTypeCode.Bigint, aggregate.ArgumentTypes[0].TypeCode);
-            Assert.AreEqual(ColumnTypeCode.Bigint, aggregate.ReturnType.TypeCode);
-            Assert.AreEqual(ColumnTypeCode.Bigint, aggregate.StateType.TypeCode);
-            Assert.AreEqual("2", aggregate.InitialCondition);
-            Assert.AreEqual("plus", aggregate.StateFunction);
-            Assert.False(aggregate.Deterministic);
+            Assert.That(ColumnTypeCode.Bigint, Is.EqualTo(aggregate.ArgumentTypes[0].TypeCode));
+            Assert.That(ColumnTypeCode.Bigint, Is.EqualTo(aggregate.ReturnType.TypeCode));
+            Assert.That(ColumnTypeCode.Bigint, Is.EqualTo(aggregate.StateType.TypeCode));
+            Assert.That("2", Is.EqualTo(aggregate.InitialCondition));
+            Assert.That("plus", Is.EqualTo(aggregate.StateFunction));
+            Assert.That(aggregate.Deterministic, Is.False);
         }
 
         [Test, TestCase(true), TestCase(false), TestCassandraVersion(2, 2)]
@@ -260,8 +262,8 @@ namespace Cassandra.IntegrationTests.Core
         {
             var cluster = GetCluster(metadataSync);
             var ks = cluster.Metadata.GetKeyspace("ks_udf");
-            Assert.NotNull(ks);
-            Assert.Null(ks.GetAggregate("aggr_does_not_exists", new[] { "bigint" }));
+            Assert.That(ks, Is.Not.Null);
+            Assert.That(ks.GetAggregate("aggr_does_not_exists", new[] { "bigint" }), Is.Null);
         }
 
         [Test, TestCase(true), TestCase(false), TestCassandraVersion(2, 2)]
@@ -269,18 +271,18 @@ namespace Cassandra.IntegrationTests.Core
         {
             var cluster = GetCluster(metadataSync);
             var ks = cluster.Metadata.GetKeyspace("ks_udf");
-            Assert.NotNull(ks);
-            Assert.NotNull(ks.GetAggregate("sum", new[] { "bigint" }));
-            Assert.Null(ks.GetAggregate("SUM", new[] { "bigint" }));
-            Assert.Null(ks.GetAggregate("sum", new[] { "BIGINT" }));
+            Assert.That(ks, Is.Not.Null);
+            Assert.That(ks.GetAggregate("sum", new[] { "bigint" }), Is.Not.Null);
+            Assert.That(ks.GetAggregate("SUM", new[] { "bigint" }), Is.Null);
+            Assert.That(ks.GetAggregate("sum", new[] { "BIGINT" }), Is.Null);
         }
 
         [Test, TestCase(true), TestCase(false), TestCassandraVersion(2, 2)]
         public void GetAggregate_Should_Cache_The_Metadata(bool metadataSync)
         {
             var ks = GetCluster(metadataSync).Metadata.GetKeyspace("ks_udf");
-            Assert.NotNull(ks);
-            Assert.AreEqual(ks.GetAggregate("sum", new[] { "int" }), ks.GetAggregate("sum", new[] { "int" }));
+            Assert.That(ks, Is.Not.Null);
+            ClassicAssert.Equals(ks.GetAggregate("sum", new[] { "int" }), ks.GetAggregate("sum", new[] { "int" }));
         }
 
         [Test, TestCase(true), TestCase(false), TestCassandraVersion(2, 2)]
@@ -298,9 +300,9 @@ namespace Cassandra.IntegrationTests.Core
                             .Value
                             .GetAggregate("sum2", new[] { "int" });
             var ks = cluster.Metadata.GetKeyspace("ks_udf");
-            Assert.NotNull(ks);
+            Assert.That(ks, Is.Not.Null);
             var aggregate = cluster.Metadata.GetAggregate("ks_udf", "sum2", new[] {"int"});
-            Assert.AreEqual("0", aggregate.InitialCondition);
+            Assert.That("0", Is.EqualTo(aggregate.InitialCondition));
             session.Execute("CREATE OR REPLACE AGGREGATE ks_udf.sum2(int) SFUNC plus STYPE int INITCOND 200");
             TestUtils.WaitForSchemaAgreement(cluster);
             if (metadataSync)
@@ -308,8 +310,8 @@ namespace Cassandra.IntegrationTests.Core
                 TestHelper.RetryAssert(() =>
                 {
                     aggregate = cluster.Metadata.GetAggregate("ks_udf", "sum2", new[] { "int" });
-                    Assert.NotNull(aggregate);
-                    Assert.AreEqual("200", aggregate.InitialCondition);
+                    Assert.That(aggregate, Is.Not.Null);
+                    Assert.That("200", Is.EqualTo(aggregate.InitialCondition));
                 }, 100, 100);
             }
             else
@@ -319,8 +321,8 @@ namespace Cassandra.IntegrationTests.Core
                                     .Single(kvp => kvp.Key == "ks_udf")
                                     .Value
                                     .GetAggregate("sum2", new[] { "int" });
-                Assert.IsNotNull(aggregate);
-                Assert.AreEqual("0", aggregate.InitialCondition); // event wasnt processed
+                Assert.That(aggregate, Is.Not.Null);
+                Assert.That("0", Is.EqualTo(aggregate.InitialCondition)); // event wasnt processed
             }
         }
 
@@ -330,8 +332,8 @@ namespace Cassandra.IntegrationTests.Core
         {
             var cluster = GetCluster(metadataSync);
             var aggregate = cluster.Metadata.GetAggregate("ks_udf", "deta", new[] {"int"});
-            Assert.AreEqual("plus", aggregate.StateFunction);
-            Assert.True(aggregate.Deterministic);
+            Assert.That("plus", Is.EqualTo(aggregate.StateFunction));
+            Assert.That(aggregate.Deterministic, Is.True);
         }
 
         [Test, TestCase(true), TestCase(false)]
@@ -340,9 +342,9 @@ namespace Cassandra.IntegrationTests.Core
         {
             var cluster = GetCluster(metadataSync);
             var fn = cluster.Metadata.GetFunction("ks_udf", "md", new[] {"int", "int"});
-            Assert.True(fn.Deterministic);
-            Assert.True(fn.Monotonic);
-            Assert.AreEqual(new []{ "dividend", "divisor"}, fn.MonotonicOn);
+            Assert.That(fn.Deterministic, Is.True);
+            Assert.That(fn.Monotonic, Is.True);
+            Assert.That(new []{ "dividend", "divisor"}, Is.EqualTo(fn.MonotonicOn));
         }
 
         [Test, TestCase(true), TestCase(false)]
@@ -351,9 +353,9 @@ namespace Cassandra.IntegrationTests.Core
         {
             var cluster = GetCluster(metadataSync);
             var fn = cluster.Metadata.GetFunction("ks_udf", "monotonic_on", new[] {"int", "int"});
-            Assert.False(fn.Deterministic);
-            Assert.False(fn.Monotonic);
-            Assert.AreEqual(new []{ "dividend"}, fn.MonotonicOn);
+            Assert.That(fn.Deterministic, Is.False);
+            Assert.That(fn.Monotonic, Is.False);
+            Assert.That(new []{ "dividend"}, Is.EqualTo(fn.MonotonicOn));
         }
     }
 }

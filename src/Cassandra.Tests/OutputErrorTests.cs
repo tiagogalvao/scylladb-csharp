@@ -35,8 +35,8 @@ namespace Cassandra.Tests
             var caught = Assert.Catch<DriverInternalError>(() => OutputError.CreateOutputError(unknownCode, unknownMessage, frameReader));
 
             // Verify the exception message contains the code and the message from the server
-            Assert.True(caught.Message.Contains(unknownCode.ToString()));
-            Assert.True(caught.Message.Contains(unknownMessage));
+            Assert.That(caught.Message.Contains(unknownCode.ToString()), Is.True);
+            Assert.That(caught.Message.Contains(unknownMessage), Is.True);
         }
     }
 }

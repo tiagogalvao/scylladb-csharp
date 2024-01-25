@@ -27,6 +27,7 @@ using System.Threading;
 using Cassandra.IntegrationTests.TestClusterManagement;
 using Cassandra.Tests;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.TestBase
 {
@@ -158,7 +159,7 @@ namespace Cassandra.IntegrationTests.TestBase
                 Thread.Sleep(500);
             }
             // Validate host was queried
-            Assert.True(hostsQueried.Any(ip => ip.ToString() == newlyBootstrappedHost), "Newly bootstrapped node was not queried!");
+            Assert.That(hostsQueried.Any(ip => ip.ToString() == newlyBootstrappedHost), Is.True, "Newly bootstrapped node was not queried!");
         }
 
         /// <summary>
@@ -661,7 +662,6 @@ namespace Cassandra.IntegrationTests.TestBase
                 cluster.Connect();
                 foreach (var host in cluster.Metadata.AllHosts())
                 {
-
                     CollectionAssert.AreEquivalent(expectedWorkloads, host.Workloads);
                 }
             }

@@ -124,8 +124,8 @@ namespace Cassandra.Tests
 
             var sut = new RequestHandler(sessionMock, new SerializerManager(ProtocolVersion.V4).GetCurrentSerializer());
             var validHost = sut.GetNextValidHost(triedHosts);
-            Assert.NotNull(validHost);
-            Assert.AreEqual(host, validHost.Host);
+            Assert.That(validHost, Is.Not.Null);
+            Assert.That(host, Is.EqualTo(validHost.Host));
         }
     }
 }

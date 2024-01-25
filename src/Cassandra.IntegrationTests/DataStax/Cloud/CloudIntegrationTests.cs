@@ -53,9 +53,9 @@ namespace Cassandra.IntegrationTests.DataStax.Cloud
                     b => b
                          .WithSocketOptions(new SocketOptions().SetReadTimeoutMillis(5000).SetConnectTimeoutMillis(10000))
                          .WithQueryTimeout(5000)));
-            ClassicAssert.IsTrue(ex.Message.Contains("https://192.0.2.255:30443/metadata"), ex.Message);
-            ClassicAssert.IsTrue(ex.Message.Contains("There was an error fetching the metadata information"), ex.Message);
-            ClassicAssert.IsTrue(ex.Message.Contains("Please make sure your cluster is not parked or terminated."), ex.Message);
+            Assert.That(ex.Message.Contains("https://192.0.2.255:30443/metadata"), Is.True, ex.Message);
+            Assert.That(ex.Message.Contains("There was an error fetching the metadata information"), Is.True, ex.Message);
+            Assert.That(ex.Message.Contains("Please make sure your cluster is not parked or terminated."), Is.True, ex.Message);
         }
 
         [Test]

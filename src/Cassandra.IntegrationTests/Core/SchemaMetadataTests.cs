@@ -23,6 +23,7 @@ using Cassandra.IntegrationTests.TestClusterManagement;
 using Cassandra.Tasks;
 using Cassandra.Tests;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using SortOrder = Cassandra.DataCollectionMetadata.SortOrder;
 
 namespace Cassandra.IntegrationTests.Core
@@ -67,19 +68,19 @@ namespace Cassandra.IntegrationTests.Core
         {
             var cluster = GetNewTemporaryCluster(builder => builder.WithMetadataSyncOptions(new MetadataSyncOptions().SetMetadataSyncEnabled(metadataSync)));
             // Basic status check
-            Assert.Greater(cluster.Metadata.GetKeyspaces().Count, 0);
-            Assert.NotNull(cluster.Metadata.GetKeyspace("system"));
-            Assert.AreEqual("system", cluster.Metadata.GetKeyspace("system").Name);
+            Assert.That(cluster.Metadata.GetKeyspaces().Count, Is.GreaterThan(0));
+            Assert.That(cluster.Metadata.GetKeyspace("system"), Is.Not.Null);
+            Assert.That("system", Is.EqualTo(cluster.Metadata.GetKeyspace("system").Name));
 
-            Assert.NotNull(cluster.Metadata.GetKeyspace("system").AsCqlQuery());
+            Assert.That(cluster.Metadata.GetKeyspace("system").AsCqlQuery(), Is.Not.Null);
 
             //Not existent tables return null
-            Assert.Null(cluster.Metadata.GetKeyspace("nonExistentKeyspace_" + Randomm.RandomAlphaNum(12)));
-            Assert.Null(cluster.Metadata.GetTable("nonExistentKeyspace_" + Randomm.RandomAlphaNum(12), "nonExistentTable_" + Randomm.RandomAlphaNum(12)));
-            Assert.Null(cluster.Metadata.GetTable("system", "nonExistentTable_" + Randomm.RandomAlphaNum(12)));
+            Assert.That(cluster.Metadata.GetKeyspace("nonExistentKeyspace_" + Randomm.RandomAlphaNum(12)), Is.Null);
+            Assert.That(cluster.Metadata.GetTable("nonExistentKeyspace_" + Randomm.RandomAlphaNum(12), "nonExistentTable_" + Randomm.RandomAlphaNum(12)), Is.Null);
+            Assert.That(cluster.Metadata.GetTable("system", "nonExistentTable_" + Randomm.RandomAlphaNum(12)), Is.Null);
 
             //Case sensitive
-            Assert.Null(cluster.Metadata.GetKeyspace("SYSTEM"));
+            Assert.That(cluster.Metadata.GetKeyspace("SYSTEM"), Is.Null);
         }
 
         [Test, TestCase(true), TestCase(false), TestCassandraVersion(2, 1)]
@@ -99,31 +100,31 @@ namespace Cassandra.IntegrationTests.Core
             session.Execute(cqlType2);
             session.Execute(cqlTable);
             var table = cluster.Metadata.GetTable(keyspaceName, "user");
-            Assert.AreEqual(3, table.TableColumns.Length);
+            Assert.That(3, Is.EqualTo(table.TableColumns.Length));
             var udtColumn = table.TableColumns.First(c => c.Name == "addr");
-            Assert.AreEqual(ColumnTypeCode.Udt, udtColumn.TypeCode);
-            Assert.IsInstanceOf<UdtColumnInfo>(udtColumn.TypeInfo);
+            Assert.That(ColumnTypeCode.Udt, Is.EqualTo(udtColumn.TypeCode));
+            ClassicAssert.IsInstanceOf<UdtColumnInfo>(udtColumn.TypeInfo);
             var udtInfo = (UdtColumnInfo)udtColumn.TypeInfo;
-            Assert.AreEqual(3, udtInfo.Fields.Count);
-            Assert.AreEqual(keyspaceName + ".address", udtInfo.Name);
+            Assert.That(3, Is.EqualTo(udtInfo.Fields.Count));
+            Assert.That(keyspaceName + ".address", Is.EqualTo(udtInfo.Name));
 
             var phoneDefinition = cluster.Metadata.GetUdtDefinition(keyspaceName, "phone");
-            Assert.AreEqual(keyspaceName + ".phone", phoneDefinition.Name);
-            Assert.AreEqual(2, phoneDefinition.Fields.Count);
+            Assert.That(keyspaceName + ".phone", Is.EqualTo(phoneDefinition.Name));
+            Assert.That(2, Is.EqualTo(phoneDefinition.Fields.Count));
 
             var addressDefinition = cluster.Metadata.GetUdtDefinition(keyspaceName, "address");
-            Assert.AreEqual(keyspaceName + ".address", addressDefinition.Name);
-            Assert.AreEqual("street,ZIP,phones", String.Join(",", addressDefinition.Fields.Select(f => f.Name)));
-            Assert.AreEqual(ColumnTypeCode.Int, addressDefinition.Fields.First(f => f.Name == "ZIP").TypeCode);
+            Assert.That(keyspaceName + ".address", Is.EqualTo(addressDefinition.Name));
+            Assert.That("street,ZIP,phones", Is.EqualTo(String.Join(",", addressDefinition.Fields.Select(f => f.Name))));
+            Assert.That(ColumnTypeCode.Int, Is.EqualTo(addressDefinition.Fields.First(f => f.Name == "ZIP").TypeCode));
             var phoneSet = addressDefinition.Fields.First(f => f.Name == "phones");
-            Assert.AreEqual(ColumnTypeCode.Set, phoneSet.TypeCode);
+            Assert.That(ColumnTypeCode.Set, Is.EqualTo(phoneSet.TypeCode));
             var phoneSetSubType = (SetColumnInfo)phoneSet.TypeInfo;
-            Assert.AreEqual(ColumnTypeCode.Udt, phoneSetSubType.KeyTypeCode);
-            Assert.AreEqual(2, ((UdtColumnInfo)phoneSetSubType.KeyTypeInfo).Fields.Count);
+            Assert.That(ColumnTypeCode.Udt, Is.EqualTo(phoneSetSubType.KeyTypeCode));
+            Assert.That(2, Is.EqualTo(((UdtColumnInfo)phoneSetSubType.KeyTypeInfo).Fields.Count));
 
             var tableMetadata = cluster.Metadata.GetTable(keyspaceName, "user");
-            Assert.AreEqual(3, tableMetadata.TableColumns.Length);
-            Assert.AreEqual(ColumnTypeCode.Udt, tableMetadata.TableColumns.First(c => c.Name == "addr").TypeCode);
+            Assert.That(3, Is.EqualTo(tableMetadata.TableColumns.Length));
+            Assert.That(ColumnTypeCode.Udt, Is.EqualTo(tableMetadata.TableColumns.First(c => c.Name == "addr").TypeCode));
         }
 
         [Test, TestCase(true), TestCase(false)]
@@ -150,30 +151,30 @@ namespace Cassandra.IntegrationTests.Core
                             "c2 'CompositeType(UTF8Type, Int32Type)')");
 
             var table = cluster.Metadata.GetTable(keyspaceName, "tbl_custom");
-            Assert.AreEqual(3, table.TableColumns.Length);
+            Assert.That(3, Is.EqualTo(table.TableColumns.Length));
             var c1 = table.TableColumns.First(c => c.Name == "c1");
-            Assert.AreEqual(ColumnTypeCode.Custom, c1.TypeCode);
+            Assert.That(ColumnTypeCode.Custom, Is.EqualTo(c1.TypeCode));
             var typeInfo1 = (CustomColumnInfo)c1.TypeInfo;
-            Assert.AreEqual("tbl_custom", c1.Table);
-            Assert.AreEqual(keyspaceName, c1.Keyspace);
-            Assert.IsFalse(c1.IsFrozen);
-            Assert.IsFalse(c1.IsReversed);
+            Assert.That("tbl_custom", Is.EqualTo(c1.Table));
+            Assert.That(keyspaceName, Is.EqualTo(c1.Keyspace));
+            Assert.That(c1.IsFrozen, Is.False);
+            Assert.That(c1.IsReversed, Is.False);
             if (TestClusterManager.CheckDseVersion(new Version(6, 8), Comparison.GreaterThanOrEqualsTo))
             {
-                Assert.AreEqual(typeName3, typeInfo1.CustomTypeName);
+                Assert.That(typeName3, Is.EqualTo(typeInfo1.CustomTypeName));
             }
             else
             {
-                Assert.AreEqual(typeName1, typeInfo1.CustomTypeName);
+                Assert.That(typeName1, Is.EqualTo(typeInfo1.CustomTypeName));
             }
             var c2 = table.TableColumns.First(c => c.Name == "c2");
-            Assert.AreEqual(ColumnTypeCode.Custom, c2.TypeCode);
-            Assert.AreEqual("tbl_custom", c2.Table);
-            Assert.AreEqual(keyspaceName, c2.Keyspace);
-            Assert.IsFalse(c2.IsFrozen);
-            Assert.IsFalse(c2.IsReversed);
+            Assert.That(ColumnTypeCode.Custom, Is.EqualTo(c2.TypeCode));
+            Assert.That("tbl_custom", Is.EqualTo(c2.Table));
+            Assert.That(keyspaceName, Is.EqualTo(c2.Keyspace));
+            Assert.That(c2.IsFrozen, Is.False);
+            Assert.That(c2.IsReversed, Is.False);
             var typeInfo2 = (CustomColumnInfo)c2.TypeInfo;
-            Assert.AreEqual(typeName2, typeInfo2.CustomTypeName);
+            Assert.That(typeName2, Is.EqualTo(typeInfo2.CustomTypeName));
         }
 
         [Test, TestCase(true), TestCase(false), TestCassandraVersion(2, 1)]
@@ -191,13 +192,13 @@ namespace Cassandra.IntegrationTests.Core
             session.Execute(cqlType);
             session.Execute(cqlTable);
             var table = cluster.Metadata.GetTable(keyspaceName, "MyTable");
-            Assert.AreEqual(2, table.TableColumns.Length);
+            Assert.That(2, Is.EqualTo(table.TableColumns.Length));
             var udtColumn = table.TableColumns.First(c => c.Name == "value");
-            Assert.AreEqual(ColumnTypeCode.Udt, udtColumn.TypeCode);
-            Assert.IsInstanceOf<UdtColumnInfo>(udtColumn.TypeInfo);
+            Assert.That(ColumnTypeCode.Udt, Is.EqualTo(udtColumn.TypeCode));
+            ClassicAssert.IsInstanceOf<UdtColumnInfo>(udtColumn.TypeInfo);
             var udtInfo = (UdtColumnInfo)udtColumn.TypeInfo;
-            Assert.AreEqual(2, udtInfo.Fields.Count);
-            Assert.AreEqual(keyspaceName + ".MyUdt", udtInfo.Name);
+            Assert.That(2, Is.EqualTo(udtInfo.Fields.Count));
+            Assert.That(keyspaceName + ".MyUdt", Is.EqualTo(udtInfo.Name));
         }
 
         [Test, TestCase(true), TestCase(false), TestCassandraVersion(2, 1)]
@@ -215,7 +216,7 @@ namespace Cassandra.IntegrationTests.Core
             session.Execute(cqlTable1);
 
             var tableMetadata = cluster.Metadata.GetTable(keyspaceName, tableName);
-            Assert.AreEqual(3, tableMetadata.TableColumns.Length);
+            Assert.That(3, Is.EqualTo(tableMetadata.TableColumns.Length));
         }
 
         [Test, TestCase(true), TestCase(false)]
@@ -238,14 +239,14 @@ namespace Cassandra.IntegrationTests.Core
 
             session.Execute("INSERT INTO " + tableName1 + " (a, b, c, d) VALUES ('1', 2, 3, 4)");
             var rs = session.Execute("select * from " + tableName1);
-            Assert.True(rs.GetRows().Count() == 1);
+            Assert.That(rs.GetRows().Count() == 1, Is.True);
 
             var table = cluster.Metadata
                                .GetKeyspace(keyspaceName)
                                .GetTableMetadata(tableName1);
-            Assert.True(table.TableColumns.Length == 4);
-            Assert.AreEqual(2, table.PartitionKeys.Length);
-            Assert.AreEqual("a, b", String.Join(", ", table.PartitionKeys.Select(p => p.Name)));
+            Assert.That(table.TableColumns.Length == 4, Is.True);
+            Assert.That(2, Is.EqualTo(table.PartitionKeys.Length));
+            Assert.That("a, b", Is.EqualTo(String.Join(", ", table.PartitionKeys.Select(p => p.Name))));
 
             string tableName2 = TestUtils.GetUniqueTableName().ToLower();
             cql = "CREATE TABLE " + tableName2 + " ( " +
@@ -259,8 +260,8 @@ namespace Cassandra.IntegrationTests.Core
             table = cluster.Metadata
                            .GetKeyspace(keyspaceName)
                            .GetTableMetadata(tableName2);
-            Assert.True(table.TableColumns.Length == 4);
-            Assert.AreEqual("a, b, c", String.Join(", ", table.PartitionKeys.Select(p => p.Name)));
+            Assert.That(table.TableColumns.Length == 4, Is.True);
+            Assert.That("a, b, c", Is.EqualTo(String.Join(", ", table.PartitionKeys.Select(p => p.Name))));
 
             string tableName3 = TestUtils.GetUniqueTableName().ToLower();
             cql = "CREATE TABLE " + tableName3 + " ( " +
@@ -274,9 +275,9 @@ namespace Cassandra.IntegrationTests.Core
             table = cluster.Metadata
                            .GetKeyspace(keyspaceName)
                            .GetTableMetadata(tableName3);
-            Assert.True(table.TableColumns.Length == 4);
+            Assert.That(table.TableColumns.Length == 4, Is.True);
             //Just 1 partition key
-            Assert.AreEqual("a", String.Join(", ", table.PartitionKeys.Select(p => p.Name)));
+            Assert.That("a", Is.EqualTo(String.Join(", ", table.PartitionKeys.Select(p => p.Name))));
         }
 
         [Test, TestCase(true), TestCase(false)]
@@ -304,13 +305,13 @@ namespace Cassandra.IntegrationTests.Core
 
             session.Execute("INSERT INTO " + tableName + " (a, b, c, d) VALUES ('1', 2, '3', '4')");
             var rs = session.Execute("select * from " + tableName);
-            Assert.True(rs.GetRows().Count() == 1);
+            Assert.That(rs.GetRows().Count() == 1, Is.True);
 
             var table = cluster.Metadata
                                .GetKeyspace(keyspaceName)
                                .GetTableMetadata(tableName);
-            Assert.NotNull(table);
-            Assert.AreEqual(7, table.TableColumns.Length);
+            Assert.That(table, Is.Not.Null);
+            Assert.That(7, Is.EqualTo(table.TableColumns.Length));
             CollectionAssert.AreEqual(new[] { "a", "b" }, table.PartitionKeys.Select(p => p.Name));
             CollectionAssert.AreEqual(new [] { "a", "b"}, table.TableColumns
                 .Where(c => c.KeyType == KeyType.Partition)
@@ -348,20 +349,20 @@ namespace Cassandra.IntegrationTests.Core
                                .GetKeyspace(keyspaceName)
                                .GetTableMetadata(tableName);
 
-            Assert.AreEqual(2, table.Indexes.Count);
+            Assert.That(2, Is.EqualTo(table.Indexes.Count));
 
             var catIndex = table.Indexes["cat_index"];
-            Assert.AreEqual("cat_index", catIndex.Name);
-            Assert.AreEqual(IndexMetadata.IndexKind.Composites, catIndex.Kind);
-            Assert.AreEqual("values(categories)", catIndex.Target);
-            Assert.NotNull(catIndex.Options);
+            Assert.That("cat_index", Is.EqualTo(catIndex.Name));
+            Assert.That(IndexMetadata.IndexKind.Composites, Is.EqualTo(catIndex.Kind));
+            Assert.That("values(categories)", Is.EqualTo(catIndex.Target));
+            Assert.That(catIndex.Options, Is.Not.Null);
             var featIndex = table.Indexes["feat_key_index"];
-            Assert.AreEqual("feat_key_index", featIndex.Name);
-            Assert.AreEqual(IndexMetadata.IndexKind.Composites, featIndex.Kind);
-            Assert.AreEqual("keys(features)", featIndex.Target);
-            Assert.NotNull(featIndex.Options);
+            Assert.That("feat_key_index", Is.EqualTo(featIndex.Name));
+            Assert.That(IndexMetadata.IndexKind.Composites, Is.EqualTo(featIndex.Kind));
+            Assert.That("keys(features)", Is.EqualTo(featIndex.Target));
+            Assert.That(featIndex.Options, Is.Not.Null);
 
-            Assert.AreEqual(5, table.TableColumns.Length);
+            Assert.That(5, Is.EqualTo(table.TableColumns.Length));
         }
 
         [Test, TestCase(true), TestCase(false)]
@@ -376,35 +377,35 @@ namespace Cassandra.IntegrationTests.Core
 
             session.Execute(string.Format(TestUtils.CreateTableAllTypes, tableName));
 
-            Assert.Null(cluster.Metadata
-                                .GetKeyspace(keyspaceName)
-                                .GetTableMetadata("tbl_does_not_exists"));
+            Assert.That(cluster.Metadata
+                               .GetKeyspace(keyspaceName)
+                               .GetTableMetadata("tbl_does_not_exists"), Is.Null);
 
             var table = cluster.Metadata
                                 .GetKeyspace(keyspaceName)
                                 .GetTableMetadata(tableName);
 
-            Assert.NotNull(table);
-            Assert.AreEqual(1, table.TableColumns.Count(c => c.Name == "id"));
-            Assert.AreEqual(1, table.TableColumns.Count(c => c.Name == "ascii_sample"));
-            Assert.AreEqual(1, table.TableColumns.Count(c => c.Name == "text_sample"));
-            Assert.AreEqual(1, table.TableColumns.Count(c => c.Name == "int_sample"));
-            Assert.AreEqual(1, table.TableColumns.Count(c => c.Name == "bigint_sample"));
-            Assert.AreEqual(1, table.TableColumns.Count(c => c.Name == "float_sample"));
-            Assert.AreEqual(1, table.TableColumns.Count(c => c.Name == "double_sample"));
-            Assert.AreEqual(1, table.TableColumns.Count(c => c.Name == "decimal_sample"));
-            Assert.AreEqual(1, table.TableColumns.Count(c => c.Name == "blob_sample"));
-            Assert.AreEqual(1, table.TableColumns.Count(c => c.Name == "boolean_sample"));
-            Assert.AreEqual(1, table.TableColumns.Count(c => c.Name == "timestamp_sample"));
-            Assert.AreEqual(1, table.TableColumns.Count(c => c.Name == "inet_sample"));
-            Assert.AreEqual(1, table.TableColumns.Count(c => c.Name == "timeuuid_sample"));
-            Assert.AreEqual(1, table.TableColumns.Count(c => c.Name == "map_sample"));
-            Assert.AreEqual(1, table.TableColumns.Count(c => c.Name == "list_sample"));
-            Assert.AreEqual(1, table.TableColumns.Count(c => c.Name == "set_sample"));
+            Assert.That(table, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(table.TableColumns.Count(c => c.Name == "id")));
+            Assert.That(1, Is.EqualTo(table.TableColumns.Count(c => c.Name == "ascii_sample")));
+            Assert.That(1, Is.EqualTo(table.TableColumns.Count(c => c.Name == "text_sample")));
+            Assert.That(1, Is.EqualTo(table.TableColumns.Count(c => c.Name == "int_sample")));
+            Assert.That(1, Is.EqualTo(table.TableColumns.Count(c => c.Name == "bigint_sample")));
+            Assert.That(1, Is.EqualTo(table.TableColumns.Count(c => c.Name == "float_sample")));
+            Assert.That(1, Is.EqualTo(table.TableColumns.Count(c => c.Name == "double_sample")));
+            Assert.That(1, Is.EqualTo(table.TableColumns.Count(c => c.Name == "decimal_sample")));
+            Assert.That(1, Is.EqualTo(table.TableColumns.Count(c => c.Name == "blob_sample")));
+            Assert.That(1, Is.EqualTo(table.TableColumns.Count(c => c.Name == "boolean_sample")));
+            Assert.That(1, Is.EqualTo(table.TableColumns.Count(c => c.Name == "timestamp_sample")));
+            Assert.That(1, Is.EqualTo(table.TableColumns.Count(c => c.Name == "inet_sample")));
+            Assert.That(1, Is.EqualTo(table.TableColumns.Count(c => c.Name == "timeuuid_sample")));
+            Assert.That(1, Is.EqualTo(table.TableColumns.Count(c => c.Name == "map_sample")));
+            Assert.That(1, Is.EqualTo(table.TableColumns.Count(c => c.Name == "list_sample")));
+            Assert.That(1, Is.EqualTo(table.TableColumns.Count(c => c.Name == "set_sample")));
 
             var tableByAll = cluster.Metadata.GetKeyspace(keyspaceName).GetTablesMetadata().First(t => t.Name == tableName);
-            Assert.NotNull(tableByAll);
-            Assert.AreEqual(table.TableColumns.Length, tableByAll.TableColumns.Length);
+            Assert.That(tableByAll, Is.Not.Null);
+            Assert.That(table.TableColumns.Length, Is.EqualTo(tableByAll.TableColumns.Length));
 
             var columnLength = table.TableColumns.Length;
             //Alter table and check for changes
@@ -413,8 +414,8 @@ namespace Cassandra.IntegrationTests.Core
             table = cluster.Metadata
                             .GetKeyspace(keyspaceName)
                             .GetTableMetadata(tableName);
-            Assert.AreEqual(columnLength + 1, table.TableColumns.Length);
-            Assert.AreEqual(1, table.TableColumns.Count(c => c.Name == "added_col"));
+            Assert.That(columnLength + 1, Is.EqualTo(table.TableColumns.Length));
+            Assert.That(1, Is.EqualTo(table.TableColumns.Count(c => c.Name == "added_col")));
         }
 
         [Test, TestCase(true), TestCase(false)]
@@ -424,10 +425,10 @@ namespace Cassandra.IntegrationTests.Core
             cluster.Connect();
             var t = cluster.Metadata.GetTableAsync("ks_does_not_exist", "t1");
             var table = TaskHelper.WaitToComplete(t);
-            Assert.Null(table);
+            Assert.That(table, Is.Null);
             t = cluster.Metadata.GetTableAsync("system", "table_does_not_exist");
             table = TaskHelper.WaitToComplete(t);
-            Assert.Null(table);
+            Assert.That(table, Is.Null);
         }
 
         /// Tests that materialized view metadata is being updated
@@ -460,7 +461,7 @@ namespace Cassandra.IntegrationTests.Core
                 session.Execute(q);
             }
             var view = cluster.Metadata.GetMaterializedView("ks_view_meta3", "monthlyhigh");
-            Assert.NotNull(view);
+            Assert.That(view, Is.Not.Null);
             StringAssert.Contains("SizeTieredCompactionStrategy", view.Options.CompactionOptions["class"]);
 
             const string alterQuery = "ALTER MATERIALIZED VIEW ks_view_meta3.monthlyhigh WITH compaction = { 'class' : 'LeveledCompactionStrategy' }";
@@ -469,7 +470,7 @@ namespace Cassandra.IntegrationTests.Core
             TestHelper.RetryAssert(() =>
             {
                 view = cluster2.Metadata.GetMaterializedView("ks_view_meta3", "monthlyhigh");
-                Assert.IsNotNull(view);
+                Assert.That(view, Is.Not.Null);
                 StringAssert.Contains("LeveledCompactionStrategy", view.Options.CompactionOptions["class"]);
             }, 200, 55);
 
@@ -478,7 +479,7 @@ namespace Cassandra.IntegrationTests.Core
             //Wait for event
             TestHelper.RetryAssert(() =>
             {
-                Assert.Null(cluster2.Metadata.GetMaterializedView("ks_view_meta3", "monthlyhigh"));
+                Assert.That(cluster2.Metadata.GetMaterializedView("ks_view_meta3", "monthlyhigh"), Is.Null);
             }, 200, 55);
         }
 
@@ -515,13 +516,13 @@ namespace Cassandra.IntegrationTests.Core
             }
 
             var ks = cluster.Metadata.GetKeyspace("ks_view_meta4");
-            Assert.NotNull(ks);
+            Assert.That(ks, Is.Not.Null);
             var dailyView = ks.GetMaterializedViewMetadata("dailyhigh");
-            Assert.NotNull(dailyView);
-            Assert.NotNull(dailyView.Options);
+            Assert.That(dailyView, Is.Not.Null);
+            Assert.That(dailyView.Options, Is.Not.Null);
             var alltimeView = ks.GetMaterializedViewMetadata("alltimehigh");
-            Assert.NotNull(alltimeView);
-            Assert.NotNull(alltimeView.Options);
+            Assert.That(alltimeView, Is.Not.Null);
+            Assert.That(alltimeView.Options, Is.Not.Null);
 
             var colName = $"fouls{Math.Abs(session.GetHashCode())}";
             session.Execute($"ALTER TABLE ks_view_meta4.scores ADD {colName} INT");
@@ -529,17 +530,17 @@ namespace Cassandra.IntegrationTests.Core
             TableColumn foulMeta = null;
             TestHelper.RetryAssert(() =>
             {
-                Assert.NotNull(cluster2.Metadata.GetKeyspace("ks_view_meta4")?.GetTableMetadata("scores").ColumnsByName[colName]);
+                Assert.That(cluster2.Metadata.GetKeyspace("ks_view_meta4")?.GetTableMetadata("scores").ColumnsByName[colName], Is.Not.Null);
                 alltimeView = cluster2.Metadata.GetMaterializedView("ks_view_meta4", "alltimehigh");
-                Assert.IsNotNull(alltimeView);
+                Assert.That(alltimeView, Is.Not.Null);
                  foulMeta = alltimeView.ColumnsByName[colName];
-                Assert.NotNull(foulMeta);
+                Assert.That(foulMeta, Is.Not.Null);
 
             }, 200, 55);
             
-            Assert.AreEqual(ColumnTypeCode.Int, foulMeta.TypeCode);
+            Assert.That(ColumnTypeCode.Int, Is.EqualTo(foulMeta.TypeCode));
             dailyView = cluster2.Metadata.GetMaterializedView("ks_view_meta4", "dailyhigh");
-            Assert.IsFalse(dailyView.TableColumns.Contains(foulMeta));
+            Assert.That(dailyView.TableColumns.Contains(foulMeta), Is.False);
         }
 
         /// Tests that multiple secondary indexes are supported per column
@@ -575,19 +576,19 @@ namespace Cassandra.IntegrationTests.Core
             session.Execute(cql);
 
             var tableMeta = cluster.Metadata.GetKeyspace(keyspaceName).GetTableMetadata(tableName);
-            Assert.AreEqual(2, tableMeta.Indexes.Count);
+            Assert.That(2, Is.EqualTo(tableMeta.Indexes.Count));
 
             var mapKeysIndex = tableMeta.Indexes["idx_map_keys"];
-            Assert.AreEqual("idx_map_keys", mapKeysIndex.Name);
-            Assert.AreEqual(IndexMetadata.IndexKind.Composites, mapKeysIndex.Kind);
-            Assert.AreEqual("keys(features)", mapKeysIndex.Target);
-            Assert.NotNull(mapKeysIndex.Options);
+            Assert.That("idx_map_keys", Is.EqualTo(mapKeysIndex.Name));
+            Assert.That(IndexMetadata.IndexKind.Composites, Is.EqualTo(mapKeysIndex.Kind));
+            Assert.That("keys(features)", Is.EqualTo(mapKeysIndex.Target));
+            Assert.That(mapKeysIndex.Options, Is.Not.Null);
 
             var mapValuesIndex = tableMeta.Indexes["idx_map_values"];
-            Assert.AreEqual("idx_map_values", mapValuesIndex.Name);
-            Assert.AreEqual(IndexMetadata.IndexKind.Composites, mapValuesIndex.Kind);
-            Assert.AreEqual("values(features)", mapValuesIndex.Target);
-            Assert.NotNull(mapValuesIndex.Options);
+            Assert.That("idx_map_values", Is.EqualTo(mapValuesIndex.Name));
+            Assert.That(IndexMetadata.IndexKind.Composites, Is.EqualTo(mapValuesIndex.Kind));
+            Assert.That("values(features)", Is.EqualTo(mapValuesIndex.Target));
+            Assert.That(mapValuesIndex.Options, Is.Not.Null);
         }
 
         /// Tests that multiple secondary indexes are not supported per duplicate column
@@ -625,19 +626,19 @@ namespace Cassandra.IntegrationTests.Core
             cql = "CREATE INDEX " + indexName + " ON " + tableName + "(description)";
             session.Execute(cql);
             var tableMeta = cluster.Metadata.GetKeyspace(keyspaceName).GetTableMetadata(tableName);
-            Assert.AreEqual(1, tableMeta.Indexes.Count);
+            Assert.That(1, Is.EqualTo(tableMeta.Indexes.Count));
 
             Assert.Throws<InvalidQueryException>(() => session.Execute(cql));
 
             var cql2 = "CREATE INDEX idx2 ON " + tableName + "(description)";
             Assert.Throws<InvalidQueryException>(() => session.Execute(cql2));
 
-            Assert.AreEqual(1, tableMeta.Indexes.Count);
+            Assert.That(1, Is.EqualTo(tableMeta.Indexes.Count));
             var descriptionIndex = tableMeta.Indexes[indexName];
-            Assert.AreEqual(indexName, descriptionIndex.Name);
-            Assert.AreEqual(IndexMetadata.IndexKind.Composites, descriptionIndex.Kind);
-            Assert.AreEqual("description", descriptionIndex.Target);
-            Assert.NotNull(descriptionIndex.Options);
+            Assert.That(indexName, Is.EqualTo(descriptionIndex.Name));
+            Assert.That(IndexMetadata.IndexKind.Composites, Is.EqualTo(descriptionIndex.Kind));
+            Assert.That("description", Is.EqualTo(descriptionIndex.Target));
+            Assert.That(descriptionIndex.Options, Is.Not.Null);
         }
 
         /// Tests that clustering order metadata is set properly
@@ -676,8 +677,8 @@ namespace Cassandra.IntegrationTests.Core
             session.Execute(cql);
 
             var tableMeta = cluster.Metadata.GetKeyspace(keyspaceName).GetTableMetadata(tableName);
-            Assert.AreEqual(new[] { "description", "price" }, tableMeta.ClusteringKeys.Select(c => c.Item1.Name));
-            Assert.AreEqual(new[] { SortOrder.Ascending, SortOrder.Descending }, tableMeta.ClusteringKeys.Select(c => c.Item2));
+            Assert.That(new[] { "description", "price" }, Is.EqualTo(tableMeta.ClusteringKeys.Select(c => c.Item1.Name)));
+            Assert.That(new[] { SortOrder.Ascending, SortOrder.Descending }, Is.EqualTo(tableMeta.ClusteringKeys.Select(c => c.Item2)));
         }
 
         [Test, TestCase(true), TestCase(false)]
@@ -712,7 +713,7 @@ namespace Cassandra.IntegrationTests.Core
             foreach (var tuple in items)
             {
                 var table = cluster.Metadata.GetTable(KeyspaceName, tuple.Item1);
-                Assert.AreEqual(tuple.Item2, table.Options.NodeSync);
+                Assert.That(tuple.Item2, Is.EqualTo(table.Options.NodeSync));
             }
         }
 
@@ -724,11 +725,11 @@ namespace Cassandra.IntegrationTests.Core
             var _ = cluster.Connect();
 
             var mv = cluster.Metadata.GetMaterializedView(KeyspaceName, "view_nodesync");
-            Assert.AreEqual(new Dictionary<string, string>
+            Assert.That(new Dictionary<string, string>
             {
                 { "enabled", "true" },
                 { "deadline_target_sec", "86400" }
-            }, mv.Options.NodeSync);
+            }, Is.EqualTo(mv.Options.NodeSync));
         }
 
         [Test, TestCassandraVersion(2, 1), TestCase(true), TestCase(false)]
@@ -739,8 +740,8 @@ namespace Cassandra.IntegrationTests.Core
 
             foreach (var host in Cluster.AllHosts())
             {
-                Assert.NotNull(host.CassandraVersion);
-                Assert.Greater(host.CassandraVersion, new Version(1, 2));
+                Assert.That(host.CassandraVersion, Is.Not.Null);
+                Assert.That(host.CassandraVersion, Is.GreaterThan(new Version(1, 2)));
             }
         }
 
@@ -749,10 +750,10 @@ namespace Cassandra.IntegrationTests.Core
         {
             var cluster = GetNewTemporaryCluster(builder => builder.WithMetadataSyncOptions(new MetadataSyncOptions().SetMetadataSyncEnabled(metadataSync)));
             var table = cluster.Metadata.GetTable("system_views", "sstable_tasks");
-            Assert.NotNull(table);
-            Assert.True(table.IsVirtual);
-            Assert.AreEqual(table.PartitionKeys.Select(c => c.Name), new[] { "keyspace_name" });
-            Assert.AreEqual(table.ClusteringKeys.Select(t => t.Item1.Name), new[] { "table_name", "task_id" });
+            Assert.That(table, Is.Not.Null);
+            Assert.That(table.IsVirtual, Is.True);
+            Assert.That(table.PartitionKeys.Select(c => c.Name), Is.EqualTo(new[] { "keyspace_name" }));
+            Assert.That(table.ClusteringKeys.Select(t => t.Item1.Name), Is.EqualTo(new[] { "table_name", "task_id" }));
         }
 
         [Test, TestCase(true), TestCase(false), TestBothServersVersion(4, 0, 6, 7)]
@@ -765,12 +766,12 @@ namespace Cassandra.IntegrationTests.Core
             foreach (var keyspaceName in defaultVirtualKeyspaces)
             {
                 var ks = cluster.Metadata.GetKeyspace(keyspaceName);
-                Assert.True(ks.IsVirtual);
-                Assert.AreEqual(keyspaceName, ks.Name);
+                Assert.That(ks.IsVirtual, Is.True);
+                Assert.That(keyspaceName, Is.EqualTo(ks.Name));
             }
 
             // "system" keyspace is still a regular keyspace
-            Assert.False(cluster.Metadata.GetKeyspace("system").IsVirtual);
+            Assert.That(cluster.Metadata.GetKeyspace("system").IsVirtual, Is.False);
         }
     }
 }

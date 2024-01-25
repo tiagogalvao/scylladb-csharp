@@ -25,20 +25,20 @@ namespace Cassandra.Tests.MetadataHelpers
         public void Should_Parse_When_TransientReplicationIsEnabled()
         {
             var target = ReplicationFactor.Parse("3/1");
-            Assert.AreEqual(3, target.AllReplicas);
-            Assert.AreEqual(1, target.TransientReplicas);
-            Assert.AreEqual(2, target.FullReplicas);
-            Assert.IsTrue(target.HasTransientReplicas());
+            Assert.That(3, Is.EqualTo(target.AllReplicas));
+            Assert.That(1, Is.EqualTo(target.TransientReplicas));
+            Assert.That(2, Is.EqualTo(target.FullReplicas));
+            Assert.That(target.HasTransientReplicas(), Is.True);
         }
         
         [Test]
         public void Should_Parse_When_TransientReplicationIsDisabled()
         {
             var target = ReplicationFactor.Parse("3");
-            Assert.AreEqual(3, target.AllReplicas);
-            Assert.AreEqual(0, target.TransientReplicas);
-            Assert.AreEqual(3, target.FullReplicas);
-            Assert.IsFalse(target.HasTransientReplicas());
+            Assert.That(3, Is.EqualTo(target.AllReplicas));
+            Assert.That(0, Is.EqualTo(target.TransientReplicas));
+            Assert.That(3, Is.EqualTo(target.FullReplicas));
+            Assert.That(target.HasTransientReplicas(), Is.False);
         }
     }
 }

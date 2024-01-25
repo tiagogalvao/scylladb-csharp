@@ -54,8 +54,8 @@ namespace Cassandra.IntegrationTests.Policies.Tests
 
             // Test basic getters
             ExponentialReconnectionPolicy reconnectionPolicy = (ExponentialReconnectionPolicy) builder.GetConfiguration().Policies.ReconnectionPolicy;
-            Assert.True(reconnectionPolicy.BaseDelayMs == 2*1000);
-            Assert.True(reconnectionPolicy.MaxDelayMs == 5*60*1000);
+            Assert.That(reconnectionPolicy.BaseDelayMs == 2*1000, Is.True);
+            Assert.That(reconnectionPolicy.MaxDelayMs == 5*60*1000, Is.True);
 
             // Test erroneous instantiations
             try
@@ -89,14 +89,14 @@ namespace Cassandra.IntegrationTests.Policies.Tests
             // Test nextDelays()
 
             var schedule = new ExponentialReconnectionPolicy(2*1000, 5*60*1000).NewSchedule();
-            Assert.True(schedule.NextDelayMs() == 2000);
-            Assert.True(schedule.NextDelayMs() == 4000);
-            Assert.True(schedule.NextDelayMs() == 8000);
-            Assert.True(schedule.NextDelayMs() == 16000);
-            Assert.True(schedule.NextDelayMs() == 32000);
+            Assert.That(schedule.NextDelayMs() == 2000, Is.True);
+            Assert.That(schedule.NextDelayMs() == 4000, Is.True);
+            Assert.That(schedule.NextDelayMs() == 8000, Is.True);
+            Assert.That(schedule.NextDelayMs() == 16000, Is.True);
+            Assert.That(schedule.NextDelayMs() == 32000, Is.True);
             for (int i = 0; i < 64; ++i)
                 schedule.NextDelayMs();
-            Assert.True(schedule.NextDelayMs() == reconnectionPolicy.MaxDelayMs);
+            Assert.That(schedule.NextDelayMs() == reconnectionPolicy.MaxDelayMs, Is.True);
 
             //// Run integration test
             //long restartTime = 2 + 4 + 8 + 2;   // 16: 3 full cycles + 2 seconds
@@ -123,7 +123,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
 
             // Test basic getters
             ConstantReconnectionPolicy reconnectionPolicy = (ConstantReconnectionPolicy) builder.GetConfiguration().Policies.ReconnectionPolicy;
-            Assert.True(reconnectionPolicy.ConstantDelayMs == 25*1000);
+            Assert.That(reconnectionPolicy.ConstantDelayMs == 25*1000, Is.True);
 
             // Test erroneous instantiations
             try
@@ -137,11 +137,11 @@ namespace Cassandra.IntegrationTests.Policies.Tests
 
             // Test nextDelays()
             var schedule = new ConstantReconnectionPolicy(10*1000).NewSchedule();
-            Assert.True(schedule.NextDelayMs() == 10000);
-            Assert.True(schedule.NextDelayMs() == 10000);
-            Assert.True(schedule.NextDelayMs() == 10000);
-            Assert.True(schedule.NextDelayMs() == 10000);
-            Assert.True(schedule.NextDelayMs() == 10000);
+            Assert.That(schedule.NextDelayMs() == 10000, Is.True);
+            Assert.That(schedule.NextDelayMs() == 10000, Is.True);
+            Assert.That(schedule.NextDelayMs() == 10000, Is.True);
+            Assert.That(schedule.NextDelayMs() == 10000, Is.True);
+            Assert.That(schedule.NextDelayMs() == 10000, Is.True);
 
             //// Run integration test
             //int restartTime = 32;   
@@ -197,7 +197,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                     _policyTestTools.ResetCoordinators();
 
                     // Ensure the time when the query completes successfully is what was expected
-                    Assert.True(retryTime - 6 < elapsedSeconds && elapsedSeconds < retryTime + 6, string.Format("Waited {0} seconds instead an expected {1} seconds wait", elapsedSeconds, retryTime));
+                    Assert.That(retryTime - 6 < elapsedSeconds && elapsedSeconds < retryTime + 6, Is.True, string.Format("Waited {0} seconds instead an expected {1} seconds wait", elapsedSeconds, retryTime));
                 }
                 catch (NoHostAvailableException)
                 {
@@ -250,7 +250,7 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                         _policyTestTools.ResetCoordinators();
 
                         // Ensure the time when the query completes successfully is what was expected
-                        Assert.True(retryTime - 3 < elapsedSeconds && elapsedSeconds < retryTime + 3, string.Format("Waited {0} seconds instead an expected {1} seconds wait", elapsedSeconds, retryTime));
+                        Assert.That(retryTime - 3 < elapsedSeconds && elapsedSeconds < retryTime + 3, Is.True, string.Format("Waited {0} seconds instead an expected {1} seconds wait", elapsedSeconds, retryTime));
                     }
                     catch (NoHostAvailableException)
                     {

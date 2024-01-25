@@ -34,7 +34,7 @@ namespace Cassandra.Tests.DataStax.Insights
 
             var target = new InsightsSupportVerifier();
 
-            Assert.IsFalse(target.SupportsInsights(cluster));
+            Assert.That(target.SupportsInsights(cluster), Is.False);
         }
 
         [Test]
@@ -45,7 +45,7 @@ namespace Cassandra.Tests.DataStax.Insights
 
             var target = new InsightsSupportVerifier();
 
-            Assert.IsFalse(target.SupportsInsights(cluster));
+            Assert.That(target.SupportsInsights(cluster), Is.False);
         }
         
         [Test]
@@ -56,7 +56,7 @@ namespace Cassandra.Tests.DataStax.Insights
 
             var target = new InsightsSupportVerifier();
 
-            Assert.IsTrue(target.SupportsInsights(cluster));
+            Assert.That(target.SupportsInsights(cluster), Is.True);
         }
         
         [Test]
@@ -67,7 +67,7 @@ namespace Cassandra.Tests.DataStax.Insights
 
             var target = new InsightsSupportVerifier();
 
-            Assert.IsTrue(target.SupportsInsights(cluster));
+            Assert.That(target.SupportsInsights(cluster), Is.True);
         }
         
         [Test]
@@ -78,7 +78,7 @@ namespace Cassandra.Tests.DataStax.Insights
 
             var target = new InsightsSupportVerifier();
 
-            Assert.IsFalse(target.SupportsInsights(cluster));
+            Assert.That(target.SupportsInsights(cluster), Is.False);
         }
 
         [Test]
@@ -89,7 +89,7 @@ namespace Cassandra.Tests.DataStax.Insights
 
             var target = new InsightsSupportVerifier();
 
-            Assert.IsFalse(target.SupportsInsights(cluster));
+            Assert.That(target.SupportsInsights(cluster), Is.False);
         }
         
         [Test]
@@ -100,7 +100,7 @@ namespace Cassandra.Tests.DataStax.Insights
 
             var target = new InsightsSupportVerifier();
 
-            Assert.IsTrue(target.SupportsInsights(cluster));
+            Assert.That(target.SupportsInsights(cluster), Is.True);
         }
         
         [Test]
@@ -111,7 +111,7 @@ namespace Cassandra.Tests.DataStax.Insights
 
             var target = new InsightsSupportVerifier();
 
-            Assert.IsTrue(target.SupportsInsights(cluster));
+            Assert.That(target.SupportsInsights(cluster), Is.True);
         }
 
         [Test]
@@ -122,7 +122,7 @@ namespace Cassandra.Tests.DataStax.Insights
 
             var target = new InsightsSupportVerifier();
 
-            Assert.IsTrue(target.SupportsInsights(cluster));
+            Assert.That(target.SupportsInsights(cluster), Is.True);
         }
         
         [Test]
@@ -133,7 +133,7 @@ namespace Cassandra.Tests.DataStax.Insights
 
             var target = new InsightsSupportVerifier();
 
-            Assert.IsTrue(target.SupportsInsights(cluster));
+            Assert.That(target.SupportsInsights(cluster), Is.True);
         }
         
         [Test]
@@ -144,7 +144,7 @@ namespace Cassandra.Tests.DataStax.Insights
 
             var target = new InsightsSupportVerifier();
 
-            Assert.IsFalse(target.SupportsInsights(cluster));
+            Assert.That(target.SupportsInsights(cluster), Is.False);
         }
 
         [Test]
@@ -155,7 +155,7 @@ namespace Cassandra.Tests.DataStax.Insights
 
             var target = new InsightsSupportVerifier();
 
-            Assert.IsTrue(target.SupportsInsights(cluster));
+            Assert.That(target.SupportsInsights(cluster), Is.True);
         }
 
         [Test]
@@ -166,7 +166,7 @@ namespace Cassandra.Tests.DataStax.Insights
 
             var target = new InsightsSupportVerifier();
 
-            Assert.IsFalse(target.SupportsInsights(cluster));
+            Assert.That(target.SupportsInsights(cluster), Is.False);
         }
 
         [Test]
@@ -177,7 +177,7 @@ namespace Cassandra.Tests.DataStax.Insights
 
             var target = new InsightsSupportVerifier();
 
-            Assert.IsFalse(target.SupportsInsights(cluster));
+            Assert.That(target.SupportsInsights(cluster), Is.False);
         }
 
         [Test]
@@ -188,7 +188,7 @@ namespace Cassandra.Tests.DataStax.Insights
 
             var target = new InsightsSupportVerifier();
 
-            Assert.IsFalse(target.SupportsInsights(cluster));
+            Assert.That(target.SupportsInsights(cluster), Is.False);
         }
 
         private ICollection<Host> GetHosts(params string[] dseVersions)

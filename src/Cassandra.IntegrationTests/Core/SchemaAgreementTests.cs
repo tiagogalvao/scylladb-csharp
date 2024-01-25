@@ -73,11 +73,11 @@ namespace Cassandra.IntegrationTests.Core
                 var cql = new SimpleStatement(
                     $"CREATE TABLE {tableName} (id int PRIMARY KEY, description text)");
                 var rowSet = await _session.ExecuteAsync(cql).ConfigureAwait(false);
-                Assert.IsTrue(rowSet.Info.IsSchemaInAgreement, "is in agreement");
+                Assert.That(rowSet.Info.IsSchemaInAgreement, Is.True, "is in agreement");
                 await TestHelper.RetryAssertAsync(
                     async () =>
                     {
-                        Assert.IsTrue(await _cluster.Metadata.CheckSchemaAgreementAsync().ConfigureAwait(false), "check");
+                        Assert.That(await _cluster.Metadata.CheckSchemaAgreementAsync().ConfigureAwait(false), Is.True, "check");
                     },
                     100,
                     50).ConfigureAwait(false);
@@ -106,8 +106,8 @@ namespace Cassandra.IntegrationTests.Core
             var cql = new SimpleStatement(
                 $"CREATE TABLE {tableName} (id int PRIMARY KEY, description text)");
             var rowSet = await _session.ExecuteAsync(cql).ConfigureAwait(false);
-            Assert.IsFalse(rowSet.Info.IsSchemaInAgreement);
-            Assert.IsFalse(await _cluster.Metadata.CheckSchemaAgreementAsync().ConfigureAwait(false));
+            Assert.That(rowSet.Info.IsSchemaInAgreement, Is.False);
+            Assert.That(await _cluster.Metadata.CheckSchemaAgreementAsync().ConfigureAwait(false), Is.False);
         }
 
         public override void OneTimeTearDown()
