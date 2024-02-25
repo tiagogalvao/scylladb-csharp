@@ -21,6 +21,7 @@ using Cassandra.IntegrationTests.TestBase;
 using Cassandra.Serialization;
 using Cassandra.Tests;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Cassandra.IntegrationTests.Policies.Tests
 {
@@ -59,14 +60,14 @@ namespace Cassandra.IntegrationTests.Policies.Tests
             var ageRaw = r["age"] as byte[];
             var publicNotes = r["public_notes"] as string;
             var serializer = ((Session)session).InternalRef.InternalCluster.GetControlConnection().Serializer.GetCurrentSerializer();
-            Assert.NotNull(idRaw);
-            Assert.NotNull(nameRaw);
-            Assert.NotNull(ageRaw);
-            Assert.AreEqual(user.Id, DeserializeDecryptedBytes(serializer, policy.Decrypt(key, idRaw), ColumnTypeCode.Uuid, null));
-            Assert.AreEqual(user.Name, DeserializeDecryptedBytes(serializer, policy.Decrypt(key, nameRaw), ColumnTypeCode.Text, null));
-            Assert.AreEqual(user.Surname, DeserializeDecryptedBytes(serializer, policy.Decrypt(key, surnameRaw), ColumnTypeCode.Text, null));
-            Assert.AreEqual(user.Age, DeserializeDecryptedBytes(serializer, policy.Decrypt(key, ageRaw), ColumnTypeCode.Int, null));
-            Assert.AreEqual(user.PublicNotes, publicNotes);
+            Assert.That(idRaw, Is.Not.Null);
+            Assert.That(nameRaw, Is.Not.Null);
+            Assert.That(ageRaw, Is.Not.Null);
+            ClassicAssert.AreEqual(user.Id, DeserializeDecryptedBytes(serializer, policy.Decrypt(key, idRaw), ColumnTypeCode.Uuid, null));
+            ClassicAssert.AreEqual(user.Name, DeserializeDecryptedBytes(serializer, policy.Decrypt(key, nameRaw), ColumnTypeCode.Text, null));
+            ClassicAssert.AreEqual(user.Surname, DeserializeDecryptedBytes(serializer, policy.Decrypt(key, surnameRaw), ColumnTypeCode.Text, null));
+            ClassicAssert.AreEqual(user.Age, DeserializeDecryptedBytes(serializer, policy.Decrypt(key, ageRaw), ColumnTypeCode.Int, null));
+            Assert.That(user.PublicNotes, Is.EqualTo(publicNotes));
         }
 
         private object DeserializeDecryptedBytes(ISerializer serializer, byte[] decrypted, ColumnTypeCode typeCode, IColumnInfo typeInfo)
@@ -119,19 +120,19 @@ namespace Cassandra.IntegrationTests.Policies.Tests
             await session.ExecuteAsync(boundInsert).ConfigureAwait(false);
             var rs = await session.ExecuteAsync(boundSelect).ConfigureAwait(false);
             var users = rs.ToList();
-            Assert.AreEqual(1, users.Count);
+            Assert.That(1, Is.EqualTo(users.Count));
             var user = users[0];
 
-            Assert.AreEqual(newUser.Id, user["id"]);
-            Assert.AreEqual(newUser.Name, user["name"]);
-            Assert.AreEqual(newUser.Surname, user["surname"]);
-            Assert.AreEqual(newUser.Age, user["age"]);
-            Assert.AreEqual(newUser.PublicNotes, user["public_notes"]);
+            Assert.That(newUser.Id, Is.EqualTo(user["id"]));
+            Assert.That(newUser.Name, Is.EqualTo(user["name"]));
+            Assert.That(newUser.Surname, Is.EqualTo(user["surname"]));
+            Assert.That(newUser.Age, Is.EqualTo(user["age"]));
+            Assert.That(newUser.PublicNotes, Is.EqualTo(user["public_notes"]));
 
             rs = await sessionNoEncryption.ExecuteAsync(new SimpleStatement($"SELECT * FROM {tableName}")).ConfigureAwait(false);
             var allUsers = rs.ToList();
 
-            Assert.AreEqual(1, allUsers.Count);
+            Assert.That(1, Is.EqualTo(allUsers.Count));
             VerifyEncryptedUser(newUser, session, policy, KeyAndIv, allUsers[0]);
         }
 
@@ -176,19 +177,19 @@ namespace Cassandra.IntegrationTests.Policies.Tests
             await session.ExecuteAsync(boundInsert).ConfigureAwait(false);
             var rs = await session.ExecuteAsync(boundSelect).ConfigureAwait(false);
             var users = rs.ToList();
-            Assert.AreEqual(1, users.Count);
+            Assert.That(1, Is.EqualTo(users.Count));
             var user = users[0];
 
-            Assert.AreEqual(newUser.Id, user["id"]);
-            Assert.AreEqual(newUser.Name, user["name"]);
-            Assert.AreEqual(newUser.Surname, user["surname"]);
-            Assert.AreEqual(newUser.Age, user["age"]);
-            Assert.AreEqual(newUser.PublicNotes, user["public_notes"]);
+            Assert.That(newUser.Id, Is.EqualTo(user["id"]));
+            Assert.That(newUser.Name, Is.EqualTo(user["name"]));
+            Assert.That(newUser.Surname, Is.EqualTo(user["surname"]));
+            Assert.That(newUser.Age, Is.EqualTo(user["age"]));
+            Assert.That(newUser.PublicNotes, Is.EqualTo(user["public_notes"]));
 
             rs = await sessionNoEncryption.ExecuteAsync(new SimpleStatement($"SELECT * FROM {tableName}")).ConfigureAwait(false);
             var allUsers = rs.ToList();
 
-            Assert.AreEqual(1, allUsers.Count);
+            Assert.That(1, Is.EqualTo(allUsers.Count));
             VerifyEncryptedUser(newUser, session, policy, KeyAndIv, allUsers[0]);
         }
 
@@ -233,12 +234,12 @@ namespace Cassandra.IntegrationTests.Policies.Tests
             await session.ExecuteAsync(boundInsert).ConfigureAwait(false);
             var rs = await session.ExecuteAsync(boundSelect).ConfigureAwait(false);
             var users = rs.ToList();
-            Assert.AreEqual(0, users.Count);
+            Assert.That(0, Is.EqualTo(users.Count));
 
             rs = await sessionNoEncryption.ExecuteAsync(new SimpleStatement($"SELECT * FROM {tableName}")).ConfigureAwait(false);
             var allUsers = rs.ToList();
 
-            Assert.AreEqual(1, allUsers.Count);
+            Assert.That(1, Is.EqualTo(allUsers.Count));
             VerifyEncryptedUser(newUser, session, policy, KeyOnly, allUsers[0]);
         }
 
@@ -291,19 +292,19 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                 new EncryptedValue(newUser.Age, KeyAndIv))).ConfigureAwait(false);
 
             var users = rs.ToList();
-            Assert.AreEqual(1, users.Count);
+            Assert.That(1, Is.EqualTo(users.Count));
             var user = users[0];
 
-            Assert.AreEqual(newUser.Id, user["id"]);
-            Assert.AreEqual(newUser.Name, user["name"]);
-            Assert.AreEqual(newUser.Surname, user["surname"]);
-            Assert.AreEqual(newUser.Age, user["age"]);
-            Assert.AreEqual(newUser.PublicNotes, user["public_notes"]);
+            Assert.That(newUser.Id, Is.EqualTo(user["id"]));
+            Assert.That(newUser.Name, Is.EqualTo(user["name"]));
+            Assert.That(newUser.Surname, Is.EqualTo(user["surname"]));
+            Assert.That(newUser.Age, Is.EqualTo(user["age"]));
+            Assert.That(newUser.PublicNotes, Is.EqualTo(user["public_notes"]));
 
             rs = await sessionNoEncryption.ExecuteAsync(new SimpleStatement($"SELECT * FROM {tableName}")).ConfigureAwait(false);
             var allUsers = rs.ToList();
 
-            Assert.AreEqual(1, allUsers.Count);
+            Assert.That(1, Is.EqualTo(allUsers.Count));
             VerifyEncryptedUser(newUser, session, policy, KeyAndIv, allUsers[0]);
         }
 
@@ -352,19 +353,19 @@ namespace Cassandra.IntegrationTests.Policies.Tests
                 new EncryptedValue(newUser.Id, KeyAndIv))).ConfigureAwait(false);
 
             var users = rs.ToList();
-            Assert.AreEqual(1, users.Count);
+            Assert.That(1, Is.EqualTo(users.Count));
             var user = users[0];
 
-            Assert.AreEqual(newUser.Id, user["id"]);
-            Assert.AreEqual(newUser.Name, user["name"]);
-            Assert.AreEqual(newUser.Surname, user["surname"]);
-            Assert.AreEqual(newUser.Age, user["age"]);
-            Assert.AreEqual(newUser.PublicNotes, user["public_notes"]);
+            Assert.That(newUser.Id, Is.EqualTo(user["id"]));
+            Assert.That(newUser.Name, Is.EqualTo(user["name"]));
+            Assert.That(newUser.Surname, Is.EqualTo(user["surname"]));
+            Assert.That(newUser.Age, Is.EqualTo(user["age"]));
+            Assert.That(newUser.PublicNotes, Is.EqualTo(user["public_notes"]));
 
             rs = await sessionNoEncryption.ExecuteAsync(new SimpleStatement($"SELECT * FROM {tableName}")).ConfigureAwait(false);
             var allUsers = rs.ToList();
 
-            Assert.AreEqual(1, allUsers.Count);
+            Assert.That(1, Is.EqualTo(allUsers.Count));
             VerifyEncryptedUser(newUser, session, policy, KeyAndIv, allUsers[0]);
         }
 
