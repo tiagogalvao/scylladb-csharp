@@ -58,7 +58,8 @@ namespace Cassandra.Tests.Requests
                         new ConstantReconnectionPolicy(5), 
                         new DefaultRetryPolicy(), 
                         NoSpeculativeExecutionPolicy.Instance, 
-                        new AtomicMonotonicTimestampGenerator());
+                        new AtomicMonotonicTimestampGenerator(),
+                        null);
                 });
             // mock connection send
             mockResult.ConnectionFactory.OnCreate += connection =>
@@ -128,7 +129,8 @@ namespace Cassandra.Tests.Requests
                         new ConstantReconnectionPolicy(5), 
                         new DefaultRetryPolicy(), 
                         NoSpeculativeExecutionPolicy.Instance, 
-                        new AtomicMonotonicTimestampGenerator());
+                        new AtomicMonotonicTimestampGenerator(),
+                        null);
                 });
             // mock connection send
             mockResult.ConnectionFactory.OnCreate += connection =>
@@ -199,7 +201,8 @@ namespace Cassandra.Tests.Requests
                         new ConstantReconnectionPolicy(5), 
                         new DefaultRetryPolicy(), 
                         NoSpeculativeExecutionPolicy.Instance, 
-                        new AtomicMonotonicTimestampGenerator());
+                        new AtomicMonotonicTimestampGenerator(),
+                        null);
                 });
             // mock connection send
             mockResult.ConnectionFactory.OnCreate += connection =>
@@ -272,7 +275,8 @@ namespace Cassandra.Tests.Requests
                         new ConstantReconnectionPolicy(5), 
                         new DefaultRetryPolicy(), 
                         NoSpeculativeExecutionPolicy.Instance, 
-                        new AtomicMonotonicTimestampGenerator());
+                        new AtomicMonotonicTimestampGenerator(),
+                        null);
                 });
             // mock connection send
             mockResult.ConnectionFactory.OnCreate += connection =>
@@ -343,7 +347,8 @@ namespace Cassandra.Tests.Requests
                         new ConstantReconnectionPolicy(5), 
                         new DefaultRetryPolicy(), 
                         NoSpeculativeExecutionPolicy.Instance, 
-                        new AtomicMonotonicTimestampGenerator());
+                        new AtomicMonotonicTimestampGenerator(),
+                        null);
                 });
             // mock connection send
             mockResult.ConnectionFactory.OnCreate += connection =>
@@ -415,7 +420,8 @@ namespace Cassandra.Tests.Requests
                         new ConstantReconnectionPolicy(5), 
                         new DefaultRetryPolicy(), 
                         NoSpeculativeExecutionPolicy.Instance, 
-                        new AtomicMonotonicTimestampGenerator());
+                        new AtomicMonotonicTimestampGenerator(),
+                        null);
                 });
             // mock connection send
             mockResult.ConnectionFactory.OnCreate += connection =>
