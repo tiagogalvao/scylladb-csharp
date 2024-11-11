@@ -228,7 +228,7 @@ namespace Cassandra.Tests.MetadataTests
             Mock.Get(timer).Verify(
                 t => t.Change(
                     It.IsAny<Action>(),
-                    delayMs == null ? It.IsAny<TimeSpan>() : TimeSpan.FromMilliseconds(delayMs.Value)),
+                    delayMs == null ? It.IsAny<TimeSpan>() : TimeSpan.FromMilliseconds(delayMs.Value, 0)),
                 times);
         }
 

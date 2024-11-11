@@ -20,8 +20,8 @@
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <RepositoryUrl>https://github.com/datastax/csharp-driver</RepositoryUrl>
     <PackageProjectUrl>https://github.com/datastax/csharp-driver</PackageProjectUrl>
-    <LangVersion>12</LangVersion>
-    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>13</LangVersion>
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,7 +36,7 @@
 
   <ItemGroup>
     <PackageReference Include="App.Metrics.Abstractions" Version="4.4.0-preview.0.4" />
-    <PackageReference Include="App.Metrics.Concurrency" Version="4.4.0-preview.0.4" />
+    <PackageReference Include="App.Metrics.Concurrency" Version="4.4.0-preview.0.10" />
   </ItemGroup>
 
   <ItemGroup>

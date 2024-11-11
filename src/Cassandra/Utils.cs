@@ -187,7 +187,7 @@ namespace Cassandra
         {
             var buffer = new byte[stream.Length - position];
             stream.Position = position;
-            stream.Read(buffer, 0, buffer.Length - position);
+            _ = stream.Read(buffer, 0, buffer.Length - position);
             return buffer;
         }
 
@@ -202,7 +202,7 @@ namespace Cassandra
             {
                 stream.Position = 0;
                 var itemLength = (int)stream.Length;
-                stream.Read(buffer, offset, itemLength);
+                _ = stream.Read(buffer, offset, itemLength);
                 offset += itemLength;
             }
             return buffer;

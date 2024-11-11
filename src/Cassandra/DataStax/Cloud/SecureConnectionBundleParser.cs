@@ -79,7 +79,7 @@ namespace Cassandra.DataStax.Cloud
                     caStream.CopyTo(memoryStream);
                 }
 
-                caCert = new X509Certificate2(memoryStream.ToArray());
+                caCert = X509CertificateLoader.LoadCertificate(memoryStream.ToArray());
             }
 
             return caCert;
@@ -111,7 +111,7 @@ namespace Cassandra.DataStax.Cloud
                     clientCertStream.CopyTo(memoryStream);
                 }
 
-                clientCert = new X509Certificate2(memoryStream.ToArray(), password);
+                clientCert = X509CertificateLoader.LoadCertificate(memoryStream.ToArray());
             }
             return clientCert;
         }
